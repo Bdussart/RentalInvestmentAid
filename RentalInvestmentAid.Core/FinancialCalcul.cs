@@ -20,9 +20,6 @@ namespace RentalInvestmentAid.Core
             var monthlyCost = Financial.Pmt(mensualRate, monthly, loan, 0, 0) * -1;
 
             double totalInssuranceCost = loan * (inssuranceRate / 100) * annualy;
-
-
-
             return new LoanInformation
             {
                 MonthlyCost = monthlyCost,
@@ -32,17 +29,5 @@ namespace RentalInvestmentAid.Core
 
             };
         }
-        public static void test()
-        {
-            var mensualRate = (0.0446 / 12);
-            var monthly = 25 * 12;
-            var loan = 200000;
-            var value =  Financial.Pmt(mensualRate, monthly, loan, 0, 0) * -1;
-
-            double mensualite = (loan * mensualRate * Math.Pow(1 + mensualRate, monthly)) / (Math.Pow(1 + mensualRate, monthly) - 1);
-
-            var total = value * monthly;
-        }
-
     }
 }

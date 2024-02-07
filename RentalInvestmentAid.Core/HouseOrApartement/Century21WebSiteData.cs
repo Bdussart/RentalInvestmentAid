@@ -26,13 +26,13 @@ namespace RentalInvestmentAid.Core.HouseOrApartement
             HtmlNodeCollection nodesWithDescription = document.DocumentNode.SelectNodes("/html/body/main/article/div/div[2]/section[1]/div");
             List <HtmlNode> spanInfos = nodesInformationWhitoutPrice.First().ChildNodes.Where(child => child.Name.Equals("span", StringComparison.CurrentCultureIgnoreCase)).ToList();
             
-
             string[] locationInformations =  spanInfos[2].InnerText.Trim().Split("-");
+
             HouseOrApartementInformation houseOrApartementInformation = new HouseOrApartementInformation()
             {
                 RentalType = KeyWordsHelper.GetRentalType(spanInfos[0].InnerText.Trim()),
                 Metrage = HtmlWordsHelper.CleanHtml(spanInfos[1].InnerText.Trim().Split("-")[1].Split("m")[0].Trim()),
-                Location = HtmlWordsHelper.CleanHtml(locationInformations[0].Trim()),
+                City = HtmlWordsHelper.CleanHtml(locationInformations[0].Trim()),
                 ZipCode = HtmlWordsHelper.CleanHtml(locationInformations[1].Trim()),
                 Price = new string(HtmlWordsHelper.CleanHtml(nodesInformationWithPrice[0].InnerText).Where(char.IsDigit).ToArray()),
                 Description = HtmlWordsHelper.CleanHtml(nodesWithDescription[0].InnerText.Trim())
