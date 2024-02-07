@@ -26,10 +26,10 @@ namespace RentalInvestmentAid.Core.Bank
                 List<HtmlNode> childs = node.ChildNodes.Where(child => child.Name.Equals("td", StringComparison.InvariantCultureIgnoreCase)).ToList();
                 bankInformation.Add(new BankInformation
                 {
-                    Duration = int.Parse(childs[0].InnerText),
-                    LowerRate = childs[4].InnerText,
-                    MarketRate = childs[3].InnerText,
-                    MaxRate = childs[2].InnerText
+                    DurationInYear = int.Parse(childs[0].InnerText),
+                    LowerRate = childs[4].InnerText.Replace("%", "").Trim(),
+                    MarketRate = childs[3].InnerText.Replace("%", "").Trim(),
+                    MaxRate = childs[2].InnerText.Replace("%", "").Trim()
                 });
             }
             return bankInformation;

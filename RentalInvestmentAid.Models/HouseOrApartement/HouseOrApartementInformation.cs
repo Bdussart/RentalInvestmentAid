@@ -15,5 +15,12 @@ namespace RentalInvestmentAid.Models.HouseOrApartement
         public string Price { get; set; } = String.Empty;
         public string Metrage { get; set; } = String.Empty;
         public string Description { get; set; } = String.Empty;
+
+        public List<RealRentalCost> RentalCost { get; private set; } = new List<RealRentalCost>();
+
+        public void SetRealRentalCost(List<RealRentalCost> realRentalCosts)
+        {
+            RentalCost = realRentalCosts;
+        }
     }
 }

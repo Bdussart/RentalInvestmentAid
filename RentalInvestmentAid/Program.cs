@@ -4,6 +4,7 @@ using RentalInvestmentAid.Core;
 using RentalInvestmentAid.Core.Bank;
 using RentalInvestmentAid.Core.HouseOrApartement;
 using RentalInvestmentAid.Core.Rental;
+using RentalInvestmentAid.Models;
 using RentalInvestmentAid.Models.Bank;
 using RentalInvestmentAid.Models.HouseOrApartement;
 using RentalInvestmentAid.Models.Rental;
@@ -44,21 +45,6 @@ namespace RentalInvestmentAid
                 "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/haute-savoie/desingy/740100.htm"
             };
 
-            //foreach (string url in listOfWebSite)
-            //{
-            //    rentalInformations.AddRange(GetRentalInformations(url));
-            //}
-
-
-            //IBankWebSiteData bankWebSiteData = new PAPWebSiteData();
-
-            //bankWebSiteData.GetRatesInformations("https://www.pap.fr/acheteur/barometre-taux-emprunt");
-
-            //            FinancialCalcul.LoanInformation(4.46, 25, 1700, 0.30);
-
-            //IHouseOrApartementWebSiteData houseOrApartementWebSiteData = new Century21WebSiteData();
-            //houseOrApartementWebSiteData.GetHouseOrApartementInformation("https://www.century21.fr/trouver_logement/detail/6627930707/");
-
             DoTheJob();
             Console.ReadLine();
         }
@@ -92,10 +78,13 @@ namespace RentalInvestmentAid
 
             Console.WriteLine("****** Let's go for some Math ! *****");
 
+            Console.WriteLine("****** Calcul the loan for each duration *****");
+            List<RealLoanCost> realLoanCosts = rentalTreament.CalculAllLoan(bankInformations, houseOrApartementInformation.Price);
 
+            Console.WriteLine("****** Calcul all prices for the location *****");
+            rentalTreament.CalculAllRentalPrices(currentRentalInformation, houseOrApartementInformation);
 
             Console.WriteLine("********-- Ending process --*******");
-
         }
     }
 }

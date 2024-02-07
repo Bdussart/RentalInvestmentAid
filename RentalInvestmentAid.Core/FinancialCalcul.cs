@@ -25,8 +25,8 @@ namespace RentalInvestmentAid.Core
                 MonthlyCost = monthlyCost,
                 MonthlyCostWithInsurrance = monthlyCost + (totalInssuranceCost / monthly), 
                 TotalCost = monthlyCost * monthly,
-                TotalCostWithInsurrance = (monthlyCost * monthly) + totalInssuranceCost
-
+                TotalCostWithInsurrance = (monthlyCost * monthly) + totalInssuranceCost,
+                Rate = rate
             };
         }
     }
