@@ -2,6 +2,7 @@
 
 using RentalInvestmentAid.Core;
 using RentalInvestmentAid.Core.Bank;
+using RentalInvestmentAid.Core.HouseOrApartement;
 using RentalInvestmentAid.Core.Rental;
 using RentalInvestmentAid.Models.Rental;
 
@@ -16,7 +17,10 @@ namespace RentalInvestmentAid
             
             List<RentalInformations> rentalInformations = new List<RentalInformations>();
 
+            Thread.Sleep(TimeSpan.FromSeconds(2)); //Take easy for the external server :)
             rentalInformations.Add(webSiteData.GetApartmentRentalInformation(url));
+
+            Thread.Sleep(TimeSpan.FromSeconds(2)); //Take easy for the external server :)
             rentalInformations.Add(webSiteData.GetHouseRentalInformation(url));
             return (rentalInformations);
         }
@@ -47,10 +51,10 @@ namespace RentalInvestmentAid
 
             //bankWebSiteData.GetRatesInformations("https://www.pap.fr/acheteur/barometre-taux-emprunt");
 
+            //            FinancialCalcul.LoanInformation(4.46, 25, 1700, 0.30);
 
-            //FinancialCalcul.test();
-
-            FinancialCalcul.LoanInformation(4.46, 25, 1700, 0.30);
+            IHouseOrApartementWebSiteData houseOrApartementWebSiteData = new Century21WebSiteData();
+            houseOrApartementWebSiteData.GetHouseOrApartementInformation("https://www.century21.fr/trouver_logement/detail/6627930707/");
 
             Console.ReadLine();
         }
