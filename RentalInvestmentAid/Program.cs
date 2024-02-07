@@ -48,7 +48,9 @@ namespace RentalInvestmentAid
             //bankWebSiteData.GetRatesInformations("https://www.pap.fr/acheteur/barometre-taux-emprunt");
 
 
-            FinancialCalcul.test();
+            //FinancialCalcul.test();
+
+            FinancialCalcul.LoanInformation(4.46, 25, 1700, 0.30);
 
             Console.ReadLine();
         }
