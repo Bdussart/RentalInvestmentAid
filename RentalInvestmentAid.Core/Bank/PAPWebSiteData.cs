@@ -1,4 +1,6 @@
 ﻿using HtmlAgilityPack;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 using RentalInvestmentAid.Models.Bank;
 using RentalInvestmentAid.Models.Rental;
 using System;
@@ -14,10 +16,24 @@ namespace RentalInvestmentAid.Core.Bank
         public List<BankInformation> GetRatesInformations(string url)
         {
             HtmlWeb htmlWeb = new HtmlWeb();
+            string html = string.Empty;
 
-            HtmlDocument document = htmlWeb.Load(url);
+            ChromeOptions options = new ChromeOptions();
+            options.AddArgument("--enable-javascript");
+            options.AddArgument("--window-size=500,1080");
+            using (IWebDriver driver = new ChromeDriver(options))
+            {
+                driver.Navigate().GoToUrl(url);
 
-            HtmlNodeCollection nodes = document.DocumentNode.SelectNodes("/html/body/div[1]/div[1]/table/tbody/tr");
+                html = driver.PageSource;
+
+                driver.Close();
+            }
+
+            HtmlDocument document = new HtmlDocument();
+            document.LoadHtml(html);
+
+            HtmlNodeCollection nodes = document.DocumentNode.SelectNodes("/html/body/div[1]/div[1]/div[1]/table/tbody/tr");
 
             List<BankInformation> bankInformation = new List<BankInformation>();
 
