@@ -13,8 +13,7 @@ namespace RentalInvestmentAid.Core
     {
         public static LoanInformation LoanInformation(double rate, int annualy, double loan, double inssuranceRate, LoanType type)
         {
-            rate = rate / 100;
-            double mensualRate = rate / 12;
+            double mensualRate = (rate / 100 )/ 12;
             int monthly = annualy * 12;
 
             var monthlyCost = Financial.Pmt(mensualRate, monthly, loan, 0, 0) * -1;
@@ -26,7 +25,7 @@ namespace RentalInvestmentAid.Core
                 MonthlyCostWithInsurrance = monthlyCost + (totalInssuranceCost / monthly), 
                 TotalCost = monthlyCost * monthly,
                 TotalCostWithInsurrance = (monthlyCost * monthly) + totalInssuranceCost,
-                Rate = rate,
+                Rate = rate ,
                 Type = type,
                 InsurranceRate = inssuranceRate
             };

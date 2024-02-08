@@ -121,7 +121,7 @@ namespace RentalInvestmentAid
                     .GetMember(res.Type.ToString())[0]
                     .GetCustomAttributes(typeof(DescriptionAttribute), inherit: false)[0] as DescriptionAttribute;
                 Console.WriteLine($"-----Pour un prêt de         :{res.DurationInYear} ans");
-                Console.WriteLine($"-----avec un taux à          :{(res.Rate * 100).ToString("#.##")}({rateDescription.Description})");
+                Console.WriteLine($"-----avec un taux à          :{(res.Rate).ToString("#.##")}({rateDescription.Description})");
                 Console.WriteLine($"-----Le coût total est de    :{res.TotalCost.ToString("#.##")}€");
                 Console.WriteLine($"-----Le coût par mois est de :{res.MonthlyCost.ToString("#.##")}€");
 
