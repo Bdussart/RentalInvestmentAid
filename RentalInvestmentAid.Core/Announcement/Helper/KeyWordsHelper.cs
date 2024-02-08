@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RentalInvestmentAid.Core.HouseOrApartement.Helper
+namespace RentalInvestmentAid.Core.Announcement.Helper
 {
     public static class KeyWordsHelper
     {

@@ -1,20 +1,36 @@
 ﻿using HtmlAgilityPack;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium;
 using RentalInvestmentAid.Models.Bank;
-using RentalInvestmentAid.Models.HouseOrApartement;
+using RentalInvestmentAid.Models.Announcement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RentalInvestmentAid.Core.HouseOrApartement
+namespace RentalInvestmentAid.Core.Announcement
 {
-    public class LeBonCoinWebSiteData : IHouseOrApartementWebSiteData
+    public class LeBonCoinWebSiteData : IAnnouncementWebSiteData
     {
-        public HouseOrApartementInformation GetHouseOrApartementInformation(string url)
+        public AnnouncementInformation GetAnnouncementInformation(string url)
         {
 
-            throw new NotImplementedException();
+
+            HtmlWeb htmlWeb = new HtmlWeb();
+            string html = string.Empty;
+
+            ChromeOptions options = new ChromeOptions();
+            options.AddArgument("--enable-javascript");
+            options.AddArgument("--window-size=500,1080");
+            using (IWebDriver driver = new ChromeDriver(options))
+            {
+                driver.Navigate().GoToUrl(url);
+
+                html = driver.PageSource;
+
+                driver.Close();
+            }
 
             // TO DO It's working with Selenium ! need to implement it :)  
 
@@ -51,10 +67,10 @@ namespace RentalInvestmentAid.Core.HouseOrApartement
 
             //HtmlNodeCollection nodes = document.DocumentNode.SelectNodes("//*[@id=\"grid\"]/article/div[1]");
 
-            //HouseOrApartementInformation houseOrApartementInformation = new HouseOrApartementInformation();
+            AnnouncementInformation announcementInformation = new AnnouncementInformation();
 
 
-            //return houseOrApartementInformation;
+            return announcementInformation;
         }
     }
 }

@@ -2,10 +2,10 @@
 
 using RentalInvestmentAid.Core;
 using RentalInvestmentAid.Core.Bank;
-using RentalInvestmentAid.Core.HouseOrApartement;
+using RentalInvestmentAid.Core.Announcement;
 using RentalInvestmentAid.Core.Rental;
 using RentalInvestmentAid.Models.Bank;
-using RentalInvestmentAid.Models.HouseOrApartement;
+using RentalInvestmentAid.Models.Announcement;
 using RentalInvestmentAid.Models.Loan;
 using RentalInvestmentAid.Models.Rental;
 using System.ComponentModel;
@@ -56,7 +56,7 @@ namespace RentalInvestmentAid
         private static void DoTheJob()
         {
             Console.WriteLine("********-- Starting process --*******");
-            IHouseOrApartementWebSiteData houseOrApartementWebSiteData = new Century21WebSiteData();
+            IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData();
             IBankWebSiteData bankWebSiteData = new PAPWebSiteData();
             RentalTreament rentalTreament = new RentalTreament();
 
@@ -68,10 +68,10 @@ namespace RentalInvestmentAid
             List<RentalInformations> rentalInformations = GetRentalInformations("https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/haute-savoie/vulbens/740314.htm");
 
             Console.WriteLine("****** Annoucement Information *****");
-            HouseOrApartementInformation houseOrApartementInformation = houseOrApartementWebSiteData.GetHouseOrApartementInformation("https://www.century21.fr/trouver_logement/detail/5187388611/");
+            AnnouncementInformation announcementInformation = announcementWebSiteData.GetAnnouncementInformation("https://www.century21.fr/trouver_logement/detail/5187388611/");
            
             Console.WriteLine("****** Find the right rental information *****");
-            RentalInformations? currentRentalInformation = rentalTreament.FindRentalInformationForAnAnnoucement(rentalInformations, houseOrApartementInformation);
+            RentalInformations? currentRentalInformation = rentalTreament.FindRentalInformationForAnAnnoucement(rentalInformations, announcementInformation);
 
             Console.WriteLine("****** Find the right rental information Check if not null *****");
             if (currentRentalInformation == null)
@@ -83,14 +83,14 @@ namespace RentalInvestmentAid
             Console.WriteLine("****** Let's go for some Math ! *****");
 
             Console.WriteLine("****** Calcul the loan for each duration *****");
-            List<RealLoanCost> realRentalCosts = rentalTreament.CalculAllLoan(bankInformations, houseOrApartementInformation.Price);
+            List<RealLoanCost> realRentalCosts = rentalTreament.CalculAllLoan(bankInformations, announcementInformation.Price);
 
             Console.WriteLine("****** Calcul all prices for the rent *****");
-            rentalTreament.CalculAllRentalPrices(currentRentalInformation, ref houseOrApartementInformation);
+            rentalTreament.CalculAllRentalPrices(currentRentalInformation, ref announcementInformation);
 
 
             Console.WriteLine("****** Check viability of the rent *****");
-            RentalResult result =  rentalTreament.CheckIfRentable(houseOrApartementInformation, realRentalCosts);
+            RentalResult result =  rentalTreament.CheckIfRentable(announcementInformation, realRentalCosts);
 
 
             Console.WriteLine("****** There is the result :  *****");
@@ -105,10 +105,10 @@ namespace RentalInvestmentAid
             Console.WriteLine("----------------------------------------------------------------------------");
             Console.WriteLine("----------------------------------------------------------------------------");
 
-            Console.WriteLine($"--Pour l'annonce :{result.HouseOrApartementInformation.UrlWebSite}");
-            Console.WriteLine($"--Située         :{result.HouseOrApartementInformation.City} - {result.HouseOrApartementInformation.ZipCode}");
-            Console.WriteLine($"--Description    :{result.HouseOrApartementInformation.Description}");
-            Console.WriteLine($"--Prix           :{result.HouseOrApartementInformation.Price}");
+            Console.WriteLine($"--Pour l'annonce :{result.AnnouncementInformation.UrlWebSite}");
+            Console.WriteLine($"--Située         :{result.AnnouncementInformation.City} - {result.AnnouncementInformation.ZipCode}");
+            Console.WriteLine($"--Description    :{result.AnnouncementInformation.Description}");
+            Console.WriteLine($"--Prix           :{result.AnnouncementInformation.Price}");
 
 
 

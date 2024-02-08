@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace RentalInvestmentAid.Core.HouseOrApartement.Helper
+namespace RentalInvestmentAid.Core.Announcement.Helper
 {
     public static class HtmlWordsHelper
     {

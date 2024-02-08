@@ -1,6 +1,6 @@
 ﻿using HtmlAgilityPack;
-using RentalInvestmentAid.Core.HouseOrApartement.Helper;
-using RentalInvestmentAid.Models.HouseOrApartement;
+using RentalInvestmentAid.Core.Announcement.Helper;
+using RentalInvestmentAid.Models.Announcement;
 using RentalInvestmentAid.Models.Rental;
 using System;
 using System.Collections.Generic;
@@ -8,12 +8,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RentalInvestmentAid.Core.HouseOrApartement
+namespace RentalInvestmentAid.Core.Announcement
 {
 
-    public class Century21WebSiteData : IHouseOrApartementWebSiteData
+    public class Century21WebSiteData : IAnnouncementWebSiteData
     {
-        public HouseOrApartementInformation GetHouseOrApartementInformation(string url)
+        public AnnouncementInformation GetAnnouncementInformation(string url)
         {
 
             HtmlWeb htmlWeb = new HtmlWeb();
@@ -28,7 +28,7 @@ namespace RentalInvestmentAid.Core.HouseOrApartement
             
             string[] locationInformations =  spanInfos[2].InnerText.Trim().Split("-");
 
-            HouseOrApartementInformation houseOrApartementInformation = new HouseOrApartementInformation()
+            AnnouncementInformation announcementInformation = new AnnouncementInformation()
             {
                 RentalType = KeyWordsHelper.GetRentalType(spanInfos[0].InnerText.Trim()),
                 Metrage = HtmlWordsHelper.CleanHtml(spanInfos[1].InnerText.Trim().Split("-")[1].Split("m")[0].Trim()),
@@ -38,7 +38,7 @@ namespace RentalInvestmentAid.Core.HouseOrApartement
                 Description = HtmlWordsHelper.CleanHtml(nodesWithDescription[0].InnerText.Trim()),
                 UrlWebSite = url
             };
-            return houseOrApartementInformation;
+            return announcementInformation;
         }
     }
 }

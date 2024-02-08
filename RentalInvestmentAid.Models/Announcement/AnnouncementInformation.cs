@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RentalInvestmentAid.Models.HouseOrApartement
+namespace RentalInvestmentAid.Models.Announcement
 {
-    public class HouseOrApartementInformation
+    public class AnnouncementInformation
     {
         public RentalTypeOfTheRent RentalType { get; set; }
         public string City { get; set; } = String.Empty;

@@ -1,4 +1,4 @@
-﻿using RentalInvestmentAid.Models.HouseOrApartement;
+﻿using RentalInvestmentAid.Models.Announcement;
 using RentalInvestmentAid.Models.Loan;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ namespace RentalInvestmentAid.Models.Rental
     public class RentalResult
     {
         public double LoanBaseAmout { get; set; }
-        public HouseOrApartementInformation HouseOrApartementInformation { get; set; }
+        public AnnouncementInformation AnnouncementInformation { get; set; }
         public List<LoanInformationWithRentalInformation> LoanInformationWithRentalInformation { get; set; }
 
     }
