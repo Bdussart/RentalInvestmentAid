@@ -4,7 +4,7 @@ using RentalInvestmentAid.Models.Loan;
 namespace RentalInvestmentAid.Test
 {
     [TestClass]
-    public class FinancialTest
+    public class FinancialTests
     {
         [TestMethod]
         public void NormalUseCase()

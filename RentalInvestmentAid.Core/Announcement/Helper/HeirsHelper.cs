@@ -8,9 +8,12 @@ namespace RentalInvestmentAid.Core.Announcement.Helper
 {
     public static class HeirsHelper
     {
-        public static IAnnouncementWebSiteData FindTheRightHeir(string url, List<IAnnouncementWebSiteData> datas)
+        public static IAnnouncementWebSiteData? FindTheRightHeir(string url, List<IAnnouncementWebSiteData> datas)
         {
-            return datas.Find(child => child.GetKeyword().Contains(url, StringComparison.InvariantCultureIgnoreCase));
+            return datas.Find(child => {
+                return url.Contains(child.GetKeyword(), StringComparison.InvariantCultureIgnoreCase);
+                }
+            );
         }
     }
 }
