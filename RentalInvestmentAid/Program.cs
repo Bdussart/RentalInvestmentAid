@@ -10,6 +10,8 @@ using RentalInvestmentAid.Models.Loan;
 using RentalInvestmentAid.Models.Rental;
 using System.ComponentModel;
 using System.Text;
+using static System.Net.WebRequestMethods;
+using RentalInvestmentAid.Core.Announcement.Helper;
 
 namespace RentalInvestmentAid
 {
@@ -42,7 +44,7 @@ namespace RentalInvestmentAid
             Console.OutputEncoding = Encoding.UTF8;
 
             List<RentalInformations> rentalInformations = new List<RentalInformations>();
-            List<string> listOfWebSite = new List<string>
+            List<string> listOfWebSiteForRentalInformation = new List<string>
             {
                 "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/haute-savoie/seyssel/740269.htm",
                 "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/ain/champagne-en-valromey/10079.htm",
@@ -53,10 +55,21 @@ namespace RentalInvestmentAid
                 "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/ain/corbonod/10118.htm",
                 "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/savoie/aix-les-bains/730008.htm",
                 "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/savoie/le-bourget-du-lac/730051.htm",
-                "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/haute-savoie/desingy/740100.htm"
+                "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/haute-savoie/desingy/740100.htm",
+                "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/haute-savoie/vulbens/740314.htm"
             };
 
-            DoTheJob();
+            List<string> listOfAnnoncmentWebSite = new List<string>
+            {
+                "https://www.leboncoin.fr/offre/ventes_immobilieres/2490111201",
+                "https://www.century21.fr/trouver_logement/detail/5187388611/",
+            };
+
+
+            listOfAnnoncmentWebSite.ForEach(url => {
+                HeirsHelper.FindTheRightHeir(url, announcementWebSiteDatas).GetAnnouncementInformation(url);
+            });
+            // DoTheJob();
             Console.ReadLine();
         }
 

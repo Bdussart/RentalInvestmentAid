@@ -10,6 +10,10 @@ namespace RentalInvestmentAid.Core.Rental
 {
     public class LaCoteImmoWebSiteData : IRentalWebSiteData
     {
+
+        //NOTE : Voici comment est fait le site lacoteImmo  :
+        //https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/haute-savoie/alby-sur-cheran/740002.htm
+        //https://www.lacoteimmo.com/prix-de-l-immo/location/{région}/{département}/{n'importe quoi}/{département en chiffre}"74" +  {quatre digit incrémental}
         public RentalInformations GetApartmentRentalInformation(string url)
         {
             HtmlWeb htmlWeb = new HtmlWeb();
