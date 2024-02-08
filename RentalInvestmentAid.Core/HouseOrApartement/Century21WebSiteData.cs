@@ -35,7 +35,8 @@ namespace RentalInvestmentAid.Core.HouseOrApartement
                 City = HtmlWordsHelper.CleanHtml(locationInformations[0].Trim()),
                 ZipCode = HtmlWordsHelper.CleanHtml(locationInformations[1].Trim()),
                 Price = new string(HtmlWordsHelper.CleanHtml(nodesInformationWithPrice[0].InnerText).Where(char.IsDigit).ToArray()),
-                Description = HtmlWordsHelper.CleanHtml(nodesWithDescription[0].InnerText.Trim())
+                Description = HtmlWordsHelper.CleanHtml(nodesWithDescription[0].InnerText.Trim()),
+                UrlWebSite = url
             };
             return houseOrApartementInformation;
         }

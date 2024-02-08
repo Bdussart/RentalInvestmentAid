@@ -11,7 +11,7 @@ namespace RentalInvestmentAid.Core
 {
     public static class FinancialCalcul
     {
-        public static LoanInformation LoanInformation(double rate, int annualy, double loan, double inssuranceRate)
+        public static LoanInformation LoanInformation(double rate, int annualy, double loan, double inssuranceRate, LoanType type)
         {
             rate = rate / 100;
             double mensualRate = rate / 12;
@@ -26,7 +26,9 @@ namespace RentalInvestmentAid.Core
                 MonthlyCostWithInsurrance = monthlyCost + (totalInssuranceCost / monthly), 
                 TotalCost = monthlyCost * monthly,
                 TotalCostWithInsurrance = (monthlyCost * monthly) + totalInssuranceCost,
-                Rate = rate
+                Rate = rate,
+                Type = type,
+                InsurranceRate = inssuranceRate
             };
         }
     }

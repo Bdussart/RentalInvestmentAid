@@ -8,11 +8,13 @@ namespace RentalInvestmentAid.Models.Loan
 {
     public class LoanInformation
     {
+        public LoanType Type { get; set; }
         public double Rate { get; set; }
         public double MonthlyCost { get; set; }
         public double MonthlyCostWithInsurrance { get; set; }
         public double TotalCost { get; set; }
         public double TotalCostWithInsurrance { get; set; }
+        public double InsurranceRate { get;set; }
 
     }
 }

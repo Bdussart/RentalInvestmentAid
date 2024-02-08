@@ -17,11 +17,11 @@ namespace RentalInvestmentAid.Core.HouseOrApartement.Helper
         {
             "appartement", "duplex", "triplex"
         };
-        public static RentalType GetRentalType(string keyWord)
+        public static RentalTypeOfTheRent GetRentalType(string keyWord)
         {
-            RentalType rentalType = RentalType.Apartment;
+            RentalTypeOfTheRent rentalType = RentalTypeOfTheRent.Apartment;
             if (HouseKeyWord.Any(s => keyWord.Contains(s, StringComparison.CurrentCultureIgnoreCase)))
-                rentalType = RentalType.House;
+                rentalType = RentalTypeOfTheRent.House;
 
             return rentalType;
         }

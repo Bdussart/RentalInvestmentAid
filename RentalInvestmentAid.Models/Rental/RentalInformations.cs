@@ -7,6 +7,6 @@
         public string LowerPrice = string.Empty;
         public string MediumPrice = string.Empty;
         public string HigherPrice = string.Empty;
-        public RentalType RentalType;
+        public RentalTypeOfTheRent RentalType;
     }
 }

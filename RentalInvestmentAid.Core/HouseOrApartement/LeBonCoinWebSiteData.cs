@@ -16,6 +16,8 @@ namespace RentalInvestmentAid.Core.HouseOrApartement
 
             throw new NotImplementedException();
 
+            // TO DO It's working with Selenium ! need to implement it :)  
+
             //HtmlWeb htmlWeb = new HtmlWeb();
 
             //htmlWeb.PreRequest += (request) =>

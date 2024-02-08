@@ -30,7 +30,7 @@ namespace RentalInvestmentAid.Core.Rental
                 MediumPrice = nodes[2].InnerText.Split(" ")[0],
                 HigherPrice = nodes[3].InnerText.Split(" ")[0],
                 ZipCode = new string(nodeForZipCode[0].InnerText.Split("\n")[2].Where(char.IsDigit).ToArray()),
-                RentalType = RentalType.Apartment
+                RentalType = RentalTypeOfTheRent.Apartment
             };
 
             return rentalInformations;
@@ -54,7 +54,7 @@ namespace RentalInvestmentAid.Core.Rental
                 MediumPrice = nodes[1].InnerText.Split(" ")[0],
                 HigherPrice = nodes[2].InnerText.Split(" ")[0],
                 ZipCode = new string(nodeForZipCode[0].InnerText.Split("\n")[2].Where(char.IsDigit).ToArray()),
-                RentalType = RentalType.House
+                RentalType = RentalTypeOfTheRent.House
             };
 
             return rentalInformations;
