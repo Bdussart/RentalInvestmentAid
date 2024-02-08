@@ -40,5 +40,10 @@ namespace RentalInvestmentAid.Core.Announcement
             };
             return announcementInformation;
         }
+
+        public string GetKeyword()
+        {
+            return "Century21";
+        }
     }
 }

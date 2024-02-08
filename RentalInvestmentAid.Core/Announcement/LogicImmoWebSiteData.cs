@@ -17,5 +17,10 @@ namespace RentalInvestmentAid.Core.Announcement
         {
             throw new NotImplementedException();
         }
+
+        public string GetKeyword()
+        {
+            return "LogicImmo";
+        }
     }
 }

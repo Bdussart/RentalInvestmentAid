@@ -10,5 +10,7 @@ namespace RentalInvestmentAid.Core.Announcement
     public interface IAnnouncementWebSiteData
     {
         public AnnouncementInformation GetAnnouncementInformation(string url);
+
+        public string GetKeyword();
     }
 }

@@ -32,6 +32,13 @@ namespace RentalInvestmentAid
 
         public static void Main(string[] args)
         {
+
+            List<IAnnouncementWebSiteData> announcementWebSiteDatas = new List<IAnnouncementWebSiteData>
+            {
+                { new Century21WebSiteData() },
+                { new LeBonCoinWebSiteData() },
+            };
+
             Console.OutputEncoding = Encoding.UTF8;
 
             List<RentalInformations> rentalInformations = new List<RentalInformations>();
@@ -60,7 +67,7 @@ namespace RentalInvestmentAid
             IBankWebSiteData bankWebSiteData = new PAPWebSiteData();
             RentalTreament rentalTreament = new RentalTreament();
 
-            /* Simple Process Minimum Viable Process => Test annonce sur Desingy */
+            /* Simple Process Minimum Viable Process => Test annonce sur Vulbens */
 
             Console.WriteLine("****** Getting Data *****");
             Console.WriteLine("****** Rental Information *****");
