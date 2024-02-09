@@ -61,7 +61,7 @@ namespace RentalInvestmentAid
 
             List<string> listOfAnnoncmentWebSite = new List<string>
             {
-                "https://www.leboncoin.fr/offre/ventes_immobilieres/2490111201",
+                "https://www.leboncoin.fr/offre/ventes_immobilieres/2460065778",
                 "https://www.century21.fr/trouver_logement/detail/5187388611/",
             };
 

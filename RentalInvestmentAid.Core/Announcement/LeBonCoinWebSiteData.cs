@@ -34,14 +34,10 @@ namespace RentalInvestmentAid.Core.Announcement
             HtmlDocument document = new HtmlDocument();
             document.LoadHtml(html);
 
-
-
             HtmlNodeCollection htmlNodesMetrageAndCity = document.DocumentNode.SelectNodes("//*[@id=\"grid\"]/article/div[1]/div/div[1]/p/span");
             HtmlNodeCollection htmlNodesPrice = document.DocumentNode.SelectNodes("//*[@id=\"grid\"]/article/div[1]/div/div[1]/div[2]/div/p");
             HtmlNodeCollection htmlNodesRentalType = document.DocumentNode.SelectNodes("//*[@id=\"grid\"]/article/div[1]/div/h1");
             HtmlNodeCollection htmlNodesDescription = document.DocumentNode.SelectNodes("//*[@id=\"grid\"]/article/div[3]/div[2]/div[1]/p");
-
-
             
             AnnouncementInformation announcementInformation = new AnnouncementInformation()
             {
