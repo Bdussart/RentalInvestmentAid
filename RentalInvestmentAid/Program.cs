@@ -12,16 +12,17 @@ using System.ComponentModel;
 using System.Text;
 using static System.Net.WebRequestMethods;
 using RentalInvestmentAid.Core.Announcement.Helper;
+using RentalInvestmentAid.Database;
 
 namespace RentalInvestmentAid
 {
 
     public class Program {
 
-        private static List<RentalInformations>  GetRentalInformations(string url)
+        private static List<RentalInformations> GetRentalInformations(string url)
         {
             IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData();
-            
+
             List<RentalInformations> rentalInformations = new List<RentalInformations>();
 
             Thread.Sleep(TimeSpan.FromSeconds(2)); //Take easy for the external server :)
@@ -35,15 +36,15 @@ namespace RentalInvestmentAid
         public static void Main(string[] args)
         {
 
-            List<IAnnouncementWebSiteData> announcementWebSiteDatas = new List<IAnnouncementWebSiteData>
-            {
-                { new Century21WebSiteData() },
-                { new LeBonCoinWebSiteData() },
-            };
+            //List<IAnnouncementWebSiteData> announcementWebSiteDatas = new List<IAnnouncementWebSiteData>
+            //{
+            //    { new Century21WebSiteData() },
+            //    { new LeBonCoinWebSiteData() },
+            //};
 
             Console.OutputEncoding = Encoding.UTF8;
 
-            List<RentalInformations> rentalInformations = new List<RentalInformations>();
+            //List<RentalInformations> rentalInformations = new List<RentalInformations>();
             List<string> listOfWebSiteForRentalInformation = new List<string>
             {
                 "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/haute-savoie/seyssel/740269.htm",
@@ -59,17 +60,30 @@ namespace RentalInvestmentAid
                 "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/haute-savoie/vulbens/740314.htm"
             };
 
-            List<string> listOfAnnoncmentWebSite = new List<string>
-            {
-                "https://www.leboncoin.fr/offre/ventes_immobilieres/2460065778",
-                "https://www.century21.fr/trouver_logement/detail/5187388611/",
-            };
+            //List<string> listOfAnnoncmentWebSite = new List<string>
+            //{
+            //    "https://www.leboncoin.fr/offre/ventes_immobilieres/2460065778",
+            //    "https://www.century21.fr/trouver_logement/detail/5187388611/",
+            //};
 
 
-            listOfAnnoncmentWebSite.ForEach(url => {
-                HeirsHelper.FindTheRightHeir(url, announcementWebSiteDatas).GetAnnouncementInformation(url);
-            });
+            //listOfAnnoncmentWebSite.ForEach(url => {
+            //    HeirsHelper.FindTheRightHeir(url, announcementWebSiteDatas).GetAnnouncementInformation(url);
+            //});
             // DoTheJob();
+            IDatabaseFactory databaseFactory = new SqlServerDatabase();
+            listOfWebSiteForRentalInformation.ForEach(url =>
+            {
+                foreach (var info in GetRentalInformations(url))
+                {
+                    databaseFactory.InsertRentalInformation(info);
+                }
+            });
+
+
+
+            var plop = databaseFactory.RentalInformations;
+
             Console.ReadLine();
         }
 

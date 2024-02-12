@@ -9,8 +9,8 @@ namespace RentalInvestmentAid.Models.Rental
 {
     public enum RentalTypeOfTheRent
     {
-        Apartment = 0,
-        House = 1
+        Apartment = 1,
+        House = 2
     }
 
     public enum RentalType
