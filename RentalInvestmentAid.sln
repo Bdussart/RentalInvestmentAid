@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentalInvestmentAid.Core", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentalInvestmentAid.Models", "RentalInvestmentAid.Models\RentalInvestmentAid.Models.csproj", "{443AE962-D4DB-41DF-8A12-5561FD5AC9BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RentalInvestmentAid.Test", "RentalInvestmentAid.Test\RentalInvestmentAid.Test.csproj", "{EBF960D4-ED76-4765-9B28-C17DF73BDD13}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentalInvestmentAid.Test", "RentalInvestmentAid.Test\RentalInvestmentAid.Test.csproj", "{EBF960D4-ED76-4765-9B28-C17DF73BDD13}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
