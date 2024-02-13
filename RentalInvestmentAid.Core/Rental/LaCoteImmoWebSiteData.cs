@@ -1,4 +1,6 @@
 ﻿using HtmlAgilityPack;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium;
 using RentalInvestmentAid.Models.Rental;
 using System;
 using System.Collections.Generic;
@@ -64,6 +66,38 @@ namespace RentalInvestmentAid.Core.Rental
             };
 
             return rentalInformations;
+        }
+
+        public List<string> GetUrlForRentalInformation(string area, string department, int departmentNumber)
+        {
+            int iterator = 1;
+            string baseUrl = string.Empty; 
+            List<string> urls = new List<string>();
+
+            ChromeOptions options = new ChromeOptions();
+            options.AddArgument("--enable-javascript");
+            options.AddArgument("--window-size=500,1080");
+
+            using (IWebDriver driver = new ChromeDriver(options))
+            {
+                bool next = true;
+                do
+                {
+                    baseUrl = $"https://www.lacoteimmo.com/prix-de-l-immo/location/{area}/{department}/nothing/{departmentNumber}{iterator.ToString("0000")}.htm";
+                    driver.Navigate().GoToUrl(baseUrl);
+
+                    if (baseUrl.Equals(driver.Url, StringComparison.CurrentCultureIgnoreCase))
+                        next = false;
+                    else
+                        urls.Add(driver.Url);
+                    iterator++;
+
+                    Thread.Sleep(TimeSpan.FromSeconds(1));//Take  it easy ...
+                } while (next);
+            }
+
+
+            return urls;
         }
     }
 }

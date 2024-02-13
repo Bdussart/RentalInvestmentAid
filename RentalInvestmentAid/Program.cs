@@ -10,8 +10,6 @@ using RentalInvestmentAid.Models.Loan;
 using RentalInvestmentAid.Models.Rental;
 using System.ComponentModel;
 using System.Text;
-using static System.Net.WebRequestMethods;
-using RentalInvestmentAid.Core.Announcement.Helper;
 using RentalInvestmentAid.Database;
 using System.Diagnostics;
 
@@ -33,12 +31,14 @@ namespace RentalInvestmentAid
             rentalInformations.Add(webSiteData.GetHouseRentalInformation(url));
             return (rentalInformations);
         }
-
+        
         public static void Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
             IDatabaseFactory databaseFactory = new SqlServerDatabase();
 
+            IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData();
+            webSiteData.GetUrlForRentalInformation("rhone-alpes", "haute-savoie", 74);
             //List<RentalInformations> rentalInformations = new List<RentalInformations>();
             List<string> listOfWebSiteForRentalInformation = new List<string>
             {
@@ -66,7 +66,7 @@ namespace RentalInvestmentAid
             //{
             //    HeirsHelper.FindTheRightHeir(url, announcementWebSiteDatas).GetAnnouncementInformation(url);
             //});
-           // DoTheJob();
+            // DoTheJob();
             //listOfWebSiteForRentalInformation.ForEach(url =>
             //{
             //    foreach (var info in GetRentalInformations(url))
@@ -83,16 +83,16 @@ namespace RentalInvestmentAid
             //};
 
 
-            IBankWebSiteData bankWebSiteData = new PAPWebSiteData();
-            List<RateInformation> bankInformations = bankWebSiteData.GetRatesInformations("https://www.pap.fr/acheteur/barometre-taux-emprunt");
+            //IBankWebSiteData bankWebSiteData = new PAPWebSiteData();
+            //List<RateInformation> bankInformations = bankWebSiteData.GetRatesInformations("https://www.pap.fr/acheteur/barometre-taux-emprunt");
 
-            foreach (RateInformation rate in bankInformations)
-            {
-                databaseFactory.InsertRateInformation(rate);
-            }
+            //foreach (RateInformation rate in bankInformations)
+            //{
+            //    databaseFactory.InsertRateInformation(rate);
+            //}
 
-            var plop = databaseFactory.RateInformations;
-            Console.ReadLine();
+            //var plop = databaseFactory.RateInformations;
+            //Console.ReadLine();
             //DoTheCentury21Job();
         }
         private static void DoTheCentury21Job()

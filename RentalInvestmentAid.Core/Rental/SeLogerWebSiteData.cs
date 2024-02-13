@@ -19,5 +19,10 @@ namespace RentalInvestmentAid.Core.Rental
         {
             throw new NotImplementedException();
         }
+
+        public List<string> GetUrlForRentalInformation(string area, string department, int departmentNumber)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
