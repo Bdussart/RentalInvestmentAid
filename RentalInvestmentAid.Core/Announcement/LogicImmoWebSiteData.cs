@@ -13,6 +13,11 @@ namespace RentalInvestmentAid.Core.Announcement
 {
     public class LogicImmoWebSiteData : IAnnouncementWebSiteData
     {
+        public List<string> GetAnnoucementUrl(List<string> department, int? maxPrice)
+        {
+            throw new NotImplementedException();
+        }
+
         public AnnouncementInformation GetAnnouncementInformation(string url)
         {
             throw new NotImplementedException();

@@ -36,11 +36,6 @@ namespace RentalInvestmentAid
         public static void Main(string[] args)
         {
 
-            //List<IAnnouncementWebSiteData> announcementWebSiteDatas = new List<IAnnouncementWebSiteData>
-            //{
-            //    { new Century21WebSiteData() },
-            //    { new LeBonCoinWebSiteData() },
-            //};
 
             Console.OutputEncoding = Encoding.UTF8;
 
@@ -71,18 +66,29 @@ namespace RentalInvestmentAid
             //    HeirsHelper.FindTheRightHeir(url, announcementWebSiteDatas).GetAnnouncementInformation(url);
             //});
             // DoTheJob();
-            IDatabaseFactory databaseFactory = new SqlServerDatabase();
-            listOfWebSiteForRentalInformation.ForEach(url =>
+            //IDatabaseFactory databaseFactory = new SqlServerDatabase();
+            //listOfWebSiteForRentalInformation.ForEach(url =>
+            //{
+            //    foreach (var info in GetRentalInformations(url))
+            //    {
+            //        databaseFactory.InsertRentalInformation(info);
+            //    }
+            //});
+            // var plop = databaseFactory.RentalInformations;
+
+
+            List<IAnnouncementWebSiteData> announcementWebSiteDatas = new List<IAnnouncementWebSiteData>
             {
-                foreach (var info in GetRentalInformations(url))
-                {
-                    databaseFactory.InsertRentalInformation(info);
-                }
-            });
+                { new Century21WebSiteData() },
+            };
 
+            List<string> departements = new List<string>
+            {
+                "haute-savoie","ain", "savoie"
+            };
 
+            new Century21WebSiteData().GetAnnoucementUrl(departements, 200000);
 
-            var plop = databaseFactory.RentalInformations;
 
             Console.ReadLine();
         }

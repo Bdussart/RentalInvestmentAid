@@ -17,11 +17,17 @@ namespace RentalInvestmentAid.Core.Announcement.Helper
         {
             "appartement", "duplex", "triplex"
         };
+        private static List<string> LandKeyWord = new List<string>
+        {
+            "Terrain"
+        };
         public static RentalTypeOfTheRent GetRentalType(string keyWord)
         {
             RentalTypeOfTheRent rentalType = RentalTypeOfTheRent.Apartment;
             if (HouseKeyWord.Any(s => keyWord.Contains(s, StringComparison.CurrentCultureIgnoreCase)))
                 rentalType = RentalTypeOfTheRent.House;
+            else if (LandKeyWord.Any(s => keyWord.Contains(s, StringComparison.CurrentCultureIgnoreCase)))
+                rentalType = RentalTypeOfTheRent.Land;
 
             return rentalType;
         }

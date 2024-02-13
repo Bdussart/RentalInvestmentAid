@@ -10,7 +10,8 @@ namespace RentalInvestmentAid.Models.Rental
     public enum RentalTypeOfTheRent
     {
         Apartment = 1,
-        House = 2
+        House = 2,
+        Land = 3
     }
 
     public enum RentalType

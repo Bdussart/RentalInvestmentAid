@@ -61,6 +61,11 @@ GO
   (type)
   values ('House')
 
+  
+  INSERT INTO [rentalInvestmentAid].[dbo].[typeProperty]
+  (type)
+  values ('Land')
+  
 GO
 
 CREATE PROCEDURE uspGetRentalInformations
