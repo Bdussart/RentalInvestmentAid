@@ -21,7 +21,7 @@ namespace RentalInvestmentAid.Core
             return rentalInformations.Find(rent => rent.City.Equals(announcementInformation.City, StringComparison.CurrentCultureIgnoreCase));
         }
 
-        public List<RealLoanCost> CalculAllLoan(List<BankInformation> bankInformation, string amount, string insurranceRate = "0,30")
+        public List<RealLoanCost> CalculAllLoan(List<RateInformation> bankInformation, string amount, string insurranceRate = "0,30")
         {
             List<RealLoanCost> realRentalCosts = new List<RealLoanCost>();
             bankInformation.ForEach(bankInformation =>

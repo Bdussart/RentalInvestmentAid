@@ -5,6 +5,6 @@ namespace RentalInvestmentAid.Core.Bank
 {
     public interface IBankWebSiteData
     {
-        public List<BankInformation> GetRatesInformations(string url);
+        public List<RateInformation> GetRatesInformations(string url);
     }
 }

@@ -11,7 +11,9 @@ namespace RentalInvestmentAid.Models.Rental
     {
         Apartment = 1,
         House = 2,
-        Land = 3
+        Land = 3,
+        Parking = 4,
+        Other = 4
     }
 
     public enum RentalType

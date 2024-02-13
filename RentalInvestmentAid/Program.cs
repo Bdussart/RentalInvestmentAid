@@ -13,6 +13,7 @@ using System.Text;
 using static System.Net.WebRequestMethods;
 using RentalInvestmentAid.Core.Announcement.Helper;
 using RentalInvestmentAid.Database;
+using System.Diagnostics;
 
 namespace RentalInvestmentAid
 {
@@ -35,8 +36,6 @@ namespace RentalInvestmentAid
 
         public static void Main(string[] args)
         {
-
-
             Console.OutputEncoding = Encoding.UTF8;
 
             //List<RentalInformations> rentalInformations = new List<RentalInformations>();
@@ -77,22 +76,57 @@ namespace RentalInvestmentAid
             // var plop = databaseFactory.RentalInformations;
 
 
-            List<IAnnouncementWebSiteData> announcementWebSiteDatas = new List<IAnnouncementWebSiteData>
-            {
-                { new Century21WebSiteData() },
-            };
+            //List<IAnnouncementWebSiteData> announcementWebSiteDatas = new List<IAnnouncementWebSiteData>
+            //{
+            //    { new Century21WebSiteData() },
+            //};
+            DoTheCentury21Job();
+        }
+        private static void DoTheCentury21Job()
+        {
 
             List<string> departements = new List<string>
             {
                 "haute-savoie","ain", "savoie"
             };
 
-            new Century21WebSiteData().GetAnnoucementUrl(departements, 200000);
+            IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData();
+            IDatabaseFactory databaseFactory = new SqlServerDatabase();
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            Console.WriteLine("********-- Starting process --*******");
+            Console.WriteLine("********-- DoTheCentury21Job --*******");
+
+            Console.WriteLine($"********-- Start Searching announcement for : {String.Join(",", departements)} --*******");
+            List<String> urls = announcementWebSiteData.GetAnnoucementUrl(departements, 200000);
+
+            Console.WriteLine($"********-- End Searching announcement for : {String.Join(",", departements)} --*******");
+            Console.WriteLine($"********-- urls : {urls.Count}  --*******");
+            Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
+
+            Console.WriteLine($"********-- Start  Announcement information --*******");
+            urls.ForEach(url =>
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(2));
+                Console.WriteLine($"********-- url : {url} --*******");
+                AnnouncementInformation announcementInformation = announcementWebSiteData.GetAnnouncementInformation(url);
+                Console.WriteLine($"********-- END url : {url}  --*******");
+                Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
 
 
+                Console.WriteLine($"********-- Insert in database : {url} --*******");
+                databaseFactory.InsertAnnouncementInformation(announcementInformation);
+                Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
+            });
+
+            Console.WriteLine($"********-- STOP  Announcement information --*******");
+            Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
+
+            var plop = databaseFactory.AnnouncementInformations;
             Console.ReadLine();
         }
-
         private static void DoTheJob()
         {
             Console.WriteLine("********-- Starting process --*******");
@@ -118,7 +152,7 @@ namespace RentalInvestmentAid
                 throw new NullReferenceException("Damn the current rental is Null !");
 
             Console.WriteLine("****** Get rates for the loan *****");
-            List<BankInformation> bankInformations = bankWebSiteData.GetRatesInformations("https://www.pap.fr/acheteur/barometre-taux-emprunt");
+            List<RateInformation> bankInformations = bankWebSiteData.GetRatesInformations("https://www.pap.fr/acheteur/barometre-taux-emprunt");
 
             Console.WriteLine("****** Let's go for some Math ! *****");
 

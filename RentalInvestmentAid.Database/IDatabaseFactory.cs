@@ -1,4 +1,5 @@
-﻿using RentalInvestmentAid.Models.Rental;
+﻿using RentalInvestmentAid.Models.Announcement;
+using RentalInvestmentAid.Models.Rental;
 
 namespace RentalInvestmentAid.Database
 {
@@ -7,5 +8,10 @@ namespace RentalInvestmentAid.Database
         public List<RentalInformations> RentalInformations { get; }
 
         public void InsertRentalInformation(RentalInformations rental);
+
+
+        public List<AnnouncementInformation> AnnouncementInformations { get; }
+
+        public void InsertAnnouncementInformation(AnnouncementInformation announcementInformation);
     }
 }

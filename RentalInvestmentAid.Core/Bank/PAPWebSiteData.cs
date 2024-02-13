@@ -13,7 +13,7 @@ namespace RentalInvestmentAid.Core.Bank
 {
     public class PAPWebSiteData : IBankWebSiteData
     {
-        public List<BankInformation> GetRatesInformations(string url)
+        public List<RateInformation> GetRatesInformations(string url)
         {
             HtmlWeb htmlWeb = new HtmlWeb();
             string html = string.Empty;
@@ -35,12 +35,12 @@ namespace RentalInvestmentAid.Core.Bank
 
             HtmlNodeCollection nodes = document.DocumentNode.SelectNodes("/html/body/div[1]/div[1]/div[1]/table/tbody/tr");
 
-            List<BankInformation> bankInformation = new List<BankInformation>();
+            List<RateInformation> bankInformation = new List<RateInformation>();
 
             foreach (HtmlNode node in nodes)
             {
                 List<HtmlNode> childs = node.ChildNodes.Where(child => child.Name.Equals("td", StringComparison.InvariantCultureIgnoreCase)).ToList();
-                bankInformation.Add(new BankInformation
+                bankInformation.Add(new RateInformation
                 {
                     DurationInYear = int.Parse(childs[0].InnerText),
                     LowerRate = childs[4].InnerText.Replace("%", "").Trim(),

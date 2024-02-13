@@ -1,7 +1,7 @@
 ﻿
 namespace RentalInvestmentAid.Models.Bank
 {
-    public class BankInformation
+    public class RateInformation
     {
         public int DurationInYear { get; set; }
         public string MaxRate { get; set; } = String.Empty;

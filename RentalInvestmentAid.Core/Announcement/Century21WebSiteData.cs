@@ -14,6 +14,7 @@ using static System.Net.Mime.MediaTypeNames;
 using static System.Net.WebRequestMethods;
 using static System.Collections.Specialized.BitVector32;
 using OpenQA.Selenium.Interactions;
+using Microsoft.FSharp.Data.UnitSystems.SI.UnitNames;
 
 namespace RentalInvestmentAid.Core.Announcement
 {
@@ -127,7 +128,6 @@ namespace RentalInvestmentAid.Core.Announcement
         {
 
             HtmlWeb htmlWeb = new HtmlWeb();
-
             HtmlDocument document = htmlWeb.Load(url);
 
             HtmlNodeCollection nodesInformationWhitoutPrice = document.DocumentNode.SelectNodes("/html/body/main/article/div/section/div[1]/div[1]/h1");
@@ -138,10 +138,18 @@ namespace RentalInvestmentAid.Core.Announcement
             
             string[] locationInformations =  spanInfos[2].InnerText.Trim().Split("-");
 
+            RentalTypeOfTheRent rentalType = KeyWordsHelper.GetRentalType(spanInfos[0].InnerText.Trim());
+            string metrage = string.Empty;
+
+            if (rentalType == RentalTypeOfTheRent.Land || rentalType == RentalTypeOfTheRent.Parking || rentalType == RentalTypeOfTheRent.Other)
+                metrage = HtmlWordsHelper.CleanHtml(spanInfos[1].InnerText.Trim().Split("m")[0].Trim()).Replace(",", ".");
+            else
+                metrage = HtmlWordsHelper.CleanHtml(spanInfos[1].InnerText.Trim().Split("-")[1].Split("m")[0].Trim()).Replace(",", ".");
+
             AnnouncementInformation announcementInformation = new AnnouncementInformation()
             {
-                RentalType = KeyWordsHelper.GetRentalType(spanInfos[0].InnerText.Trim()),
-                Metrage = HtmlWordsHelper.CleanHtml(spanInfos[1].InnerText.Trim().Split("-")[1].Split("m")[0].Trim()),
+                RentalType = rentalType,
+                Metrage = metrage,
                 City = HtmlWordsHelper.CleanHtml(locationInformations[0].Trim()),
                 ZipCode = HtmlWordsHelper.CleanHtml(locationInformations[1].Trim()),
                 Price = new string(HtmlWordsHelper.CleanHtml(nodesInformationWithPrice[0].InnerText).Where(char.IsDigit).ToArray()),

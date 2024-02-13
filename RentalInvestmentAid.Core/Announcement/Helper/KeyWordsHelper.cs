@@ -21,13 +21,21 @@ namespace RentalInvestmentAid.Core.Announcement.Helper
         {
             "Terrain"
         };
+        private static List<string> ParkingKeyWord = new List<string>
+        {
+            "Parking"
+        };
         public static RentalTypeOfTheRent GetRentalType(string keyWord)
         {
-            RentalTypeOfTheRent rentalType = RentalTypeOfTheRent.Apartment;
+            RentalTypeOfTheRent rentalType = RentalTypeOfTheRent.Other;
             if (HouseKeyWord.Any(s => keyWord.Contains(s, StringComparison.CurrentCultureIgnoreCase)))
                 rentalType = RentalTypeOfTheRent.House;
+            else if (ApartementKeyWord.Any(s => keyWord.Contains(s, StringComparison.CurrentCultureIgnoreCase)))
+                rentalType = RentalTypeOfTheRent.Apartment;
             else if (LandKeyWord.Any(s => keyWord.Contains(s, StringComparison.CurrentCultureIgnoreCase)))
                 rentalType = RentalTypeOfTheRent.Land;
+            else if (ParkingKeyWord.Any(s => keyWord.Contains(s, StringComparison.CurrentCultureIgnoreCase)))
+                rentalType = RentalTypeOfTheRent.Parking;
 
             return rentalType;
         }
