@@ -37,21 +37,22 @@ namespace RentalInvestmentAid
         public static void Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
+            IDatabaseFactory databaseFactory = new SqlServerDatabase();
 
             //List<RentalInformations> rentalInformations = new List<RentalInformations>();
             List<string> listOfWebSiteForRentalInformation = new List<string>
             {
                 "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/haute-savoie/seyssel/740269.htm",
                 "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/ain/champagne-en-valromey/10079.htm",
-                "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/ain/hauteville-lompnes/10185.htm",
-                "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/savoie/chanaz/730073.htm",
-                "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/haute-savoie/clarafond-arcine/740077.htm",
-                "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/ain/seyssel/10407.htm",
-                "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/ain/corbonod/10118.htm",
-                "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/savoie/aix-les-bains/730008.htm",
-                "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/savoie/le-bourget-du-lac/730051.htm",
-                "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/haute-savoie/desingy/740100.htm",
-                "https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/haute-savoie/vulbens/740314.htm"
+                //"https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/ain/hauteville-lompnes/10185.htm",
+                //"https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/savoie/chanaz/730073.htm",
+                //"https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/haute-savoie/clarafond-arcine/740077.htm",
+                //"https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/ain/seyssel/10407.htm",
+                //"https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/ain/corbonod/10118.htm",
+                //"https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/savoie/aix-les-bains/730008.htm",
+                //"https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/savoie/le-bourget-du-lac/730051.htm",
+                //"https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/haute-savoie/desingy/740100.htm",
+                //"https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/haute-savoie/vulbens/740314.htm"
             };
 
             //List<string> listOfAnnoncmentWebSite = new List<string>
@@ -61,11 +62,11 @@ namespace RentalInvestmentAid
             //};
 
 
-            //listOfAnnoncmentWebSite.ForEach(url => {
+            //listOfAnnoncmentWebSite.ForEach(url =>
+            //{
             //    HeirsHelper.FindTheRightHeir(url, announcementWebSiteDatas).GetAnnouncementInformation(url);
             //});
-            // DoTheJob();
-            //IDatabaseFactory databaseFactory = new SqlServerDatabase();
+           // DoTheJob();
             //listOfWebSiteForRentalInformation.ForEach(url =>
             //{
             //    foreach (var info in GetRentalInformations(url))
@@ -73,14 +74,26 @@ namespace RentalInvestmentAid
             //        databaseFactory.InsertRentalInformation(info);
             //    }
             //});
-            // var plop = databaseFactory.RentalInformations;
+            //var plop2 = databaseFactory.RentalInformations;
 
 
             //List<IAnnouncementWebSiteData> announcementWebSiteDatas = new List<IAnnouncementWebSiteData>
             //{
             //    { new Century21WebSiteData() },
             //};
-            DoTheCentury21Job();
+
+
+            IBankWebSiteData bankWebSiteData = new PAPWebSiteData();
+            List<RateInformation> bankInformations = bankWebSiteData.GetRatesInformations("https://www.pap.fr/acheteur/barometre-taux-emprunt");
+
+            foreach (RateInformation rate in bankInformations)
+            {
+                databaseFactory.InsertRateInformation(rate);
+            }
+
+            var plop = databaseFactory.RateInformations;
+            Console.ReadLine();
+            //DoTheCentury21Job();
         }
         private static void DoTheCentury21Job()
         {

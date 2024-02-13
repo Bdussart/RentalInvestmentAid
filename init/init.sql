@@ -228,9 +228,9 @@ GO
 CREATE TABLE [dbo].[rateInformation](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[durationInYear] [int] NOT NULL,
-	[maxRate] [decimal](3, 0) NOT NULL,
-	[marketRate] [decimal](3, 0) NOT NULL,
-	[lowerRate] [decimal](3, 0) NOT NULL,
+	[maxRate] [decimal](5, 2) NOT NULL,
+	[marketRate] [decimal](5, 2) NOT NULL,
+	[lowerRate] [decimal](5, 2) NOT NULL,
 	[createdDate] [datetime] NOT NULL,
 	[updatedDate] [datetime] NOT NULL,
  CONSTRAINT [PK_rateInformation] PRIMARY KEY CLUSTERED 
@@ -244,9 +244,9 @@ GO
 CREATE PROCEDURE [dbo].[uspInsertRateInformation]
 (
 				@durationInYear	int,
-				@maxRate		decimal(3,0),
-				@marketPrice	decimal(3,0),
-				@lowerPrice		decimal(3,0)
+				@maxRate		decimal(5,2),
+				@marketRate		decimal(5,2),
+				@lowerRate		decimal(5,2)
 )
 AS
 BEGIN
@@ -265,8 +265,8 @@ INSERT INTO [dbo].[rateInformation]
            (
 		   @durationInYear
 		   ,@maxRate
-		   ,@marketPrice
-		   ,@lowerPrice
+		   ,@marketRate
+		   ,@lowerRate
 		   ,@Now
 		   ,@Now
 		   )

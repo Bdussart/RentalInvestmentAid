@@ -6,6 +6,7 @@ using RentalInvestmentAid.Database.Converter;
 using System.Collections.Generic;
 using RentalInvestmentAid.Models.Announcement;
 using System.Diagnostics;
+using RentalInvestmentAid.Models.Bank;
 
 namespace RentalInvestmentAid.Database
 {
@@ -20,7 +21,6 @@ namespace RentalInvestmentAid.Database
                 return _rentalInformation;
             }
         }
-
         public List<AnnouncementInformation> AnnouncementInformations
         {
             get
@@ -30,9 +30,19 @@ namespace RentalInvestmentAid.Database
                 return _announcementInformation;
             }
         }
+        public List<RateInformation> RateInformations
+        {
+            get
+            {
+                if (_ratelInformation == null)
+                    SetRateInformation();
+                return _ratelInformation;
+            }
+        }
 
         private List<RentalInformations> _rentalInformation = null;
         private List<AnnouncementInformation> _announcementInformation = null;
+        private List<RateInformation> _ratelInformation = null;
         private void SetRentalsInformations()
         {
             _rentalInformation = new List<RentalInformations>();
@@ -128,6 +138,51 @@ namespace RentalInvestmentAid.Database
                     sqlCommand.Parameters.AddWithValue("@description", announcementInformation.Description);
                     sqlCommand.Parameters.AddWithValue("@idProptertyType", announcementInformation.RentalType);
                     sqlCommand.Parameters.AddWithValue("@url", announcementInformation.UrlWebSite);
+
+                    connection.Open();
+                    sqlCommand.ExecuteNonQuery();
+                }
+            }
+        }
+        private void SetRateInformation()
+        {
+            _ratelInformation = new List<RateInformation>();
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspGetRateInformations", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    connection.Open();
+                    using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            _ratelInformation.Add(new RateInformation
+                            {
+                                Id = reader.GetInt32(0),
+                                DurationInYear = reader.GetInt32(1),
+                                MaxRate = reader.GetDecimal(2).ToString(),
+                                MarketRate = reader.GetDecimal(3).ToString(),
+                                LowerRate = reader.GetDecimal(4).ToString(),
+                                CreatedDate = reader.GetDateTime(5),
+                                UpdatedDate = reader.GetDateTime(6)
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        public void InsertRateInformation(RateInformation rateInformation)
+        {
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspInsertRateInformation", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.AddWithValue("@durationInYear", rateInformation.DurationInYear);
+                    sqlCommand.Parameters.AddWithValue("@maxRate", Convert.ToDecimal(rateInformation.MaxRate));
+                    sqlCommand.Parameters.AddWithValue("@marketRate", Convert.ToDecimal(rateInformation.MarketRate));
+                    sqlCommand.Parameters.AddWithValue("@lowerRate", Convert.ToDecimal(rateInformation.LowerRate));
 
                     connection.Open();
                     sqlCommand.ExecuteNonQuery();
