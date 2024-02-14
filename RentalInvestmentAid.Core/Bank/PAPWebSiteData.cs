@@ -16,52 +16,58 @@ namespace RentalInvestmentAid.Core.Bank
     {
         public List<RateInformation> GetRatesInformations(string url)
         {
-            HtmlWeb htmlWeb = new HtmlWeb();
-            string html = string.Empty;
-
-            ChromeOptions options = new ChromeOptions();
-            options.AddArgument("--enable-javascript");
-            options.AddArgument("--window-size=500,1080");
-            using (IWebDriver driver = new ChromeDriver(options))
-            {
-                driver.Navigate().GoToUrl(url);
-
-                html = driver.PageSource;
-
-                driver.Close();
-            }
-
-            HtmlDocument document = new HtmlDocument();
-            document.LoadHtml(html);
-
-            HtmlNodeCollection nodes = document.DocumentNode.SelectNodes("/html/body/div[1]/div[1]/div[1]/table/tbody/tr");
-
             List<RateInformation> bankInformation = new List<RateInformation>();
-
-            foreach (HtmlNode node in nodes)
+            try
             {
-                List<HtmlNode> childs = node.ChildNodes.Where(child => child.Name.Equals("td", StringComparison.InvariantCultureIgnoreCase)).ToList();
-                bankInformation.Add(new RateInformation
-                {
-                    DurationInYear = int.Parse(childs[0].InnerText),
-                    Rate = childs[4].InnerText.Replace("%", "").Trim(),
-                    RateType = RateType.LowRate
-                });
+                HtmlWeb htmlWeb = new HtmlWeb();
+                string html = string.Empty;
 
-                bankInformation.Add(new RateInformation
+                ChromeOptions options = new ChromeOptions();
+                options.AddArgument("--enable-javascript");
+                options.AddArgument("--window-size=500,1080");
+                using (IWebDriver driver = new ChromeDriver(options))
                 {
-                    DurationInYear = int.Parse(childs[0].InnerText),
-                    Rate = childs[3].InnerText.Replace("%", "").Trim(),
-                    RateType = RateType.MediumRate
-                });
+                    driver.Navigate().GoToUrl(url);
 
-                bankInformation.Add(new RateInformation
+                    html = driver.PageSource;
+
+                    driver.Close();
+                }
+
+                HtmlDocument document = new HtmlDocument();
+                document.LoadHtml(html);
+
+                HtmlNodeCollection nodes = document.DocumentNode.SelectNodes("/html/body/div[1]/div[1]/div[1]/table/tbody/tr");
+
+                foreach (HtmlNode node in nodes)
                 {
-                    DurationInYear = int.Parse(childs[0].InnerText),
-                    Rate = childs[2].InnerText.Replace("%", "").Trim(),
-                    RateType = RateType.HighRate
-                });
+                    List<HtmlNode> childs = node.ChildNodes.Where(child => child.Name.Equals("td", StringComparison.InvariantCultureIgnoreCase)).ToList();
+                    bankInformation.Add(new RateInformation
+                    {
+                        DurationInYear = int.Parse(childs[0].InnerText),
+                        Rate = childs[4].InnerText.Replace("%", "").Trim(),
+                        RateType = RateType.LowRate
+                    });
+
+                    bankInformation.Add(new RateInformation
+                    {
+                        DurationInYear = int.Parse(childs[0].InnerText),
+                        Rate = childs[3].InnerText.Replace("%", "").Trim(),
+                        RateType = RateType.MediumRate
+                    });
+
+                    bankInformation.Add(new RateInformation
+                    {
+                        DurationInYear = int.Parse(childs[0].InnerText),
+                        Rate = childs[2].InnerText.Replace("%", "").Trim(),
+                        RateType = RateType.HighRate
+                    });
+                }
             }
+            catch (Exception ex)
+            {
+                // LOG ERROR
+            };
             return bankInformation;
         }
     }

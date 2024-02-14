@@ -12,6 +12,7 @@ using System.ComponentModel;
 using System.Text;
 using RentalInvestmentAid.Database;
 using System.Diagnostics;
+using Microsoft.IdentityModel.Logging;
 
 namespace RentalInvestmentAid
 {
@@ -35,7 +36,22 @@ namespace RentalInvestmentAid
         {
             Console.OutputEncoding = Encoding.UTF8;
 
-            DoLoadDataJob();
+            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
+            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
+            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
+            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
+            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
+            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
+            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
+            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
+            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
+            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
+            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
+            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
+            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
+
+
+            // DoLoadDataJob();
             //IDatabaseFactory databaseFactory = new SqlServerDatabase();
 
             ////IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData();
@@ -105,7 +121,7 @@ namespace RentalInvestmentAid
 
             Task[] tasks = new Task[3];
 
-           Dictionary<int, string> dicoDepartements = new Dictionary<int, string>
+            Dictionary<int, string> dicoDepartements = new Dictionary<int, string>
             {
                 {74, "haute-savoie" },
                 {01, "ain" },
@@ -115,8 +131,8 @@ namespace RentalInvestmentAid
             List<String> departements = dicoDepartements.Values.ToList();
 
 
-            //tasks[0] = Task.Factory.StartNew(() =>
-            //{
+            tasks[0] = Task.Factory.StartNew(() =>
+            {
                 IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData();
                 List<String> urls = new List<string>();
 
@@ -131,102 +147,102 @@ namespace RentalInvestmentAid
                         databaseFactory.InsertRentalInformation(info);
                     }
                 });
-           // });
-        //    tasks[1] = Task.Factory.StartNew(() =>
-        //    {
-        //        List<RateInformation> bankInformations = bankWebSiteData.GetRatesInformations("https://www.pap.fr/acheteur/barometre-taux-emprunt");
+            });
+            tasks[1] = Task.Factory.StartNew(() =>
+            {
+                List<RateInformation> bankInformations = bankWebSiteData.GetRatesInformations("https://www.pap.fr/acheteur/barometre-taux-emprunt");
 
-        //        foreach (RateInformation rate in bankInformations)
-        //        {
-        //            databaseFactory.InsertRateInformation(rate);
-        //        }
-        //    });
-        //    tasks[2] = Task.Factory.StartNew(() =>
-        //    {
-        //        IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData();
+                foreach (RateInformation rate in bankInformations)
+                {
+                    databaseFactory.InsertRateInformation(rate);
+                }
+            });
+            tasks[2] = Task.Factory.StartNew(() =>
+            {
+                IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData();
 
-        //        Stopwatch stopwatch = new Stopwatch();
-        //        stopwatch.Start();
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
 
-        //        Console.WriteLine("********-- Starting process --*******");
-        //        Console.WriteLine("********-- DoTheCentury21Job --*******");
+                Console.WriteLine("********-- Starting process --*******");
+                Console.WriteLine("********-- DoTheCentury21Job --*******");
 
-        //        Console.WriteLine($"********-- Start Searching announcement for : {String.Join(",", dicoDepartements)} --*******");
-        //        List<String> urls = announcementWebSiteData.GetAnnoucementUrl(departements, 200000);
+                Console.WriteLine($"********-- Start Searching announcement for : {String.Join(",", dicoDepartements)} --*******");
+                List<String> urls = announcementWebSiteData.GetAnnoucementUrl(departements, 200000);
 
-        //        Console.WriteLine($"********-- End Searching announcement for : {String.Join(",", dicoDepartements)} --*******");
-        //        Console.WriteLine($"********-- urls : {urls.Count}  --*******");
-        //        Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
+                Console.WriteLine($"********-- End Searching announcement for : {String.Join(",", dicoDepartements)} --*******");
+                Console.WriteLine($"********-- urls : {urls.Count}  --*******");
+                Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
 
-        //        Console.WriteLine($"********-- Start  Announcement information --*******");
-        //        urls.ForEach(url =>
-        //        {
-        //            Thread.Sleep(TimeSpan.FromSeconds(2));
-        //            Console.WriteLine($"********-- url : {url} --*******");
-        //            AnnouncementInformation announcementInformation = announcementWebSiteData.GetAnnouncementInformation(url);
-        //            Console.WriteLine($"********-- END url : {url}  --*******");
-        //            Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
+                Console.WriteLine($"********-- Start  Announcement information --*******");
+                urls.ForEach(url =>
+                {
+                    Thread.Sleep(TimeSpan.FromSeconds(2));
+                    Console.WriteLine($"********-- url : {url} --*******");
+                    AnnouncementInformation announcementInformation = announcementWebSiteData.GetAnnouncementInformation(url);
+                    Console.WriteLine($"********-- END url : {url}  --*******");
+                    Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
 
-        //            Console.WriteLine($"********-- Insert in database : {url} --*******");
-        //            databaseFactory.InsertAnnouncementInformation(announcementInformation);
-        //            Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
-        //        });
+                    Console.WriteLine($"********-- Insert in database : {url} --*******");
+                    databaseFactory.InsertAnnouncementInformation(announcementInformation);
+                    Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
+                });
 
-        //        Console.WriteLine($"********-- STOP  Announcement information --*******");
-        //        Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
+                Console.WriteLine($"********-- STOP  Announcement information --*******");
+                Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
 
-        //    });
+            });
 
-        //    Task.Factory.ContinueWhenAll(tasks, task =>
-        //    {
-        //        Console.Write("DONE");
-        //    });
-        //    Console.ReadKey();
+            Task.Factory.ContinueWhenAll(tasks, task =>
+            {
+                Console.Write("DONE");
+            });
+            Console.ReadKey();
 
-        //}
-        //private static void DoTheCentury21Job()
-        //{
+        }
+        private static void DoTheCentury21Job()
+        {
 
-        //    List<string> departements = new List<string>
-        //    {
-        //        "haute-savoie","ain", "savoie"
-        //    };
+            List<string> departements = new List<string>
+            {
+                "haute-savoie","ain", "savoie"
+            };
 
-        //    IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData();
-        //    IDatabaseFactory databaseFactory = new SqlServerDatabase();
+            IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData();
+            IDatabaseFactory databaseFactory = new SqlServerDatabase();
 
-        //    Stopwatch stopwatch = new Stopwatch();
-        //    stopwatch.Start();
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
 
-        //    Console.WriteLine("********-- Starting process --*******");
-        //    Console.WriteLine("********-- DoTheCentury21Job --*******");
+            Console.WriteLine("********-- Starting process --*******");
+            Console.WriteLine("********-- DoTheCentury21Job --*******");
 
-        //    Console.WriteLine($"********-- Start Searching announcement for : {String.Join(",", departements)} --*******");
-        //    List<String> urls = announcementWebSiteData.GetAnnoucementUrl(departements, 200000);
+            Console.WriteLine($"********-- Start Searching announcement for : {String.Join(",", departements)} --*******");
+            List<String> urls = announcementWebSiteData.GetAnnoucementUrl(departements, 200000);
 
-        //    Console.WriteLine($"********-- End Searching announcement for : {String.Join(",", departements)} --*******");
-        //    Console.WriteLine($"********-- urls : {urls.Count}  --*******");
-        //    Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
+            Console.WriteLine($"********-- End Searching announcement for : {String.Join(",", departements)} --*******");
+            Console.WriteLine($"********-- urls : {urls.Count}  --*******");
+            Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
 
-        //    Console.WriteLine($"********-- Start  Announcement information --*******");
-        //    urls.ForEach(url =>
-        //    {
-        //        Thread.Sleep(TimeSpan.FromSeconds(2));
-        //        Console.WriteLine($"********-- url : {url} --*******");
-        //        AnnouncementInformation announcementInformation = announcementWebSiteData.GetAnnouncementInformation(url);
-        //        Console.WriteLine($"********-- END url : {url}  --*******");
-        //        Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
+            Console.WriteLine($"********-- Start  Announcement information --*******");
+            urls.ForEach(url =>
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(2));
+                Console.WriteLine($"********-- url : {url} --*******");
+                AnnouncementInformation announcementInformation = announcementWebSiteData.GetAnnouncementInformation(url);
+                Console.WriteLine($"********-- END url : {url}  --*******");
+                Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
 
 
-        //        Console.WriteLine($"********-- Insert in database : {url} --*******");
-        //        databaseFactory.InsertAnnouncementInformation(announcementInformation);
-        //        Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
-        //    });
+                Console.WriteLine($"********-- Insert in database : {url} --*******");
+                databaseFactory.InsertAnnouncementInformation(announcementInformation);
+                Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
+            });
 
-        //    Console.WriteLine($"********-- STOP  Announcement information --*******");
-        //    Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
+            Console.WriteLine($"********-- STOP  Announcement information --*******");
+            Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
 
-        //    var plop = databaseFactory.AnnouncementInformations;
+            var plop = databaseFactory.AnnouncementInformations;
             Console.ReadLine();
         }
         private static void DoTheJob()

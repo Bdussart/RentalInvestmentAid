@@ -20,41 +20,49 @@ namespace RentalInvestmentAid.Core.Announcement
             throw new NotImplementedException();
         }
 
-        public AnnouncementInformation GetAnnouncementInformation(string url)
+        public AnnouncementInformation? GetAnnouncementInformation(string url)
         {
+            AnnouncementInformation? announcementInformation = null;
 
-            HtmlWeb htmlWeb = new HtmlWeb();
-            string html = string.Empty;
-
-            ChromeOptions options = new ChromeOptions();
-            options.AddArgument("--enable-javascript");
-            options.AddArgument("--window-size=500,1080");
-            using (IWebDriver driver = new ChromeDriver(options))
+            try
             {
-                driver.Navigate().GoToUrl(url);
-                html = driver.PageSource;
-                driver.Close();
+                HtmlWeb htmlWeb = new HtmlWeb();
+                string html = string.Empty;
+
+                ChromeOptions options = new ChromeOptions();
+                options.AddArgument("--enable-javascript");
+                options.AddArgument("--window-size=500,1080");
+                using (IWebDriver driver = new ChromeDriver(options))
+                {
+                    driver.Navigate().GoToUrl(url);
+                    html = driver.PageSource;
+                    driver.Close();
+                }
+
+                HtmlDocument document = new HtmlDocument();
+                document.LoadHtml(html);
+
+                HtmlNodeCollection htmlNodesMetrageAndCity = document.DocumentNode.SelectNodes("//*[@id=\"grid\"]/article/div[1]/div/div[1]/p/span");
+                HtmlNodeCollection htmlNodesPrice = document.DocumentNode.SelectNodes("//*[@id=\"grid\"]/article/div[1]/div/div[1]/div[2]/div/p");
+                HtmlNodeCollection htmlNodesRentalType = document.DocumentNode.SelectNodes("//*[@id=\"grid\"]/article/div[1]/div/h1");
+                HtmlNodeCollection htmlNodesDescription = document.DocumentNode.SelectNodes("//*[@id=\"grid\"]/article/div[3]/div[2]/div[1]/p");
+
+                announcementInformation = new AnnouncementInformation()
+                {
+                    RentalType = KeyWordsHelper.GetRentalType(htmlNodesRentalType[0].InnerText.Trim()),
+                    Metrage = HtmlWordsHelper.CleanHtml(htmlNodesMetrageAndCity[1].InnerText.Trim().Split("m")[0].Trim()),
+                    City = HtmlWordsHelper.CleanHtml(htmlNodesMetrageAndCity[2].InnerText.Trim().Split(" ")[0]),
+                    ZipCode = HtmlWordsHelper.CleanHtml(htmlNodesMetrageAndCity[2].InnerText.Trim().Split(" ")[1]),
+                    Price = new string(HtmlWordsHelper.CleanHtml(htmlNodesPrice[0].InnerText).Where(char.IsDigit).ToArray()),
+                    Description = HtmlWordsHelper.CleanHtml(htmlNodesDescription[0].InnerText.Trim()),
+                    UrlWebSite = url
+                };
+
             }
-
-            HtmlDocument document = new HtmlDocument();
-            document.LoadHtml(html);
-
-            HtmlNodeCollection htmlNodesMetrageAndCity = document.DocumentNode.SelectNodes("//*[@id=\"grid\"]/article/div[1]/div/div[1]/p/span");
-            HtmlNodeCollection htmlNodesPrice = document.DocumentNode.SelectNodes("//*[@id=\"grid\"]/article/div[1]/div/div[1]/div[2]/div/p");
-            HtmlNodeCollection htmlNodesRentalType = document.DocumentNode.SelectNodes("//*[@id=\"grid\"]/article/div[1]/div/h1");
-            HtmlNodeCollection htmlNodesDescription = document.DocumentNode.SelectNodes("//*[@id=\"grid\"]/article/div[3]/div[2]/div[1]/p");
-            
-            AnnouncementInformation announcementInformation = new AnnouncementInformation()
+            catch (Exception ex)
             {
-                RentalType = KeyWordsHelper.GetRentalType(htmlNodesRentalType[0].InnerText.Trim()),
-                Metrage = HtmlWordsHelper.CleanHtml(htmlNodesMetrageAndCity[1].InnerText.Trim().Split("m")[0].Trim()),
-                City = HtmlWordsHelper.CleanHtml(htmlNodesMetrageAndCity[2].InnerText.Trim().Split(" ")[0]),
-                ZipCode = HtmlWordsHelper.CleanHtml(htmlNodesMetrageAndCity[2].InnerText.Trim().Split(" ")[1]),
-                Price = new string(HtmlWordsHelper.CleanHtml(htmlNodesPrice[0].InnerText).Where(char.IsDigit).ToArray()),
-                Description = HtmlWordsHelper.CleanHtml(htmlNodesDescription[0].InnerText.Trim()),
-                UrlWebSite = url
-            };
-
+                //TODO LOG EX
+            }
             return announcementInformation;
         }
 

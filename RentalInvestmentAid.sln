@@ -11,14 +11,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentalInvestmentAid.Models"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentalInvestmentAid.Test", "RentalInvestmentAid.Test\RentalInvestmentAid.Test.csproj", "{EBF960D4-ED76-4765-9B28-C17DF73BDD13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RentalInvestmentAid.Database", "RentalInvestmentAid.Database\RentalInvestmentAid.Database.csproj", "{0E7CE835-EEAC-4930-ABA5-31289D3316F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentalInvestmentAid.Database", "RentalInvestmentAid.Database\RentalInvestmentAid.Database.csproj", "{0E7CE835-EEAC-4930-ABA5-31289D3316F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RentalInvestmentAid.Settings", "RentalInvestmentAid.Settings\RentalInvestmentAid.Settings.csproj", "{65123082-5585-4F38-97FE-CDCCD8190572}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentalInvestmentAid.Settings", "RentalInvestmentAid.Settings\RentalInvestmentAid.Settings.csproj", "{65123082-5585-4F38-97FE-CDCCD8190572}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "init", "init", "{FCC05192-78CD-4861-87EC-D4C3D3860F29}"
 	ProjectSection(SolutionItems) = preProject
 		init\init.sql = init\init.sql
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RentalInvestmentAid.Logger", "RentalInvestmentAid.Logger\RentalInvestmentAid.Logger.csproj", "{C48DC6A7-3142-4E65-8BF8-0C697E9C6FC8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,6 +52,10 @@ Global
 		{65123082-5585-4F38-97FE-CDCCD8190572}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65123082-5585-4F38-97FE-CDCCD8190572}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65123082-5585-4F38-97FE-CDCCD8190572}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C48DC6A7-3142-4E65-8BF8-0C697E9C6FC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C48DC6A7-3142-4E65-8BF8-0C697E9C6FC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C48DC6A7-3142-4E65-8BF8-0C697E9C6FC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C48DC6A7-3142-4E65-8BF8-0C697E9C6FC8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

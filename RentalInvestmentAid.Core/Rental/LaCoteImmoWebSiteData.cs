@@ -111,10 +111,10 @@ namespace RentalInvestmentAid.Core.Rental
 
         public List<string> GetUrlForRentalInformation(string area, string department, int departmentNumber)
         {
+            List<string> urls = new List<string>();
             int iterator = 1;
             string baseUrl = string.Empty;
             string previousUrl = string.Empty;
-            List<string> urls = new List<string>();
 
             ChromeOptions options = new ChromeOptions();
             options.AddArgument("--enable-javascript");
@@ -127,11 +127,20 @@ namespace RentalInvestmentAid.Core.Rental
                 using (IWebDriver driver = new ChromeDriver(options)) // why open a new driver in the loop ? => Because this website is heavy for the memory and the processor, i don't want to shutdown the website server and my computer :) 
                 {
                     baseUrl = $"https://www.lacoteimmo.com/prix-de-l-immo/location/{area}/{department}/nothing/{departmentNumber}{iterator.ToString("0000")}.htm";
-                    driver.Navigate().GoToUrl(baseUrl);
-                    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2));
-                    wait.Until(d => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
+                    try
+                    {
+                        driver.Navigate().GoToUrl(baseUrl);
+                        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2));
+                        wait.Until(d => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
+                    }
+                    catch (Exception ex)
+                    {
+                        //TO LOG EX
+                    }
 
-                    if ((baseUrl.Equals(driver.Url, StringComparison.CurrentCultureIgnoreCase)) || (previousUrl.Equals(driver.Url, StringComparison.CurrentCultureIgnoreCase)))
+                    if ((baseUrl.Equals(driver.Url, StringComparison.CurrentCultureIgnoreCase)) || 
+                        (previousUrl.Equals(driver.Url, StringComparison.CurrentCultureIgnoreCase)) ||
+                        driver.Url == string.Empty)
                         next = false;
                     else
                     {

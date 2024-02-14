@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\RentalInvestmentAid.Core\RentalInvestmentAid.Core.csproj" />
     <ProjectReference Include="..\RentalInvestmentAid.Database\RentalInvestmentAid.Database.csproj" />
+    <ProjectReference Include="..\RentalInvestmentAid.Logger\RentalInvestmentAid.Logger.csproj" />
   </ItemGroup>
 
   <ItemGroup>

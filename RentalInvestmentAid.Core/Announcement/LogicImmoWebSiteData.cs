@@ -18,7 +18,7 @@ namespace RentalInvestmentAid.Core.Announcement
             throw new NotImplementedException();
         }
 
-        public AnnouncementInformation GetAnnouncementInformation(string url)
+        public AnnouncementInformation? GetAnnouncementInformation(string url)
         {
             throw new NotImplementedException();
         }
