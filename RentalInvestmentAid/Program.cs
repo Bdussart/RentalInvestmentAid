@@ -37,8 +37,8 @@ namespace RentalInvestmentAid
             Console.OutputEncoding = Encoding.UTF8;
             IDatabaseFactory databaseFactory = new SqlServerDatabase();
 
-            IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData();
-            webSiteData.GetUrlForRentalInformation("rhone-alpes", "haute-savoie", 74);
+            //IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData();
+            //webSiteData.GetUrlForRentalInformation("rhone-alpes", "haute-savoie", 74);
             //List<RentalInformations> rentalInformations = new List<RentalInformations>();
             List<string> listOfWebSiteForRentalInformation = new List<string>
             {
@@ -83,15 +83,15 @@ namespace RentalInvestmentAid
             //};
 
 
-            //IBankWebSiteData bankWebSiteData = new PAPWebSiteData();
-            //List<RateInformation> bankInformations = bankWebSiteData.GetRatesInformations("https://www.pap.fr/acheteur/barometre-taux-emprunt");
+            IBankWebSiteData bankWebSiteData = new PAPWebSiteData();
+            List<RateInformation> bankInformations = bankWebSiteData.GetRatesInformations("https://www.pap.fr/acheteur/barometre-taux-emprunt");
 
-            //foreach (RateInformation rate in bankInformations)
-            //{
-            //    databaseFactory.InsertRateInformation(rate);
-            //}
+            foreach (RateInformation rate in bankInformations)
+            {
+                databaseFactory.InsertRateInformation(rate);
+            }
 
-            //var plop = databaseFactory.RateInformations;
+            var plop = databaseFactory.RateInformations;
             //Console.ReadLine();
             //DoTheCentury21Job();
         }

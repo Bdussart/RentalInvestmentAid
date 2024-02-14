@@ -30,11 +30,9 @@ namespace RentalInvestmentAid.Core
                 {
                     DurationInYear = bankInformation.DurationInYear,
                     Price = amount,
-                    LoanInformations = new List<Models.Loan.LoanInformation>()
+                    LoanInformations = new List<LoanInformation>()
                     {
-                        {FinancialCalcul.LoanInformation(Convert.ToDouble(bankInformation.MaxRate), bankInformation.DurationInYear, Double.Parse(amount), Convert.ToDouble(insurranceRate), LoanType.HigherRate ) },
-                        {FinancialCalcul.LoanInformation(Convert.ToDouble(bankInformation.MarketRate), bankInformation.DurationInYear, Double.Parse(amount), Convert.ToDouble(insurranceRate), LoanType.MarketRate  ) },
-                        {FinancialCalcul.LoanInformation(Convert.ToDouble(bankInformation.LowerRate), bankInformation.DurationInYear, Double.Parse(amount), Convert.ToDouble(insurranceRate), LoanType.LowerRate) }
+                        {FinancialCalcul.LoanInformation(Convert.ToDouble(bankInformation.Rate), bankInformation.DurationInYear, Double.Parse(amount), Convert.ToDouble(insurranceRate), bankInformation.RateType ) },
                     }
                 });
 

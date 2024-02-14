@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OpenQA.Selenium.Support.UI;
+using OpenQA.Selenium.DevTools;
 
 namespace RentalInvestmentAid.Core.Rental
 {
@@ -77,15 +79,18 @@ namespace RentalInvestmentAid.Core.Rental
 
             ChromeOptions options = new ChromeOptions();
             options.AddArgument("--enable-javascript");
-            options.AddArgument("--window-size=500,1080");
+            //options.AddArgument("--window-size=500,1080");
+            options.AddArgument("incognito");
 
-            using (IWebDriver driver = new ChromeDriver(options))
+            bool next = true;
+            do
             {
-                bool next = true;
-                do
+                using (IWebDriver driver = new ChromeDriver(options)) // why open a new driver in the loop ? => Because this website is heavy for the memory and the processor, i don't want to shutdown the website server and my computer :) 
                 {
                     baseUrl = $"https://www.lacoteimmo.com/prix-de-l-immo/location/{area}/{department}/nothing/{departmentNumber}{iterator.ToString("0000")}.htm";
                     driver.Navigate().GoToUrl(baseUrl);
+                    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2));
+                    wait.Until(d => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
 
                     if ((baseUrl.Equals(driver.Url, StringComparison.CurrentCultureIgnoreCase)) || (previousUrl.Equals(driver.Url, StringComparison.CurrentCultureIgnoreCase)))
                         next = false;
@@ -95,10 +100,9 @@ namespace RentalInvestmentAid.Core.Rental
                         previousUrl = driver.Url;
                     }
                     iterator++;
-
-                    Thread.Sleep(TimeSpan.FromSeconds(1));//Take  it easy ...
-                } while (next);
-            }
+                    Thread.Sleep(TimeSpan.FromSeconds(1));
+                }
+            } while (next);
 
 
             return urls;

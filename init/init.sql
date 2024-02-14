@@ -228,9 +228,8 @@ GO
 CREATE TABLE [dbo].[rateInformation](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[durationInYear] [int] NOT NULL,
-	[maxRate] [decimal](5, 2) NOT NULL,
-	[marketRate] [decimal](5, 2) NOT NULL,
-	[lowerRate] [decimal](5, 2) NOT NULL,
+	[rate] [decimal](5, 2) NOT NULL,
+	[idRateType] [int] NOT NULL,
 	[createdDate] [datetime] NOT NULL,
 	[updatedDate] [datetime] NOT NULL,
  CONSTRAINT [PK_rateInformation] PRIMARY KEY CLUSTERED 
@@ -241,12 +240,12 @@ CREATE TABLE [dbo].[rateInformation](
 GO
 
 
+
 CREATE PROCEDURE [dbo].[uspInsertRateInformation]
 (
 				@durationInYear	int,
-				@maxRate		decimal(5,2),
-				@marketRate		decimal(5,2),
-				@lowerRate		decimal(5,2)
+				@rate		    decimal(5,2),
+				@rateType		int
 )
 AS
 BEGIN
@@ -256,17 +255,15 @@ SET @Now = GETDATE()
 
 INSERT INTO [dbo].[rateInformation]
            ([durationInYear]
-           ,[maxRate]
-           ,[marketRate]
-           ,[lowerRate]
+           ,[rate]
+           ,[idRateType]
            ,[createdDate]
            ,[updatedDate])
      VALUES
            (
 		   @durationInYear
-		   ,@maxRate
-		   ,@marketRate
-		   ,@lowerRate
+		   ,@rate
+		   ,@rateType
 		   ,@Now
 		   ,@Now
 		   )
@@ -280,9 +277,8 @@ AS
 BEGIN
 SELECT  [id]
       ,[durationInYear]
-      ,[maxRate]
-      ,[marketRate]
-      ,[lowerRate]
+      ,[rate]
+      ,[idRateType]
       ,[createdDate]
       ,[updatedDate]
   FROM [RentalInvestmentAid].[dbo].[rateInformation]
@@ -291,3 +287,46 @@ END
 GO
 
 
+
+
+CREATE TABLE [dbo].[rateType](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[rate] [varchar](15) NOT NULL,
+ CONSTRAINT [PK_rateType] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[rateType]  WITH CHECK ADD  CONSTRAINT [FK_rateType_rateType] FOREIGN KEY([id])
+REFERENCES [dbo].[rateType] ([id])
+GO
+
+ALTER TABLE [dbo].[rateType] CHECK CONSTRAINT [FK_rateType_rateType]
+GO
+
+
+
+ALTER TABLE [dbo].[rateInformation]  WITH CHECK ADD  CONSTRAINT [FK_rateInformation_rateType] FOREIGN KEY([idRateType])
+REFERENCES [dbo].[rateType] ([id])
+GO
+
+ALTER TABLE [dbo].[rateInformation] CHECK CONSTRAINT [FK_rateInformation_rateType]
+GO
+
+
+insert into dbo.rateType
+(rate)
+VALUES
+('lowRate')
+
+insert into dbo.rateType
+(rate)
+VALUES
+('mediumRate')
+
+insert into dbo.rateType
+(rate)
+VALUES
+('highRate')

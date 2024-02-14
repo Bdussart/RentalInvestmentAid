@@ -6,12 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Excel.FinancialFunctions;
 using RentalInvestmentAid.Models.Loan;
+using RentalInvestmentAid.Models.Rate;
 
 namespace RentalInvestmentAid.Core
 {
     public static class FinancialCalcul
     {
-        public static LoanInformation LoanInformation(double rate, int annualy, double loan, double inssuranceRate, LoanType type)
+        public static LoanInformation LoanInformation(double rate, int annualy, double loan, double inssuranceRate, RateType type)
         {
             double mensualRate = (rate / 100 )/ 12;
             int monthly = annualy * 12;

@@ -2,6 +2,7 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using RentalInvestmentAid.Models.Bank;
+using RentalInvestmentAid.Models.Rate;
 using RentalInvestmentAid.Models.Rental;
 using System;
 using System.Collections.Generic;
@@ -43,9 +44,22 @@ namespace RentalInvestmentAid.Core.Bank
                 bankInformation.Add(new RateInformation
                 {
                     DurationInYear = int.Parse(childs[0].InnerText),
-                    LowerRate = childs[4].InnerText.Replace("%", "").Trim(),
-                    MarketRate = childs[3].InnerText.Replace("%", "").Trim(),
-                    MaxRate = childs[2].InnerText.Replace("%", "").Trim()
+                    Rate = childs[4].InnerText.Replace("%", "").Trim(),
+                    RateType = RateType.LowRate
+                });
+
+                bankInformation.Add(new RateInformation
+                {
+                    DurationInYear = int.Parse(childs[0].InnerText),
+                    Rate = childs[3].InnerText.Replace("%", "").Trim(),
+                    RateType = RateType.MediumRate
+                });
+
+                bankInformation.Add(new RateInformation
+                {
+                    DurationInYear = int.Parse(childs[0].InnerText),
+                    Rate = childs[2].InnerText.Replace("%", "").Trim(),
+                    RateType = RateType.HighRate
                 });
             }
             return bankInformation;

@@ -1,5 +1,6 @@
 using RentalInvestmentAid.Core;
 using RentalInvestmentAid.Models.Loan;
+using RentalInvestmentAid.Models.Rate;
 
 namespace RentalInvestmentAid.Test
 {
@@ -15,7 +16,7 @@ namespace RentalInvestmentAid.Test
             int annualy = 15;
             double loan = 200000;
             double insurranceRate = 0.34;
-            LoanType type = LoanType.HigherRate;
+            RateType type = RateType.HighRate;
 
             string expectedMensualyCost = "1521,05";
             string expectedTotalCost = "273789,7";

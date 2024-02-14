@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using RentalInvestmentAid.Models.Announcement;
 using System.Diagnostics;
 using RentalInvestmentAid.Models.Bank;
+using RentalInvestmentAid.Models.Rate;
 
 namespace RentalInvestmentAid.Database
 {
@@ -161,11 +162,10 @@ namespace RentalInvestmentAid.Database
                             {
                                 Id = reader.GetInt32(0),
                                 DurationInYear = reader.GetInt32(1),
-                                MaxRate = reader.GetDecimal(2).ToString(),
-                                MarketRate = reader.GetDecimal(3).ToString(),
-                                LowerRate = reader.GetDecimal(4).ToString(),
-                                CreatedDate = reader.GetDateTime(5),
-                                UpdatedDate = reader.GetDateTime(6)
+                                Rate = reader.GetDecimal(2).ToString(),
+                                RateType = (RateType)reader.GetInt32(3),
+                                CreatedDate = reader.GetDateTime(4),
+                                UpdatedDate = reader.GetDateTime(5)
                             });
                         }
                     }
@@ -180,10 +180,8 @@ namespace RentalInvestmentAid.Database
                 {
                     sqlCommand.CommandType = CommandType.StoredProcedure;
                     sqlCommand.Parameters.AddWithValue("@durationInYear", rateInformation.DurationInYear);
-                    sqlCommand.Parameters.AddWithValue("@maxRate", Convert.ToDecimal(rateInformation.MaxRate));
-                    sqlCommand.Parameters.AddWithValue("@marketRate", Convert.ToDecimal(rateInformation.MarketRate));
-                    sqlCommand.Parameters.AddWithValue("@lowerRate", Convert.ToDecimal(rateInformation.LowerRate));
-
+                    sqlCommand.Parameters.AddWithValue("@rate", Convert.ToDecimal(rateInformation.Rate));
+                    sqlCommand.Parameters.AddWithValue("@rateType", Convert.ToDecimal(rateInformation.RateType));
                     connection.Open();
                     sqlCommand.ExecuteNonQuery();
                 }

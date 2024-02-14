@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RentalInvestmentAid.Models.Rate;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace RentalInvestmentAid.Models.Loan
 {
     public class LoanInformation
     {
-        public LoanType Type { get; set; }
+        public RateType Type { get; set; }
         public double Rate { get; set; }
         public double MonthlyCost { get; set; }
         public double MonthlyCostWithInsurrance { get; set; }

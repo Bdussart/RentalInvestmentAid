@@ -1,4 +1,5 @@
 ﻿using RentalInvestmentAid.Models.Loan;
+using RentalInvestmentAid.Models.Rate;
 using RentalInvestmentAid.Models.Rental;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace RentalInvestmentAid.Models
     public class LoanInformationWithRentalInformation
     {
         public int DurationInYear { get; set; }
-        public LoanType Type { get; set; }
+        public RateType Type { get; set; }
         public double Rate { get; set; }
         public double MonthlyCost { get; set; }
         public double TotalCost { get; set; }
