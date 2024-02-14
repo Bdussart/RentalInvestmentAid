@@ -126,7 +126,6 @@ namespace RentalInvestmentAid.Core.Announcement
 
         public AnnouncementInformation GetAnnouncementInformation(string url)
         {
-
             HtmlWeb htmlWeb = new HtmlWeb();
             HtmlDocument document = htmlWeb.Load(url);
 

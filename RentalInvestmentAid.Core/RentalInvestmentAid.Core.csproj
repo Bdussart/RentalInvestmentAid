@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Rental\wjoqgahn.5ai~" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="ExcelFinancialFunctions" Version="3.2.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.58" />
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
