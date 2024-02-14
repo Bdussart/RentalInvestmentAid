@@ -18,8 +18,9 @@ namespace RentalInvestmentAid.Core.Rental
         //NOTE : Voici comment est fait le site lacoteImmo  :
         //https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/haute-savoie/alby-sur-cheran/740002.htm
         //https://www.lacoteimmo.com/prix-de-l-immo/location/{région}/{département}/{n'importe quoi}/{département en chiffre}"74" +  {quatre digit incrémental}
-        public RentalInformations GetApartmentRentalInformation(string url)
+        public List<RentalInformations> GetApartmentRentalInformation(string url)
         {
+            List<RentalInformations> rentalInformations = new List<RentalInformations>();
             HtmlWeb htmlWeb = new HtmlWeb();
 
             HtmlDocument document = htmlWeb.Load(url);
@@ -28,25 +29,43 @@ namespace RentalInvestmentAid.Core.Rental
 
             HtmlNodeCollection nodeForZipCode = document.DocumentNode.SelectNodes("//*[@id=\"wrapper\"]/script[2]/text()");
 
+            string zipCode = new string(nodeForZipCode[0].InnerText.Split("\n")[2].Where(char.IsDigit).ToArray());
 
-
-            //*[@id="wrapper"]/script[2]/text()
-            RentalInformations rentalInformations = new RentalInformations()
+            rentalInformations.Add(new RentalInformations()
             {
                 City = nodes[0].InnerText,
-                LowerPrice = nodes[1].InnerText.Split(" ")[0],
-                MediumPrice = nodes[2].InnerText.Split(" ")[0],
-                HigherPrice = nodes[3].InnerText.Split(" ")[0],
-                ZipCode = new string(nodeForZipCode[0].InnerText.Split("\n")[2].Where(char.IsDigit).ToArray()),
-                RentalType = RentalTypeOfTheRent.Apartment,
+                Price = nodes[1].InnerText.Split(" ")[0],
+                RentalPriceType = RentalPriceType.LowerPrice,
+                ZipCode = zipCode,
+                RentalTypeOfTheRent = RentalTypeOfTheRent.Apartment,
                 Url = url
-            };
+            });
 
+            rentalInformations.Add(new RentalInformations()
+            {
+                City = nodes[0].InnerText,
+                Price = nodes[2].InnerText.Split(" ")[0],
+                RentalPriceType = RentalPriceType.MediumPrice,
+                ZipCode = zipCode,
+                RentalTypeOfTheRent = RentalTypeOfTheRent.Apartment,
+                Url = url
+            });
+
+            rentalInformations.Add(new RentalInformations()
+            {
+                City = nodes[0].InnerText,
+                Price = nodes[3].InnerText.Split(" ")[0],
+                RentalPriceType = RentalPriceType.HigherPrice,
+                ZipCode = zipCode,
+                RentalTypeOfTheRent = RentalTypeOfTheRent.Apartment,
+                Url = url
+            });
             return rentalInformations;
         }
 
-        public RentalInformations GetHouseRentalInformation(string url)
+        public List<RentalInformations> GetHouseRentalInformation(string url)
         {
+            List<RentalInformations> rentalInformations = new List<RentalInformations>();
             HtmlWeb htmlWeb = new HtmlWeb();
 
             HtmlDocument document = htmlWeb.Load(url);
@@ -56,16 +75,36 @@ namespace RentalInvestmentAid.Core.Rental
             HtmlNodeCollection nodeForZipCode = document.DocumentNode.SelectNodes("//*[@id=\"wrapper\"]/script[2]/text()");
             HtmlNodeCollection nodeForCity = document.DocumentNode.SelectNodes("/html[1]/body[1]/div[2]/div[2]/div[2]/div[1]/div[1]/table[1]/tbody[1]/tr/td");
             //*[@id="wrapper"]/script[2]/text()
-            RentalInformations rentalInformations = new RentalInformations()
+
+
+            string zipCode = new string(nodeForZipCode[0].InnerText.Split("\n")[2].Where(char.IsDigit).ToArray());
+            rentalInformations.Add(new RentalInformations()
             {
                 City = nodeForCity[0].InnerText,
-                LowerPrice = nodes[0].InnerText.Split(" ")[0],
-                MediumPrice = nodes[1].InnerText.Split(" ")[0],
-                HigherPrice = nodes[2].InnerText.Split(" ")[0],
-                ZipCode = new string(nodeForZipCode[0].InnerText.Split("\n")[2].Where(char.IsDigit).ToArray()),
-                RentalType = RentalTypeOfTheRent.House,
+                Price = nodes[0].InnerText.Split(" ")[0],
+                RentalPriceType = RentalPriceType.LowerPrice,
+                ZipCode = zipCode,
+                RentalTypeOfTheRent = RentalTypeOfTheRent.House,
                 Url = url
-            };
+            });
+            rentalInformations.Add(new RentalInformations()
+            {
+                City = nodeForCity[0].InnerText,
+                Price = nodes[1].InnerText.Split(" ")[0],
+                RentalPriceType = RentalPriceType.MediumPrice,
+                ZipCode = zipCode,
+                RentalTypeOfTheRent = RentalTypeOfTheRent.House,
+                Url = url
+            });
+            rentalInformations.Add(new RentalInformations()
+            {
+                City = nodeForCity[0].InnerText,
+                Price = nodes[2].InnerText.Split(" ")[0],
+                RentalPriceType = RentalPriceType.HigherPrice,
+                ZipCode = zipCode,
+                RentalTypeOfTheRent = RentalTypeOfTheRent.House,
+                Url = url
+            });
 
             return rentalInformations;
         }

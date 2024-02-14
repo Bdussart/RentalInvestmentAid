@@ -8,7 +8,7 @@ namespace RentalInvestmentAid.Models.Rental
 {
     public class RealRentalCost
     {
-        public RentalType Type { get;set; }
+        public RentalPriceType Type { get;set; }
         public double PricePerSquareMeter { get; set; }
         public double RealPrice { get; set; }
 

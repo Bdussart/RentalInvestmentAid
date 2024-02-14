@@ -25,10 +25,10 @@ namespace RentalInvestmentAid
             List<RentalInformations> rentalInformations = new List<RentalInformations>();
 
             Thread.Sleep(TimeSpan.FromSeconds(2)); //Take easy for the external server :)
-            rentalInformations.Add(webSiteData.GetApartmentRentalInformation(url));
+            rentalInformations.AddRange(webSiteData.GetApartmentRentalInformation(url));
 
             Thread.Sleep(TimeSpan.FromSeconds(2)); //Take easy for the external server :)
-            rentalInformations.Add(webSiteData.GetHouseRentalInformation(url));
+            rentalInformations.AddRange(webSiteData.GetHouseRentalInformation(url));
             return (rentalInformations);
         }
         
@@ -67,14 +67,14 @@ namespace RentalInvestmentAid
             //    HeirsHelper.FindTheRightHeir(url, announcementWebSiteDatas).GetAnnouncementInformation(url);
             //});
             // DoTheJob();
-            //listOfWebSiteForRentalInformation.ForEach(url =>
-            //{
-            //    foreach (var info in GetRentalInformations(url))
-            //    {
-            //        databaseFactory.InsertRentalInformation(info);
-            //    }
-            //});
-            //var plop2 = databaseFactory.RentalInformations;
+            listOfWebSiteForRentalInformation.ForEach(url =>
+            {
+                foreach (var info in GetRentalInformations(url))
+                {
+                    databaseFactory.InsertRentalInformation(info);
+                }
+            });
+            var plop2 = databaseFactory.RentalInformations;
 
 
             //List<IAnnouncementWebSiteData> announcementWebSiteDatas = new List<IAnnouncementWebSiteData>
@@ -158,10 +158,10 @@ namespace RentalInvestmentAid
             AnnouncementInformation announcementInformation = announcementWebSiteData.GetAnnouncementInformation("https://www.century21.fr/trouver_logement/detail/5187388611/");
            
             Console.WriteLine("****** Find the right rental information *****");
-            RentalInformations? currentRentalInformation = rentalTreament.FindRentalInformationForAnAnnoucement(rentalInformations, announcementInformation);
+            List<RentalInformations> currentsRentalInformation = rentalTreament.FindRentalInformationForAnAnnoucement(rentalInformations, announcementInformation);
 
             Console.WriteLine("****** Find the right rental information Check if not null *****");
-            if (currentRentalInformation == null)
+            if (currentsRentalInformation.Count == 0)
                 throw new NullReferenceException("Damn the current rental is Null !");
 
             Console.WriteLine("****** Get rates for the loan *****");
@@ -173,7 +173,7 @@ namespace RentalInvestmentAid
             List<RealLoanCost> realRentalCosts = rentalTreament.CalculAllLoan(bankInformations, announcementInformation.Price);
 
             Console.WriteLine("****** Calcul all prices for the rent *****");
-            rentalTreament.CalculAllRentalPrices(currentRentalInformation, ref announcementInformation);
+            rentalTreament.CalculAllRentalPrices(currentsRentalInformation, ref announcementInformation);
 
 
             Console.WriteLine("****** Check viability of the rent *****");

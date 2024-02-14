@@ -29,9 +29,8 @@ CREATE TABLE [dbo].[rentalInformation](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[city] [varchar](50) NOT NULL,
 	[zipCode] [varchar](5) NOT NULL,
-	[lowerPrice] [decimal](3, 0) NOT NULL,
-	[mediumPrice] [decimal](3, 0) NOT NULL,
-	[higherPrice] [decimal](3, 0) NOT NULL,
+	[price] [decimal](5, 2) NOT NULL,
+	[idPriceType] int NOT NULL,
 	[idPropertyType] [int] NOT NULL,
 	[url] [varchar](255) NOT NULL,
 	[createdDate] [datetime] NOT NULL,
@@ -50,6 +49,36 @@ GO
 ALTER TABLE [dbo].[rentalInformation] CHECK CONSTRAINT [FK_rentalInformation_typeProperty]
 GO
 
+
+CREATE TABLE [dbo].[priceType](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[type] [varchar](15) NOT NULL,
+ CONSTRAINT [PK_priceType] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[rentalInformation]  WITH CHECK ADD  CONSTRAINT [FK_rentalInformation_priceType] FOREIGN KEY([idPriceType])
+REFERENCES [dbo].[priceType] ([id])
+GO
+
+ALTER TABLE [dbo].[rentalInformation] CHECK CONSTRAINT [FK_rentalInformation_priceType]
+GO
+
+
+  INSERT INTO [rentalInvestmentAid].[dbo].priceType
+  (type)
+  values ('LowerPrice')
+
+    INSERT INTO [rentalInvestmentAid].[dbo].priceType
+  (type)
+  values ('MediumPrice')
+
+    INSERT INTO [rentalInvestmentAid].[dbo].priceType
+  (type)
+  values ('HigherPrice')
 
 
   INSERT INTO [rentalInvestmentAid].[dbo].[typeProperty]
@@ -83,9 +112,8 @@ BEGIN
 SELECT  [id]
       ,[city]
       ,[zipCode]
-      ,[lowerPrice]
-      ,[mediumPrice]
-      ,[higherPrice]
+      ,[price]
+      ,[idPriceType]
       ,[idPropertyType]
       ,[createdDate]
       ,[updatedDate]
@@ -98,9 +126,8 @@ CREATE PROCEDURE uspInsertRentalInformation
 (
 				@city			varchar(50),
 				@zipcode		varchar(5),
-				@lowerPrice		decimal(3,0),
-				@mediumPrice	decimal(3,0),
-				@higherPrice	decimal(3,0),
+				@price		decimal(5,2),
+				@idPriceType	int,
 				@idPropertyType int,
 				@url			varchar(255)
 )
@@ -113,9 +140,8 @@ SET @Now = GETDATE()
 INSERT INTO [dbo].[RentalInformation]
            ([city]
            ,[zipCode]
-           ,[lowerPrice]
-           ,[mediumPrice]
-           ,[higherPrice]
+           ,[price]
+           ,[idPriceType]
            ,[idPropertyType]
 		   ,[url]
            ,[createdDate]
@@ -124,9 +150,8 @@ INSERT INTO [dbo].[RentalInformation]
            (
 		   @city
 		   ,@zipcode
-		   ,@lowerPrice
-		   ,@mediumPrice
-		   ,@higherPrice
+		   ,@price
+		   ,@idPriceType
 		   ,@idPropertyType
 		   ,@url
 		   ,@Now
@@ -319,14 +344,14 @@ GO
 insert into dbo.rateType
 (rate)
 VALUES
-('lowRate')
+('LowRate')
 
 insert into dbo.rateType
 (rate)
 VALUES
-('mediumRate')
+('MediumRate')
 
 insert into dbo.rateType
 (rate)
 VALUES
-('highRate')
+('HighRate')

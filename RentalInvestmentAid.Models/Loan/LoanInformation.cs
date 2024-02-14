@@ -16,6 +16,5 @@ namespace RentalInvestmentAid.Models.Loan
         public double TotalCost { get; set; }
         public double TotalCostWithInsurrance { get; set; }
         public double InsurranceRate { get;set; }
-
     }
 }

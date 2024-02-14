@@ -10,12 +10,12 @@ namespace RentalInvestmentAid.Core.Rental
 {
     public class SeLogerWebSiteData : IRentalWebSiteData
     {
-        public RentalInformations GetApartmentRentalInformation(string url)
+        public List<RentalInformations> GetApartmentRentalInformation(string url)
         {
             throw new NotImplementedException();
         }
 
-        public RentalInformations GetHouseRentalInformation(string url)
+        public List<RentalInformations> GetHouseRentalInformation(string url)
         {
             throw new NotImplementedException();
         }

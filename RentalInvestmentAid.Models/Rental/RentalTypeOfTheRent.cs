@@ -16,13 +16,13 @@ namespace RentalInvestmentAid.Models.Rental
         Other = 4
     }
 
-    public enum RentalType
+    public enum RentalPriceType
     {
         [Description("Location Basse")]
-        LowerPrice = 0,
+        LowerPrice = 1,
         [Description("Location Moyenne")]
-        MediumPrice = 1,
+        MediumPrice = 2,
         [Description("Location Haute")]
-        HigherPrice = 2
+        HigherPrice = 3
     }
 }

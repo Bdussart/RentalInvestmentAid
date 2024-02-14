@@ -15,10 +15,10 @@ namespace RentalInvestmentAid.Core
 {
     public class RentalTreament
     {
-        public RentalInformations? FindRentalInformationForAnAnnoucement(List<RentalInformations> rentalInformations, AnnouncementInformation announcementInformation)
+        public List<RentalInformations> FindRentalInformationForAnAnnoucement(List<RentalInformations> rentalInformations, AnnouncementInformation announcementInformation)
         {
             //SameCity name AND zipcode different not handled yet
-            return rentalInformations.Find(rent => rent.City.Equals(announcementInformation.City, StringComparison.CurrentCultureIgnoreCase));
+            return rentalInformations.Where(rent => rent.City.Equals(announcementInformation.City, StringComparison.CurrentCultureIgnoreCase)).ToList();
         }
 
         public List<RealLoanCost> CalculAllLoan(List<RateInformation> bankInformation, string amount, string insurranceRate = "0,30")
@@ -40,15 +40,20 @@ namespace RentalInvestmentAid.Core
             return realRentalCosts;
         }
 
-        public void CalculAllRentalPrices(RentalInformations rentalInformation, ref AnnouncementInformation announcementInformation)
+        public void CalculAllRentalPrices(List<RentalInformations> rentalInformation, ref AnnouncementInformation announcementInformation)
         {
-
-            announcementInformation.SetRealRentalCost(new List<RealRentalCost>
+            string metrage = announcementInformation.Metrage;
+            List<RealRentalCost> realCost = new List<RealRentalCost>();
+            rentalInformation.ForEach(rentalInformation =>
             {
-                { new RealRentalCost(){ PricePerSquareMeter = float.Parse(rentalInformation.LowerPrice, CultureInfo.InvariantCulture.NumberFormat), RealPrice = float.Parse(rentalInformation.LowerPrice, CultureInfo.InvariantCulture.NumberFormat) * Convert.ToDouble(announcementInformation.Metrage), Type = RentalType.LowerPrice } },
-                { new RealRentalCost(){ PricePerSquareMeter = float.Parse(rentalInformation.MediumPrice,CultureInfo.InvariantCulture.NumberFormat), RealPrice = float.Parse(rentalInformation.MediumPrice, CultureInfo.InvariantCulture.NumberFormat) * Convert.ToDouble(announcementInformation.Metrage), Type = RentalType.MediumPrice }},
-                { new RealRentalCost(){ PricePerSquareMeter =float.Parse(rentalInformation.HigherPrice,CultureInfo.InvariantCulture.NumberFormat), RealPrice = float.Parse(rentalInformation.HigherPrice, CultureInfo.InvariantCulture.NumberFormat) * Convert.ToDouble(announcementInformation.Metrage), Type = RentalType.HigherPrice }}
+                realCost.Add(new RealRentalCost()
+                {
+                    PricePerSquareMeter = float.Parse(rentalInformation.Price, CultureInfo.InvariantCulture.NumberFormat),
+                    RealPrice = float.Parse(rentalInformation.Price, CultureInfo.InvariantCulture.NumberFormat) * Convert.ToDouble(metrage),
+                    Type = rentalInformation.RentalPriceType
+                });
             });
+            announcementInformation.SetRealRentalCost(realCost);
         }
 
 
