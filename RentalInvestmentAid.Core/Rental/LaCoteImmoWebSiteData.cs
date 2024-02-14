@@ -71,7 +71,8 @@ namespace RentalInvestmentAid.Core.Rental
         public List<string> GetUrlForRentalInformation(string area, string department, int departmentNumber)
         {
             int iterator = 1;
-            string baseUrl = string.Empty; 
+            string baseUrl = string.Empty;
+            string previousUrl = string.Empty;
             List<string> urls = new List<string>();
 
             ChromeOptions options = new ChromeOptions();
@@ -86,10 +87,13 @@ namespace RentalInvestmentAid.Core.Rental
                     baseUrl = $"https://www.lacoteimmo.com/prix-de-l-immo/location/{area}/{department}/nothing/{departmentNumber}{iterator.ToString("0000")}.htm";
                     driver.Navigate().GoToUrl(baseUrl);
 
-                    if (baseUrl.Equals(driver.Url, StringComparison.CurrentCultureIgnoreCase))
+                    if ((baseUrl.Equals(driver.Url, StringComparison.CurrentCultureIgnoreCase)) || (previousUrl.Equals(driver.Url, StringComparison.CurrentCultureIgnoreCase)))
                         next = false;
                     else
+                    {
                         urls.Add(driver.Url);
+                        previousUrl = driver.Url;
+                    }
                     iterator++;
 
                     Thread.Sleep(TimeSpan.FromSeconds(1));//Take  it easy ...
