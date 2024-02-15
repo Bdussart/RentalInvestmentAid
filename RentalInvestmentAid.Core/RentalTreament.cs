@@ -18,29 +18,21 @@ namespace RentalInvestmentAid.Core
         public List<RentalInformations> FindRentalInformationForAnAnnoucement(List<RentalInformations> rentalInformations, AnnouncementInformation announcementInformation)
         {
             //SameCity name AND zipcode different not handled yet
-            return rentalInformations.Where(rent => rent.City.Equals(announcementInformation.City, StringComparison.CurrentCultureIgnoreCase)).ToList();
+            return rentalInformations.Where(rent => rent.City.Equals(announcementInformation.City, StringComparison.CurrentCultureIgnoreCase) 
+            && announcementInformation.RentalType == rent.RentalTypeOfTheRent).ToList();
         }
 
-        public List<RealLoanCost> CalculAllLoan(List<RateInformation> bankInformation, string amount, string insurranceRate = "0,30")
+        public List<LoanInformation> CalculAllLoan(List<RateInformation> ratesInformation, string amount, string insurranceRate = "0,30")
         {
-            List<RealLoanCost> realRentalCosts = new List<RealLoanCost>();
-            bankInformation.ForEach(bankInformation =>
+            List<LoanInformation> loanInformation = new List<LoanInformation>();
+            ratesInformation.ForEach(rateInformation =>
             {
-                realRentalCosts.Add(new RealLoanCost()
-                {
-                    DurationInYear = bankInformation.DurationInYear,
-                    Price = amount,
-                    LoanInformations = new List<LoanInformation>()
-                    {
-                        {FinancialCalcul.LoanInformation(Convert.ToDouble(bankInformation.Rate), bankInformation.DurationInYear, Double.Parse(amount), Convert.ToDouble(insurranceRate), bankInformation.RateType ) },
-                    }
-                });
-
+                loanInformation.Add(FinancialCalcul.LoanInformation(rateInformation, Double.Parse(amount), Convert.ToDouble(insurranceRate)));
             });
-            return realRentalCosts;
+            return loanInformation;
         }
 
-        public void CalculAllRentalPrices(List<RentalInformations> rentalInformation, ref AnnouncementInformation announcementInformation)
+        public List<RealRentalCost> CalculAllRentalPrices(List<RentalInformations> rentalInformation, AnnouncementInformation announcementInformation)
         {
             string metrage = announcementInformation.Metrage;
             List<RealRentalCost> realCost = new List<RealRentalCost>();
@@ -48,37 +40,29 @@ namespace RentalInvestmentAid.Core
             {
                 realCost.Add(new RealRentalCost()
                 {
-                    PricePerSquareMeter = float.Parse(rentalInformation.Price, CultureInfo.InvariantCulture.NumberFormat),
-                    RealPrice = float.Parse(rentalInformation.Price, CultureInfo.InvariantCulture.NumberFormat) * Convert.ToDouble(metrage),
+                    PricePerSquareMeter = Convert.ToDouble(rentalInformation.Price),
+                    RealPrice = Convert.ToDouble(rentalInformation.Price) * Convert.ToDouble(metrage),
                     Type = rentalInformation.RentalPriceType
                 });
             });
-            announcementInformation.SetRealRentalCost(realCost);
+
+            return realCost;
         }
 
 
-        public RentalResult CheckIfRentable(AnnouncementInformation announcementInformation, List<RealLoanCost> realLoanCosts)
+        public RentalResult CheckIfRentable(string price, List<RealRentalCost> realRentalCosts, List<LoanInformation> loansInformation)
         {
             RentalResult result = new RentalResult();
-            result.LoanBaseAmout = Convert.ToDouble(announcementInformation.Price);
             result.LoanInformationWithRentalInformation = new List<LoanInformationWithRentalInformation>();
-            result.AnnouncementInformation = announcementInformation; 
-            foreach (RealLoanCost realLoanCost in realLoanCosts)
+            foreach (LoanInformation lLoanInformations in loansInformation)
             {
-                foreach (LoanInformation loanInformation in realLoanCost.LoanInformations)
+                LoanInformationWithRentalInformation loanInformationWithRentalInformation = new LoanInformationWithRentalInformation()
                 {
-                    LoanInformationWithRentalInformation loanInformationWithRentalInformation = new LoanInformationWithRentalInformation()
-                    {
-                        DurationInYear = realLoanCost.DurationInYear,
-                        Rate = loanInformation.Rate,
-                        Type = loanInformation.Type,
-                        InsurranceRate = loanInformation.InsurranceRate,
-                        MonthlyCost = loanInformation.MonthlyCost,
-                        TotalCost = loanInformation.TotalCost
-                    };
+                    LoanInformation = lLoanInformations
+                };
 
                     loanInformationWithRentalInformation.RealRentalCosts = new List<RealRentalCost>();
-                    foreach (RealRentalCost rentalCost in announcementInformation.RentalCost)
+                    foreach (RealRentalCost rentalCost in realRentalCosts)
                     {
 
                         loanInformationWithRentalInformation.RealRentalCosts.Add(new RealRentalCost()
@@ -86,11 +70,11 @@ namespace RentalInvestmentAid.Core
                             Type = rentalCost.Type,
                             RealPrice = rentalCost.RealPrice,
                             PricePerSquareMeter = rentalCost.PricePerSquareMeter,
-                            IsViable = rentalCost.Rental70Pourcent > loanInformationWithRentalInformation.MonthlyCost
+                            IsViable = rentalCost.Rental70Pourcent > loanInformationWithRentalInformation.LoanInformation.MonthlyCost
                         });
                     }
                     result.LoanInformationWithRentalInformation.Add(loanInformationWithRentalInformation);
-                }
+                
             }
 
             

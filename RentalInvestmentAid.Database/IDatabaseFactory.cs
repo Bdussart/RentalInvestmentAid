@@ -1,11 +1,16 @@
 ﻿using RentalInvestmentAid.Models.Announcement;
 using RentalInvestmentAid.Models.Bank;
+using RentalInvestmentAid.Models.Loan;
 using RentalInvestmentAid.Models.Rental;
 
 namespace RentalInvestmentAid.Database
 {
     public interface IDatabaseFactory
     {
+
+        /// <summary>
+        /// TODO : BULK INSERT !!!!!!
+        /// </summary>
         public List<RentalInformations> RentalInformations { get; }
 
         public void InsertRentalInformation(RentalInformations rental);
@@ -17,5 +22,9 @@ namespace RentalInvestmentAid.Database
         public List<RateInformation> RateInformations { get; }
 
         public void InsertRateInformation(RateInformation announcementInformation);
+
+        public List<LoanInformation> LoansInformations { get; }
+
+        public void InsertLoanInformation(LoanInformation loanInformation);
     }
 }

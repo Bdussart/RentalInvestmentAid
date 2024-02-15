@@ -30,7 +30,13 @@ namespace RentalInvestmentAid.Logger
         public static void LogInfo(string  message)
         {
             Init();
-            _logger.Information("Hello, world!");
+            _logger.Information(message);
+        }
+
+        public static void LogException(Exception exception)
+        {
+            Init();
+            _logger.Warning(exception, exception.Message);
         }
 
     }

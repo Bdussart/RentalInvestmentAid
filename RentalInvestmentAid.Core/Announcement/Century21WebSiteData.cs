@@ -15,6 +15,7 @@ using static System.Net.WebRequestMethods;
 using static System.Collections.Specialized.BitVector32;
 using OpenQA.Selenium.Interactions;
 using Microsoft.FSharp.Data.UnitSystems.SI.UnitNames;
+using RentalInvestmentAid.Core.Helper;
 
 namespace RentalInvestmentAid.Core.Announcement
 {
@@ -58,6 +59,47 @@ namespace RentalInvestmentAid.Core.Announcement
             return urls;
         }
 
+        private void SetSearchInformation(IWebDriver driver, int? maxPrice, string department)
+        {
+            try
+            {
+                SeleniumHelper.GoAndWaitPageIsReady(driver, baseUrl);
+                ImitateHumanTyping(department, driver.FindElement(By.Id("q")));
+                driver.FindElement(By.XPath("/html/body/main/article/header/div/div[2]/div/div/div[2]/div/form/div[2]/div")).Click();
+                if (maxPrice.HasValue)
+                {
+                    if (!driver.FindElement(By.Id("price_max")).Displayed)
+                        driver.FindElement(By.XPath("/html/body/main/section/section/div[1]/div[1]/div[2]")).Click();
+
+                    ImitateHumanTyping(maxPrice.Value.ToString(), driver.FindElement(By.Id("price_max")));
+                    driver.FindElement(By.XPath("/html/body/main/section/section/div[2]/div[3]")).Click();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogHelper.LogException(ex);
+                throw;
+            }
+        }
+
+        public bool ThereIsANextPage(string html)
+        {
+            bool nextPage =false;
+
+            HtmlDocument document = new HtmlDocument();
+            document.LoadHtml(html);
+            HtmlNodeCollection isOnlyOnePage = document.DocumentNode.SelectNodes("/html/body/main/article/section/section/div[2]/div[4]/section/ul/li");
+            if (isOnlyOnePage.Count < 2) //If lower => only one page
+                nextPage = false;
+            else
+            {
+                HtmlNodeCollection ThereIsANextPage = document.DocumentNode.SelectNodes("/html/body/main/article/section/section/div[2]/div[4]/section/ul/li[last()]/ul/li");
+                if (ThereIsANextPage.Count == 1) //Due to the Century21 logical, The last LI must be the link to the next page
+                    nextPage = true;
+            }
+
+            return nextPage;
+        }
         public List<string> GetAnnoucementUrl(List<string> departments, int? maxPrice)
         {
             List<String> urls = new List<String>();
@@ -65,62 +107,34 @@ namespace RentalInvestmentAid.Core.Announcement
             ChromeOptions options = new ChromeOptions();
             options.AddArgument("--enable-javascript");
             options.AddArgument("--window-size=500,1080");
-
-            using (IWebDriver driver = new ChromeDriver(options))
+            Parallel.ForEach(departments, department =>
             {
-                foreach (string department in departments)
+                using (IWebDriver driver = new ChromeDriver(options))
                 {
-                    driver.Navigate().GoToUrl(baseUrl);
-                    ImitateHumanTyping(department, driver.FindElement(By.Id("q")));
-                    driver.FindElement(By.XPath("/html/body/main/article/header/div/div[2]/div/div/div[2]/div/form/div[2]/div")).Click();
-                    if (maxPrice.HasValue)
-                    {
-                        if(!driver.FindElement(By.Id("price_max")).Displayed)
-                            driver.FindElement(By.XPath("/html/body/main/section/section/div[1]/div[1]/div[2]")).Click();
-
-                        ImitateHumanTyping(maxPrice.Value.ToString(), driver.FindElement(By.Id("price_max")));
-                        driver.FindElement(By.XPath("/html/body/main/section/section/div[2]/div[3]")).Click();
-                    }
+                    SetSearchInformation(driver, maxPrice, department);
+                    urls.AddRange(FindUrlForEachAnnoncement(driver.PageSource));
                     bool nextPage = false;
                     do
                     {
-                        nextPage = false;
                         urls.AddRange(FindUrlForEachAnnoncement(driver.PageSource));
+                        nextPage = ThereIsANextPage(driver.PageSource);
 
-                        HtmlDocument document = new HtmlDocument();
-                        document.LoadHtml(driver.PageSource);
-                        HtmlNodeCollection isOnlyOnePage = document.DocumentNode.SelectNodes("/html/body/main/article/section/section/div[2]/div[4]/section/ul/li");
-                        if (isOnlyOnePage.Count < 2) //If lower => only one page
-                            nextPage = false;
-                        else
-                        {
-                            HtmlNodeCollection ThereIsANextPage = document.DocumentNode.SelectNodes("/html/body/main/article/section/section/div[2]/div[4]/section/ul/li[last()]/ul/li");
-                            if (ThereIsANextPage.Count == 1) //Due to the Century21 logical, The last LI must be the link to the next page
-                                nextPage = true;
-                        }                        
-
-                        
                         if (nextPage)
                         {
                             IWebElement element = driver.FindElement(By.XPath("/html/body/main/article/section/section/div[2]/div[4]/section/ul/li[last()]/ul/li/a"));
                             IWebElement footer = driver.FindElement(By.XPath("/html/body/footer"));
 
-                            Thread.Sleep(TimeSpan.FromSeconds(2));
                             Actions actions = new Actions(driver);
                             actions.ScrollToElement(footer); //Need to be a bit lower than the next page button, there is a popup for a bot ... :(
                             actions.Perform();
-                            Thread.Sleep(TimeSpan.FromSeconds(2));
                             actions.Click(element);
                             actions.Perform();
                         }
                     }
                     while (nextPage);
 
-
                 }
-                driver.Close();
-            }
-
+            });
             return urls;
         }
 
@@ -159,8 +173,9 @@ namespace RentalInvestmentAid.Core.Announcement
                     UrlWebSite = url
                 };
             }
-            catch (Exception ex) { 
-            //TODO: LOG INFO
+            catch (Exception ex)
+            {
+                Logger.LogHelper.LogException(ex);
             }
 
             return announcementInformation;

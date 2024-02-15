@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using RentalInvestmentAid.Core.Helper;
 using RentalInvestmentAid.Models.Bank;
 using RentalInvestmentAid.Models.Rate;
 using RentalInvestmentAid.Models.Rental;
@@ -27,11 +28,8 @@ namespace RentalInvestmentAid.Core.Bank
                 options.AddArgument("--window-size=500,1080");
                 using (IWebDriver driver = new ChromeDriver(options))
                 {
-                    driver.Navigate().GoToUrl(url);
-
+                    SeleniumHelper.GoAndWaitPageIsReady(driver, url);
                     html = driver.PageSource;
-
-                    driver.Close();
                 }
 
                 HtmlDocument document = new HtmlDocument();
@@ -66,7 +64,7 @@ namespace RentalInvestmentAid.Core.Bank
             }
             catch (Exception ex)
             {
-                // LOG ERROR
+                Logger.LogHelper.LogException(ex);
             };
             return bankInformation;
         }

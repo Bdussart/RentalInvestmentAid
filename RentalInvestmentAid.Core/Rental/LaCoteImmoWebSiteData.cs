@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenQA.Selenium.Support.UI;
 using OpenQA.Selenium.DevTools;
+using RentalInvestmentAid.Core.Helper;
 
 namespace RentalInvestmentAid.Core.Rental
 {
@@ -21,6 +22,7 @@ namespace RentalInvestmentAid.Core.Rental
         public List<RentalInformations> GetApartmentRentalInformation(string url)
         {
             List<RentalInformations> rentalInformations = new List<RentalInformations>();
+            try { 
             HtmlWeb htmlWeb = new HtmlWeb();
 
             HtmlDocument document = htmlWeb.Load(url);
@@ -60,13 +62,20 @@ namespace RentalInvestmentAid.Core.Rental
                 RentalTypeOfTheRent = RentalTypeOfTheRent.Apartment,
                 Url = url
             });
+            }
+            catch (Exception ex)
+            {
+                Logger.LogHelper.LogException(ex);
+            }
             return rentalInformations;
         }
 
         public List<RentalInformations> GetHouseRentalInformation(string url)
         {
             List<RentalInformations> rentalInformations = new List<RentalInformations>();
-            HtmlWeb htmlWeb = new HtmlWeb();
+            try
+            {
+                HtmlWeb htmlWeb = new HtmlWeb();
 
             HtmlDocument document = htmlWeb.Load(url);
 
@@ -106,6 +115,11 @@ namespace RentalInvestmentAid.Core.Rental
                 Url = url
             });
 
+            }
+            catch (Exception ex)
+            {
+                Logger.LogHelper.LogException(ex);
+            }
             return rentalInformations;
         }
 
@@ -120,6 +134,8 @@ namespace RentalInvestmentAid.Core.Rental
             options.AddArgument("--enable-javascript");
             //options.AddArgument("--window-size=500,1080");
             options.AddArgument("incognito");
+            options.AddArgument("no-sandbox");
+
 
             bool next = true;
             do
@@ -129,13 +145,13 @@ namespace RentalInvestmentAid.Core.Rental
                     baseUrl = $"https://www.lacoteimmo.com/prix-de-l-immo/location/{area}/{department}/nothing/{departmentNumber}{iterator.ToString("0000")}.htm";
                     try
                     {
-                        driver.Navigate().GoToUrl(baseUrl);
+                        SeleniumHelper.GoAndWaitPageIsReady(driver, baseUrl);
                         WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2));
                         wait.Until(d => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
                     }
                     catch (Exception ex)
                     {
-                        //TO LOG EX
+                        Logger.LogHelper.LogException(ex);
                     }
 
                     if ((baseUrl.Equals(driver.Url, StringComparison.CurrentCultureIgnoreCase)) || 

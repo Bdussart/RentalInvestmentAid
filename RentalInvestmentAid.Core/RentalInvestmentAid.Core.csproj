@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\RentalInvestmentAid.Logger\RentalInvestmentAid.Logger.csproj" />
     <ProjectReference Include="..\RentalInvestmentAid.Models\RentalInvestmentAid.Models.csproj" />
   </ItemGroup>
 

@@ -8,6 +8,7 @@ using RentalInvestmentAid.Models.Announcement;
 using System.Diagnostics;
 using RentalInvestmentAid.Models.Bank;
 using RentalInvestmentAid.Models.Rate;
+using RentalInvestmentAid.Models.Loan;
 
 namespace RentalInvestmentAid.Database
 {
@@ -40,10 +41,20 @@ namespace RentalInvestmentAid.Database
                 return _ratelInformation;
             }
         }
+        public List<LoanInformation> LoansInformations
+        {
+            get
+            {
+                if (_loansInformations == null)
+                    SetLoanInformation();
+                return _loansInformations;
+            }
+        }
 
         private List<RentalInformations> _rentalInformation = null;
         private List<AnnouncementInformation> _announcementInformation = null;
         private List<RateInformation> _ratelInformation = null;
+        private List<LoanInformation> _loansInformations = null;
         private void SetRentalsInformations()
         {
             _rentalInformation = new List<RentalInformations>();
@@ -180,6 +191,62 @@ namespace RentalInvestmentAid.Database
                     sqlCommand.Parameters.AddWithValue("@durationInYear", rateInformation.DurationInYear);
                     sqlCommand.Parameters.AddWithValue("@rate", Convert.ToDecimal(rateInformation.Rate));
                     sqlCommand.Parameters.AddWithValue("@rateType", Convert.ToDecimal(rateInformation.RateType));
+                    connection.Open();
+                    sqlCommand.ExecuteNonQuery();
+                }
+            }
+        }
+        private void SetLoanInformation()
+        {
+            _loansInformations = new List<LoanInformation>();
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspGetLoanInformations", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    connection.Open();
+                    using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            _loansInformations.Add(new LoanInformation
+                            {
+                                Id = reader.GetInt32(0),
+                                AnnouncementInformation = new AnnouncementInformation
+                                {
+                                    Id = reader.GetInt32(1)
+                                },
+                                RateInformation = new RateInformation
+                                {
+                                    Id = reader.GetInt32(2)
+                                },
+                                TotalCost = reader.GetDouble(3),
+                                MonthlyCost = reader.GetDouble(4),
+                                InsurranceRate = reader.GetDouble(5),
+                                TotalCostWithInsurrance = reader.GetDouble(6),
+                                MonthlyCostWithInsurrance = reader.GetDouble(7),
+                                CreatedDate = reader.GetDateTime(8),
+                                UpdatedDate = reader.GetDateTime(9)
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        public void InsertLoanInformation(LoanInformation loanInformation)
+        {
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspInsertLoanInformation", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.AddWithValue("@idAnnoncementInformation", loanInformation.AnnouncementInformation.Id);
+                    sqlCommand.Parameters.AddWithValue("@idRateInformation", loanInformation.RateInformation.Id);
+                    sqlCommand.Parameters.AddWithValue("@totalCost", loanInformation.TotalCost);
+                    sqlCommand.Parameters.AddWithValue("@monthlyCost", loanInformation.MonthlyCost);
+                    sqlCommand.Parameters.AddWithValue("@insuranceRate", loanInformation.InsurranceRate);
+                    sqlCommand.Parameters.AddWithValue("@totalCostWithInssurance", loanInformation.TotalCostWithInsurrance);
+                    sqlCommand.Parameters.AddWithValue("@monthlyCostWithInssurance", loanInformation.MonthlyCostWithInsurrance);
                     connection.Open();
                     sqlCommand.ExecuteNonQuery();
                 }

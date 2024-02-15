@@ -25,5 +25,11 @@ namespace RentalInvestmentAid.Models.Announcement
         {
             RentalCost = realRentalCosts;
         }
+
+
+        public override string ToString()
+        {
+            return $"[{Id}] {City} - {ZipCode} - {Price} : {UrlWebSite}";
+        }
     }
 }

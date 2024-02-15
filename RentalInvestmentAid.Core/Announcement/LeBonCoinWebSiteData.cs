@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RentalInvestmentAid.Core.Announcement.Helper;
 using System.Reflection.Metadata;
+using RentalInvestmentAid.Core.Helper;
 
 namespace RentalInvestmentAid.Core.Announcement
 {
@@ -34,9 +35,9 @@ namespace RentalInvestmentAid.Core.Announcement
                 options.AddArgument("--window-size=500,1080");
                 using (IWebDriver driver = new ChromeDriver(options))
                 {
-                    driver.Navigate().GoToUrl(url);
+
+                    SeleniumHelper.GoAndWaitPageIsReady(driver, url);
                     html = driver.PageSource;
-                    driver.Close();
                 }
 
                 HtmlDocument document = new HtmlDocument();
@@ -61,7 +62,7 @@ namespace RentalInvestmentAid.Core.Announcement
             }
             catch (Exception ex)
             {
-                //TODO LOG EX
+                Logger.LogHelper.LogException(ex);
             }
             return announcementInformation;
         }

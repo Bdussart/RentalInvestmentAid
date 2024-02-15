@@ -35,23 +35,9 @@ namespace RentalInvestmentAid
         public static void Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
-
-            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
-            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
-            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
-            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
-            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
-            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
-            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
-            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
-            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
-            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
-            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
-            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
-            Logger.LogHelper.LogInfo("LOGGG TESSTTTT");
+            DoLoadDataJob();
 
 
-            // DoLoadDataJob();
             //IDatabaseFactory databaseFactory = new SqlServerDatabase();
 
             ////IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData();
@@ -119,86 +105,121 @@ namespace RentalInvestmentAid
             IDatabaseFactory databaseFactory = new SqlServerDatabase();
             IBankWebSiteData bankWebSiteData = new PAPWebSiteData();
 
-            Task[] tasks = new Task[3];
+            //Task[] tasks = new Task[3];
 
-            Dictionary<int, string> dicoDepartements = new Dictionary<int, string>
-            {
-                {74, "haute-savoie" },
-                {01, "ain" },
-                {73, "savoie" }
-            };
+            //Dictionary<int, string> dicoDepartements = new Dictionary<int, string>
+            //{
+            //    {74, "haute-savoie" },
+            //    {01, "ain" },
+            //    {73, "savoie" }
+            //};
 
-            List<String> departements = dicoDepartements.Values.ToList();
+            //List<String> departements = dicoDepartements.Values.ToList();
+
+            //tasks[0] = Task.Factory.StartNew(() =>
+            //{
+            //    IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData();
+            //    Parallel.ForEach(dicoDepartements, departement =>
+            //    {
+            //        {
+            //            List<String> urls = new List<string>();
+
+            //            urls = webSiteData.GetUrlForRentalInformation("rhone-alpes", departement.Value, departement.Key);
+
+            //            urls.ForEach(url =>
+            //            {
+            //                foreach (var info in GetRentalInformations(url))
+            //                {
+            //                    databaseFactory.InsertRentalInformation(info);
+            //                }
+            //            });
+            //        }
+            //    });
+            //});
+            //tasks[1] = Task.Factory.StartNew(() =>
+            //{
+            //    List<RateInformation> bankInformations = bankWebSiteData.GetRatesInformations("https://www.pap.fr/acheteur/barometre-taux-emprunt");
+
+            //    foreach (RateInformation rate in bankInformations)
+            //    {
+            //        databaseFactory.InsertRateInformation(rate);
+            //    }
+            //});
+            //tasks[2] = Task.Factory.StartNew(() =>
+            //{
+            //    IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData();
+
+            //    Stopwatch stopwatch = new Stopwatch();
+            //    stopwatch.Start();
+
+            //    Console.WriteLine("********-- Starting process --*******");
+            //    Console.WriteLine("********-- DoTheCentury21Job --*******");
+
+            //    Console.WriteLine($"********-- Start Searching announcement for : {String.Join(",", dicoDepartements)} --*******");
+            //    List<String> urls = announcementWebSiteData.GetAnnoucementUrl(departements, 200000);
+
+            //    Console.WriteLine($"********-- End Searching announcement for : {String.Join(",", dicoDepartements)} --*******");
+            //    Console.WriteLine($"********-- urls : {urls.Count}  --*******");
+            //    Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
+
+            //    Console.WriteLine($"********-- Start  Announcement information --*******");
+            //    urls.ForEach(url =>
+            //    {
+            //        Thread.Sleep(TimeSpan.FromSeconds(2));
+            //        Console.WriteLine($"********-- url : {url} --*******");
+            //        AnnouncementInformation announcementInformation = announcementWebSiteData.GetAnnouncementInformation(url);
+            //        Console.WriteLine($"********-- END url : {url}  --*******");
+            //        Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
+
+            //        Console.WriteLine($"********-- Insert in database : {url} --*******");
+            //        databaseFactory.InsertAnnouncementInformation(announcementInformation);
+            //        Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
+            //    });
+
+            //    Console.WriteLine($"********-- STOP  Announcement information --*******");
+            //    Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
+
+            //});
 
 
-            tasks[0] = Task.Factory.StartNew(() =>
-            {
-                IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData();
-                List<String> urls = new List<string>();
+            //Task.Factory.ContinueWhenAll(tasks, task =>
+            //{
+            //    Console.Write("DONE");
+            //});
 
-                foreach (KeyValuePair<int, string> departement in dicoDepartements)
-                {
-                    urls = webSiteData.GetUrlForRentalInformation("rhone-alpes", departement.Value, departement.Key);
-                }
-                urls.ForEach(url =>
-                {
-                    foreach (var info in GetRentalInformations(url))
-                    {
-                        databaseFactory.InsertRentalInformation(info);
-                    }
-                });
-            });
-            tasks[1] = Task.Factory.StartNew(() =>
-            {
-                List<RateInformation> bankInformations = bankWebSiteData.GetRatesInformations("https://www.pap.fr/acheteur/barometre-taux-emprunt");
 
-                foreach (RateInformation rate in bankInformations)
-                {
-                    databaseFactory.InsertRateInformation(rate);
-                }
-            });
-            tasks[2] = Task.Factory.StartNew(() =>
-            {
-                IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData();
 
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
-
-                Console.WriteLine("********-- Starting process --*******");
-                Console.WriteLine("********-- DoTheCentury21Job --*******");
-
-                Console.WriteLine($"********-- Start Searching announcement for : {String.Join(",", dicoDepartements)} --*******");
-                List<String> urls = announcementWebSiteData.GetAnnoucementUrl(departements, 200000);
-
-                Console.WriteLine($"********-- End Searching announcement for : {String.Join(",", dicoDepartements)} --*******");
-                Console.WriteLine($"********-- urls : {urls.Count}  --*******");
-                Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
-
-                Console.WriteLine($"********-- Start  Announcement information --*******");
-                urls.ForEach(url =>
-                {
-                    Thread.Sleep(TimeSpan.FromSeconds(2));
-                    Console.WriteLine($"********-- url : {url} --*******");
-                    AnnouncementInformation announcementInformation = announcementWebSiteData.GetAnnouncementInformation(url);
-                    Console.WriteLine($"********-- END url : {url}  --*******");
-                    Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
-
-                    Console.WriteLine($"********-- Insert in database : {url} --*******");
-                    databaseFactory.InsertAnnouncementInformation(announcementInformation);
-                    Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
-                });
-
-                Console.WriteLine($"********-- STOP  Announcement information --*******");
-                Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
-
-            });
-
-            Task.Factory.ContinueWhenAll(tasks, task =>
-            {
-                Console.Write("DONE");
-            });
+            CheckAllDataRentability();
             Console.ReadKey();
 
+        }
+
+        private static void CheckAllDataRentability()
+        {
+            IDatabaseFactory databaseFactory = new SqlServerDatabase();
+
+            RentalTreament rentalTreament = new RentalTreament();
+
+            foreach (AnnouncementInformation announcement in databaseFactory.AnnouncementInformations)
+            {               
+                List<RentalInformations> currentsRentalInformation = rentalTreament.FindRentalInformationForAnAnnoucement(databaseFactory.RentalInformations, announcement);
+
+                Console.WriteLine("****** Find the right rental information Check if not null *****");
+                if (currentsRentalInformation.Count == 0)
+                    Logger.LogHelper.LogInfo($"{announcement.ToString()} - Don't find rental information -----");
+                else
+                {
+                    List<LoanInformation> loansInformation = rentalTreament.CalculAllLoan(databaseFactory.RateInformations, announcement.Price);
+
+                    foreach (LoanInformation loan in loansInformation) {
+                        loan.AnnouncementInformation = announcement;
+                        databaseFactory.InsertLoanInformation(loan);
+                    }
+
+                    List<RealRentalCost> realRentalCosts = rentalTreament.CalculAllRentalPrices(currentsRentalInformation,  announcement);
+                    RentalResult result = rentalTreament.CheckIfRentable(announcement.Price, realRentalCosts, loansInformation);
+                }
+            }
         }
         private static void DoTheCentury21Job()
         {
@@ -245,101 +266,6 @@ namespace RentalInvestmentAid
             var plop = databaseFactory.AnnouncementInformations;
             Console.ReadLine();
         }
-        private static void DoTheJob()
-        {
-            Console.WriteLine("********-- Starting process --*******");
-            IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData();
-            IBankWebSiteData bankWebSiteData = new PAPWebSiteData();
-            RentalTreament rentalTreament = new RentalTreament();
-
-            /* Simple Process Minimum Viable Process => Test annonce sur Vulbens */
-
-            Console.WriteLine("****** Getting Data *****");
-            Console.WriteLine("****** Rental Information *****");
-
-            List<RentalInformations> rentalInformations = GetRentalInformations("https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/haute-savoie/vulbens/740314.htm");
-
-            Console.WriteLine("****** Annoucement Information *****");
-            AnnouncementInformation announcementInformation = announcementWebSiteData.GetAnnouncementInformation("https://www.century21.fr/trouver_logement/detail/5187388611/");
-           
-            Console.WriteLine("****** Find the right rental information *****");
-            List<RentalInformations> currentsRentalInformation = rentalTreament.FindRentalInformationForAnAnnoucement(rentalInformations, announcementInformation);
-
-            Console.WriteLine("****** Find the right rental information Check if not null *****");
-            if (currentsRentalInformation.Count == 0)
-                throw new NullReferenceException("Damn the current rental is Null !");
-
-            Console.WriteLine("****** Get rates for the loan *****");
-            List<RateInformation> bankInformations = bankWebSiteData.GetRatesInformations("https://www.pap.fr/acheteur/barometre-taux-emprunt");
-
-            Console.WriteLine("****** Let's go for some Math ! *****");
-
-            Console.WriteLine("****** Calcul the loan for each duration *****");
-            List<RealLoanCost> realRentalCosts = rentalTreament.CalculAllLoan(bankInformations, announcementInformation.Price);
-
-            Console.WriteLine("****** Calcul all prices for the rent *****");
-            rentalTreament.CalculAllRentalPrices(currentsRentalInformation, ref announcementInformation);
-
-
-            Console.WriteLine("****** Check viability of the rent *****");
-            RentalResult result =  rentalTreament.CheckIfRentable(announcementInformation, realRentalCosts);
-
-
-            Console.WriteLine("****** There is the result :  *****");
-
-            DisplayResult(result);
-            Console.WriteLine("********-- Ending process --*******");
-        }
-
-
-        private static void  DisplayResult(RentalResult result)
-        {
-            Console.WriteLine("----------------------------------------------------------------------------");
-            Console.WriteLine("----------------------------------------------------------------------------");
-
-            Console.WriteLine($"--Pour l'annonce :{result.AnnouncementInformation.UrlWebSite}");
-            Console.WriteLine($"--Située         :{result.AnnouncementInformation.City} - {result.AnnouncementInformation.ZipCode}");
-            Console.WriteLine($"--Description    :{result.AnnouncementInformation.Description}");
-            Console.WriteLine($"--Prix           :{result.AnnouncementInformation.Price}");
-
-
-
-
-            foreach (var res in result.LoanInformationWithRentalInformation)
-            {
-                Console.WriteLine("***************************************************************************");
-
-                var rateDescription = res.Type.GetType()
-                    .GetMember(res.Type.ToString())[0]
-                    .GetCustomAttributes(typeof(DescriptionAttribute), inherit: false)[0] as DescriptionAttribute;
-                Console.WriteLine($"-----Pour un prêt de         :{res.DurationInYear} ans");
-                Console.WriteLine($"-----avec un taux à          :{(res.Rate).ToString("#.##")}({rateDescription.Description})");
-                Console.WriteLine($"-----Le coût total est de    :{res.TotalCost.ToString("#.##")}€");
-                Console.WriteLine($"-----Le coût par mois est de :{res.MonthlyCost.ToString("#.##")}€");
-
-                Console.WriteLine("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU");
-                foreach (RealRentalCost rental in res.RealRentalCosts)
-                {
-
-                    var rentalDescription = rental.Type.GetType()
-                        .GetMember(rental.Type.ToString())[0]
-                        .GetCustomAttributes(typeof(DescriptionAttribute), inherit: false)[0] as DescriptionAttribute;
-
-                    Console.WriteLine($"******************** Pour une location au prix    :{rental.RealPrice.ToString("#.##")}€ par mois -> 70% : {rental.Rental70Pourcent.ToString("#.##")}€");
-                    Console.WriteLine($"******************** Pour un prix mètre carré de  :{rental.PricePerSquareMeter.ToString("#.##")}€ - {rentalDescription.Description}");
-                    if (rental.IsViable.HasValue && rental.IsViable.Value)
-                        Console.WriteLine($"///////////////////////////////// Ce bien est rentable \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
-                    else
-                        Console.WriteLine($"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ Ce bien est pas rentable /////////////////////////////////");
-
-                    Console.WriteLine("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU");
-                }
-
-            }
-
-
-            Console.WriteLine("----------------------------------------------------------------------------");
-            Console.WriteLine("----------------------------------------------------------------------------");
-        }
+      
     }
 }

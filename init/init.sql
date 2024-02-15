@@ -355,3 +355,203 @@ insert into dbo.rateType
 (rate)
 VALUES
 ('HighRate')
+
+
+CREATE TABLE [dbo].[loanInformation](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[idAnnoncementInformation] [int] NOT NULL,
+	[idRateInformation] [int] NOT NULL,
+	[totalCost] [decimal](10, 2) NOT NULL,
+	[monthlyCost] [decimal](8, 2) NOT NULL,
+	[insuranceRate] [decimal](6, 2) NOT NULL,
+	[totalCostWithInssurance] [decimal](10, 2) NOT NULL,
+	[monthlyCostWithInssurance] [decimal](8, 2) NOT NULL,
+	[createdDate] [datetime] NOT NULL,
+	[updatedDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_loanInformation] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+ALTER TABLE [dbo].[loanInformation]  WITH CHECK ADD  CONSTRAINT [FK_loanInformation_annoncementInformation] FOREIGN KEY([idAnnoncementInformation])
+REFERENCES [dbo].[annoncementInformation] ([id])
+GO
+
+ALTER TABLE [dbo].[loanInformation] CHECK CONSTRAINT [FK_loanInformation_annoncementInformation]
+GO
+
+ALTER TABLE [dbo].[loanInformation]  WITH CHECK ADD  CONSTRAINT [FK_loanInformation_rateInformation] FOREIGN KEY([idRateInformation])
+REFERENCES [dbo].[rateInformation] ([id])
+GO
+
+ALTER TABLE [dbo].[loanInformation] CHECK CONSTRAINT [FK_loanInformation_rateInformation]
+GO
+
+
+CREATE PROCEDURE [dbo].[uspGetLoanInformation]
+AS
+BEGIN
+SELECT [id]
+	,idAnnoncementInformation
+	,idRateInformation
+	,totalCost
+	,monthlyCost
+	,insuranceRate
+	,totalCostWithInssurance
+	,monthlyCostWithInssurance
+	,createdDate
+	,updatedDate
+  FROM [RentalInvestmentAid].[dbo].[loanInformation]
+
+END
+GO
+
+CREATE PROCEDURE [dbo].[uspInsertLoanInformation]
+(
+	@idAnnoncementInformation int
+	,@idRateInformation int
+	,@totalCost decimal(10, 2)
+	,@monthlyCost decimal(8, 2)
+	,@insuranceRate decimal(6, 2)
+	,@totalCostWithInssurance decimal(10, 2)
+	,@monthlyCostWithInssurance decimal(8, 2)
+)
+AS
+BEGIN
+
+DECLARE @Now datetime
+SET @Now = GETDATE()
+
+INSERT INTO [dbo].[loanInformation]
+           (idAnnoncementInformation
+			,idRateInformation
+			,totalCost
+			,monthlyCost
+			,insuranceRate
+			,totalCostWithInssurance
+			,monthlyCostWithInssurance
+			,createdDate
+			,updatedDate)
+     VALUES
+           (
+		   @idAnnoncementInformation
+		   ,@idRateInformation
+		   ,@totalCost
+		   ,@monthlyCost
+		   ,@insuranceRate
+		   ,@totalCostWithInssurance
+		   ,@monthlyCostWithInssurance
+		   ,@Now
+		   ,@Now
+		   )
+
+END
+GO
+
+
+
+--CREATE TABLE [dbo].[rentabilityInformation](
+--	[id] [int] IDENTITY(1,1) NOT NULL,
+--	[idAnnoncementInformation] [int] NOT NULL,
+--	[idRateInformation] [int] NOT NULL,
+--	[idRentalInformation] [int] NOT NULL,
+--	[realPrice] [decimal](8, 2) NOT NULL,
+--	[pricePerMonth] [decimal](6, 2) NOT NULL,
+--	[rentPrice] [decimal](6, 2) NOT NULL,
+--	[rent70Price] [decimal](6, 2) NOT NULL,
+--	[createdDate] [datetime] NOT NULL,
+--	[updatedDate] [datetime] NOT NULL,
+-- CONSTRAINT [PK_rentabilityInformation] PRIMARY KEY CLUSTERED 
+--(
+--	[id] ASC
+--)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+--) ON [PRIMARY]
+--GO
+
+--ALTER TABLE [dbo].[rentabilityInformation]  WITH CHECK ADD  CONSTRAINT [FK_rentabilityInformation_annoncementInformation] FOREIGN KEY([idAnnoncementInformation])
+--REFERENCES [dbo].[annoncementInformation] ([id])
+--GO
+
+--ALTER TABLE [dbo].[rentabilityInformation] CHECK CONSTRAINT [FK_rentabilityInformation_annoncementInformation]
+--GO
+
+--ALTER TABLE [dbo].[rentabilityInformation]  WITH CHECK ADD  CONSTRAINT [FK_rentabilityInformation_rateInformation] FOREIGN KEY([idRateInformation])
+--REFERENCES [dbo].[rateInformation] ([id])
+--GO
+
+--ALTER TABLE [dbo].[rentabilityInformation] CHECK CONSTRAINT [FK_rentabilityInformation_rateInformation]
+--GO
+
+--ALTER TABLE [dbo].[rentabilityInformation]  WITH CHECK ADD  CONSTRAINT [FK_rentabilityInformation_rentalInformation] FOREIGN KEY([idRentalInformation])
+--REFERENCES [dbo].[rentalInformation] ([id])
+--GO
+
+--ALTER TABLE [dbo].[rentabilityInformation] CHECK CONSTRAINT [FK_rentabilityInformation_rentalInformation]
+--GO
+
+
+
+--CREATE PROCEDURE [dbo].[uspGetRentabilityInformations]
+--AS
+--BEGIN
+--SELECT [id]
+--      ,[idAnnoncementInformation]
+--      ,[idRateInformation]
+--      ,[idRentalInformation]
+--      ,[realPrice]
+--      ,[pricePerMonth]
+--      ,[rentPrice]
+--      ,[rent70Price]
+--      ,[createdDate]
+--      ,[updatedDate]
+--  FROM [RentalInvestmentAid].[dbo].[rentabilityInformation]
+
+--END
+--GO
+
+
+
+--CREATE PROCEDURE [dbo].[uspInsertRentabilityInformation]
+--(
+--				@idAnnoncementInformation	int,
+--				@idRateInformation			int,
+--				@idRentalInformation		int,
+--				@realPrice					decimal(8, 2),
+--				@pricePerMonth				decimal(6,2),
+--				@rentPrice					decimal(6,2),
+--				@rent70Price				decimal(6,2)
+--)
+--AS
+--BEGIN
+
+--DECLARE @Now datetime
+--SET @Now = GETDATE()
+
+--INSERT INTO [dbo].[rentabilityInformation]
+--           ([idAnnoncementInformation]
+--           ,[idRateInformation]
+--           ,[idRentalInformation]
+--           ,[realPrice]
+--           ,[pricePerMonth]
+--           ,[rentPrice]
+--           ,[rent70Price]
+--           ,[createdDate]
+--           ,[updatedDate])
+--     VALUES
+--           (
+--		   @idAnnoncementInformation
+--		   ,@idRateInformation
+--		   ,@idRentalInformation
+--		   ,@realPrice
+--		   ,@pricePerMonth
+--		   ,@rentPrice
+--		   ,@rent70Price
+--		   ,@Now
+--		   ,@Now
+--		   )
+
+--END
+--GO

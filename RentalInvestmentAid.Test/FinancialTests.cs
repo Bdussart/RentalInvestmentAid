@@ -1,4 +1,5 @@
 using RentalInvestmentAid.Core;
+using RentalInvestmentAid.Models.Bank;
 using RentalInvestmentAid.Models.Loan;
 using RentalInvestmentAid.Models.Rate;
 
@@ -12,7 +13,7 @@ namespace RentalInvestmentAid.Test
         {
             //ref : https://www.meilleurtaux.com/credit-immobilier/simulation-de-pret-immobilier/calcul-des-mensualites.html
 
-            double rate = 3.85;
+            string rate = "3.85";
             int annualy = 15;
             double loan = 200000;
             double insurranceRate = 0.34;
@@ -21,10 +22,17 @@ namespace RentalInvestmentAid.Test
             string expectedMensualyCost = "1521,05";
             string expectedTotalCost = "273789,7";
 
-            LoanInformation info =  FinancialCalcul.LoanInformation(rate, annualy, loan, insurranceRate, type);
 
-            Assert.AreEqual(rate, info.Rate);
-            Assert.AreEqual(type, info.Type);
+            RateInformation rateInformation = new RateInformation()
+            {
+                Rate = rate,
+                DurationInYear = annualy,
+                RateType = type
+            };
+            LoanInformation info =  FinancialCalcul.LoanInformation(rateInformation, loan, insurranceRate);
+
+            Assert.AreEqual(rate, info.RateInformation.Rate);
+            Assert.AreEqual(type, info.RateInformation.RateType);
             Assert.AreEqual(insurranceRate, info.InsurranceRate);
 
             Assert.AreEqual(expectedMensualyCost, info.MonthlyCostWithInsurrance.ToString("#.##"));
