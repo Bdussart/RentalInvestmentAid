@@ -131,7 +131,8 @@ namespace RentalInvestmentAid.Core.Rental
             string previousUrl = string.Empty;
 
             ChromeOptions options = new ChromeOptions();
-            options.AddArgument("--enable-javascript");
+            options.AddArgument("--enable-javascript"); 
+            options.AddArguments("--headless");
             //options.AddArgument("--window-size=500,1080");
             options.AddArgument("incognito");
             options.AddArgument("no-sandbox");
@@ -143,11 +144,9 @@ namespace RentalInvestmentAid.Core.Rental
                 using (IWebDriver driver = new ChromeDriver(options)) // why open a new driver in the loop ? => Because this website is heavy for the memory and the processor, i don't want to shutdown the website server and my computer :) 
                 {
                     baseUrl = $"https://www.lacoteimmo.com/prix-de-l-immo/location/{area}/{department}/nothing/{departmentNumber}{iterator.ToString("0000")}.htm";
-                    try
+                    try                    
                     {
                         SeleniumHelper.GoAndWaitPageIsReady(driver, baseUrl);
-                        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2));
-                        wait.Until(d => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
                     }
                     catch (Exception ex)
                     {

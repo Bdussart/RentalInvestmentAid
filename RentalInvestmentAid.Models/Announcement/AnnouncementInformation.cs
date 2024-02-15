@@ -19,9 +19,9 @@ namespace RentalInvestmentAid.Models.Announcement
         public string UrlWebSite { get; set; } = String.Empty;
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
-        public List<RealRentalCost> RentalCost { get; private set; } = new List<RealRentalCost>();
+        public List<RentInformation> RentalCost { get; private set; } = new List<RentInformation>();
 
-        public void SetRealRentalCost(List<RealRentalCost> realRentalCosts)
+        public void SetRealRentalCost(List<RentInformation> realRentalCosts)
         {
             RentalCost = realRentalCosts;
         }

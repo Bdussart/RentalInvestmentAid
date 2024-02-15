@@ -32,17 +32,18 @@ namespace RentalInvestmentAid.Core
             return loanInformation;
         }
 
-        public List<RealRentalCost> CalculAllRentalPrices(List<RentalInformations> rentalInformation, AnnouncementInformation announcementInformation)
+        public List<RentInformation> CalculAllRentalPrices(List<RentalInformations> rentalInformation, AnnouncementInformation announcementInformation)
         {
             string metrage = announcementInformation.Metrage;
-            List<RealRentalCost> realCost = new List<RealRentalCost>();
+            List<RentInformation> realCost = new List<RentInformation>();
             rentalInformation.ForEach(rentalInformation =>
             {
-                realCost.Add(new RealRentalCost()
+                realCost.Add(new RentInformation()
                 {
-                    PricePerSquareMeter = Convert.ToDouble(rentalInformation.Price),
-                    RealPrice = Convert.ToDouble(rentalInformation.Price) * Convert.ToDouble(metrage),
-                    Type = rentalInformation.RentalPriceType
+                    AnnouncementInformation = announcementInformation,
+                    RentalInformations = rentalInformation,
+                    RentPrice = Convert.ToDouble(rentalInformation.Price) * Convert.ToDouble(metrage),
+                    Rental70Pourcent = (Convert.ToDouble(rentalInformation.Price) * Convert.ToDouble(metrage)) * 0.70
                 });
             });
 
@@ -50,32 +51,32 @@ namespace RentalInvestmentAid.Core
         }
 
 
-        public RentalResult CheckIfRentable(string price, List<RealRentalCost> realRentalCosts, List<LoanInformation> loansInformation)
+        public RentalResult CheckIfRentable(string price, List<RentInformation> realRentalCosts, List<LoanInformation> loansInformation)
         {
             RentalResult result = new RentalResult();
-            result.LoanInformationWithRentalInformation = new List<LoanInformationWithRentalInformation>();
-            foreach (LoanInformation lLoanInformations in loansInformation)
-            {
-                LoanInformationWithRentalInformation loanInformationWithRentalInformation = new LoanInformationWithRentalInformation()
-                {
-                    LoanInformation = lLoanInformations
-                };
+            //result.LoanInformationWithRentalInformation = new List<LoanInformationWithRentalInformation>();
+            //foreach (LoanInformation loanInformations in loansInformation)
+            //{
+            //    LoanInformationWithRentalInformation loanInformationWithRentalInformation = new LoanInformationWithRentalInformation()
+            //    {
+            //        LoanInformation = loanInformations
+            //    };
 
-                    loanInformationWithRentalInformation.RealRentalCosts = new List<RealRentalCost>();
-                    foreach (RealRentalCost rentalCost in realRentalCosts)
-                    {
+            //        loanInformationWithRentalInformation.RealRentalCosts = new List<RentInformation>();
+            //        foreach (RentInformation rentalCost in realRentalCosts)
+            //        {
 
-                        loanInformationWithRentalInformation.RealRentalCosts.Add(new RealRentalCost()
-                        {
-                            Type = rentalCost.Type,
-                            RealPrice = rentalCost.RealPrice,
-                            PricePerSquareMeter = rentalCost.PricePerSquareMeter,
-                            IsViable = rentalCost.Rental70Pourcent > loanInformationWithRentalInformation.LoanInformation.MonthlyCost
-                        });
-                    }
-                    result.LoanInformationWithRentalInformation.Add(loanInformationWithRentalInformation);
+            //            loanInformationWithRentalInformation.RealRentalCosts.Add(new RentInformation()
+            //            {
+            //                Type = rentalCost.Type,
+            //                RentPrice = rentalCost.RentPrice,
+            //                PricePerSquareMeter = rentalCost.PricePerSquareMeter,
+            //                IsViable = rentalCost.Rental70Pourcent > loanInformationWithRentalInformation.LoanInformation.MonthlyCost
+            //            });
+            //        }
+            //        result.LoanInformationWithRentalInformation.Add(loanInformationWithRentalInformation);
                 
-            }
+            //}
 
             
 

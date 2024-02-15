@@ -107,14 +107,14 @@ namespace RentalInvestmentAid
 
             //Task[] tasks = new Task[3];
 
-            //Dictionary<int, string> dicoDepartements = new Dictionary<int, string>
-            //{
-            //    {74, "haute-savoie" },
-            //    {01, "ain" },
-            //    {73, "savoie" }
-            //};
+            Dictionary<int, string> dicoDepartements = new Dictionary<int, string>
+            {
+                { 74, "haute-savoie" },
+                //{01, "ain" },
+                //{73, "savoie" }
+            };
 
-            //List<String> departements = dicoDepartements.Values.ToList();
+            List<String> departements = dicoDepartements.Values.ToList();
 
             //tasks[0] = Task.Factory.StartNew(() =>
             //{
@@ -147,49 +147,30 @@ namespace RentalInvestmentAid
             //});
             //tasks[2] = Task.Factory.StartNew(() =>
             //{
-            //    IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData();
+                IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData();
 
-            //    Stopwatch stopwatch = new Stopwatch();
-            //    stopwatch.Start();
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
 
-            //    Console.WriteLine("********-- Starting process --*******");
-            //    Console.WriteLine("********-- DoTheCentury21Job --*******");
-
-            //    Console.WriteLine($"********-- Start Searching announcement for : {String.Join(",", dicoDepartements)} --*******");
-            //    List<String> urls = announcementWebSiteData.GetAnnoucementUrl(departements, 200000);
-
-            //    Console.WriteLine($"********-- End Searching announcement for : {String.Join(",", dicoDepartements)} --*******");
-            //    Console.WriteLine($"********-- urls : {urls.Count}  --*******");
-            //    Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
-
-            //    Console.WriteLine($"********-- Start  Announcement information --*******");
-            //    urls.ForEach(url =>
-            //    {
-            //        Thread.Sleep(TimeSpan.FromSeconds(2));
-            //        Console.WriteLine($"********-- url : {url} --*******");
-            //        AnnouncementInformation announcementInformation = announcementWebSiteData.GetAnnouncementInformation(url);
-            //        Console.WriteLine($"********-- END url : {url}  --*******");
-            //        Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
-
-            //        Console.WriteLine($"********-- Insert in database : {url} --*******");
-            //        databaseFactory.InsertAnnouncementInformation(announcementInformation);
-            //        Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
-            //    });
-
-            //    Console.WriteLine($"********-- STOP  Announcement information --*******");
-            //    Console.WriteLine($"********-- elapsed : {stopwatch.Elapsed.TotalSeconds}  --*******");
-
+                List<String> urls = announcementWebSiteData.GetAnnoucementUrl(departements, 200000);
+                urls.ForEach(url =>
+                {
+                    Thread.Sleep(TimeSpan.FromSeconds(2));
+                    AnnouncementInformation announcementInformation = announcementWebSiteData.GetAnnouncementInformation(url);
+                    databaseFactory.InsertAnnouncementInformation(announcementInformation);
+                });
             //});
 
 
             //Task.Factory.ContinueWhenAll(tasks, task =>
             //{
             //    Console.Write("DONE");
+            //    CheckAllDataRentability();
             //});
 
-
-
             CheckAllDataRentability();
+
+
             Console.ReadKey();
 
         }
@@ -216,8 +197,14 @@ namespace RentalInvestmentAid
                         databaseFactory.InsertLoanInformation(loan);
                     }
 
-                    List<RealRentalCost> realRentalCosts = rentalTreament.CalculAllRentalPrices(currentsRentalInformation,  announcement);
-                    RentalResult result = rentalTreament.CheckIfRentable(announcement.Price, realRentalCosts, loansInformation);
+                    List<RentInformation> realRentalCosts = rentalTreament.CalculAllRentalPrices(currentsRentalInformation,  announcement);
+                    foreach (RentInformation rent in realRentalCosts)
+                    {
+                        rent.AnnouncementInformation = announcement;
+                        databaseFactory.InsertRentInformation(rent);
+                    }
+
+                    //RentalResult result = rentalTreament.CheckIfRentable(announcement.Price, realRentalCosts, loansInformation);
                 }
             }
         }

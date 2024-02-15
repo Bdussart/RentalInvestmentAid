@@ -451,107 +451,82 @@ INSERT INTO [dbo].[loanInformation]
 END
 GO
 
+CREATE TABLE [dbo].[rentInformation](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[idAnnoncementInformation] [int] NOT NULL,
+	[idRentalInformation] [int] NOT NULL,
+	[rentPrice] [decimal](6, 2) NOT NULL,
+	[rent70Price] [decimal](6, 2) NOT NULL,
+	[createdDate] [datetime] NOT NULL,
+	[updatedDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_rentabilityInformation] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[rentInformation]  WITH CHECK ADD  CONSTRAINT [FK_rentInformation_annoncementInformation] FOREIGN KEY([idAnnoncementInformation])
+REFERENCES [dbo].[annoncementInformation] ([id])
+GO
+
+ALTER TABLE [dbo].[rentInformation] CHECK CONSTRAINT [FK_rentInformation_annoncementInformation]
+GO
 
 
---CREATE TABLE [dbo].[rentabilityInformation](
---	[id] [int] IDENTITY(1,1) NOT NULL,
---	[idAnnoncementInformation] [int] NOT NULL,
---	[idRateInformation] [int] NOT NULL,
---	[idRentalInformation] [int] NOT NULL,
---	[realPrice] [decimal](8, 2) NOT NULL,
---	[pricePerMonth] [decimal](6, 2) NOT NULL,
---	[rentPrice] [decimal](6, 2) NOT NULL,
---	[rent70Price] [decimal](6, 2) NOT NULL,
---	[createdDate] [datetime] NOT NULL,
---	[updatedDate] [datetime] NOT NULL,
--- CONSTRAINT [PK_rentabilityInformation] PRIMARY KEY CLUSTERED 
---(
---	[id] ASC
---)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
---) ON [PRIMARY]
---GO
+ALTER TABLE [dbo].[rentInformation]  WITH CHECK ADD  CONSTRAINT [FK_rentInformation_rentalInformation] FOREIGN KEY([idRentalInformation])
+REFERENCES [dbo].[rentalInformation] ([id])
+GO
 
---ALTER TABLE [dbo].[rentabilityInformation]  WITH CHECK ADD  CONSTRAINT [FK_rentabilityInformation_annoncementInformation] FOREIGN KEY([idAnnoncementInformation])
---REFERENCES [dbo].[annoncementInformation] ([id])
---GO
-
---ALTER TABLE [dbo].[rentabilityInformation] CHECK CONSTRAINT [FK_rentabilityInformation_annoncementInformation]
---GO
-
---ALTER TABLE [dbo].[rentabilityInformation]  WITH CHECK ADD  CONSTRAINT [FK_rentabilityInformation_rateInformation] FOREIGN KEY([idRateInformation])
---REFERENCES [dbo].[rateInformation] ([id])
---GO
-
---ALTER TABLE [dbo].[rentabilityInformation] CHECK CONSTRAINT [FK_rentabilityInformation_rateInformation]
---GO
-
---ALTER TABLE [dbo].[rentabilityInformation]  WITH CHECK ADD  CONSTRAINT [FK_rentabilityInformation_rentalInformation] FOREIGN KEY([idRentalInformation])
---REFERENCES [dbo].[rentalInformation] ([id])
---GO
-
---ALTER TABLE [dbo].[rentabilityInformation] CHECK CONSTRAINT [FK_rentabilityInformation_rentalInformation]
---GO
+ALTER TABLE [dbo].[rentInformation] CHECK CONSTRAINT [FK_rentInformation_rentalInformation]
+GO
 
 
+CREATE PROCEDURE [dbo].[uspGetRentInformations]
+AS
+BEGIN
+SELECT [id]
+      ,[idAnnoncementInformation]
+      ,[idRentalInformation]
+      ,[rentPrice]
+      ,[rent70Price]
+      ,[createdDate]
+      ,[updatedDate]
+  FROM [RentalInvestmentAid].[dbo].[rentInformation]
 
---CREATE PROCEDURE [dbo].[uspGetRentabilityInformations]
---AS
---BEGIN
---SELECT [id]
---      ,[idAnnoncementInformation]
---      ,[idRateInformation]
---      ,[idRentalInformation]
---      ,[realPrice]
---      ,[pricePerMonth]
---      ,[rentPrice]
---      ,[rent70Price]
---      ,[createdDate]
---      ,[updatedDate]
---  FROM [RentalInvestmentAid].[dbo].[rentabilityInformation]
-
---END
---GO
+END
+GO
 
 
+CREATE PROCEDURE [dbo].[uspInsertRentInformation]
+(
+				@idAnnoncementInformation	int,
+				@idRentalInformation		int,
+				@rentPrice					decimal(6,2),
+				@rent70Price				decimal(6,2)
+)
+AS
+BEGIN
 
---CREATE PROCEDURE [dbo].[uspInsertRentabilityInformation]
---(
---				@idAnnoncementInformation	int,
---				@idRateInformation			int,
---				@idRentalInformation		int,
---				@realPrice					decimal(8, 2),
---				@pricePerMonth				decimal(6,2),
---				@rentPrice					decimal(6,2),
---				@rent70Price				decimal(6,2)
---)
---AS
---BEGIN
+DECLARE @Now datetime
+SET @Now = GETDATE()
 
---DECLARE @Now datetime
---SET @Now = GETDATE()
+INSERT INTO [dbo].[rentInformation]
+           ([idAnnoncementInformation]
+           ,[idRentalInformation]
+           ,[rentPrice]
+           ,[rent70Price]
+           ,[createdDate]
+           ,[updatedDate])
+     VALUES
+           (
+		   @idAnnoncementInformation
+		   ,@idRentalInformation
+		   ,@rentPrice
+		   ,@rent70Price
+		   ,@Now
+		   ,@Now
+		   )
 
---INSERT INTO [dbo].[rentabilityInformation]
---           ([idAnnoncementInformation]
---           ,[idRateInformation]
---           ,[idRentalInformation]
---           ,[realPrice]
---           ,[pricePerMonth]
---           ,[rentPrice]
---           ,[rent70Price]
---           ,[createdDate]
---           ,[updatedDate])
---     VALUES
---           (
---		   @idAnnoncementInformation
---		   ,@idRateInformation
---		   ,@idRentalInformation
---		   ,@realPrice
---		   ,@pricePerMonth
---		   ,@rentPrice
---		   ,@rent70Price
---		   ,@Now
---		   ,@Now
---		   )
-
---END
---GO
+END
+GO

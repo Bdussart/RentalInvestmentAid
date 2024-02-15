@@ -26,5 +26,8 @@ namespace RentalInvestmentAid.Database
         public List<LoanInformation> LoansInformations { get; }
 
         public void InsertLoanInformation(LoanInformation loanInformation);
+
+        public List<RentInformation> rentInformation { get; }
+        public void InsertRentInformation(RentInformation rentInformation);
     }
 }

@@ -18,27 +18,27 @@ namespace RentalInvestmentAid.Database
         {
             get
             {
-                if (_rentalInformation == null)
+                if (_rentalInformations == null)
                     SetRentalsInformations();
-                return _rentalInformation;
+                return _rentalInformations;
             }
         }
         public List<AnnouncementInformation> AnnouncementInformations
         {
             get
             {
-                if (_announcementInformation == null)
+                if (_announcementInformations == null)
                     SetAnnoucementInformation();
-                return _announcementInformation;
+                return _announcementInformations;
             }
         }
         public List<RateInformation> RateInformations
         {
             get
             {
-                if (_ratelInformation == null)
+                if (_rateInformations == null)
                     SetRateInformation();
-                return _ratelInformation;
+                return _rateInformations;
             }
         }
         public List<LoanInformation> LoansInformations
@@ -51,13 +51,24 @@ namespace RentalInvestmentAid.Database
             }
         }
 
-        private List<RentalInformations> _rentalInformation = null;
-        private List<AnnouncementInformation> _announcementInformation = null;
-        private List<RateInformation> _ratelInformation = null;
+        public List<RentInformation> rentInformation
+        {
+            get
+            {
+                if (_rateInformations == null)
+                    SetRentInformation();
+                return _rentInformations;
+            }
+        }
+
+        private List<RentalInformations> _rentalInformations = null;
+        private List<AnnouncementInformation> _announcementInformations = null;
+        private List<RateInformation> _rateInformations = null;
         private List<LoanInformation> _loansInformations = null;
+        private List<RentInformation> _rentInformations = null;
         private void SetRentalsInformations()
         {
-            _rentalInformation = new List<RentalInformations>();
+            _rentalInformations = new List<RentalInformations>();
             using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
             {
                 using (SqlCommand sqlCommand = new SqlCommand("uspGetRentalInformations", connection))
@@ -68,7 +79,7 @@ namespace RentalInvestmentAid.Database
                     {
                         while (reader.Read())
                         {
-                            _rentalInformation.Add(new RentalInformations
+                            _rentalInformations.Add(new RentalInformations
                             {
                                 Id = reader.GetInt32(0),
                                 City = reader.GetString(1),
@@ -105,7 +116,7 @@ namespace RentalInvestmentAid.Database
         }
         private void SetAnnoucementInformation()
         {
-            _announcementInformation = new List<AnnouncementInformation>();
+            _announcementInformations = new List<AnnouncementInformation>();
             using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
             {
                 using (SqlCommand sqlCommand = new SqlCommand("uspGetAnnoncementInformations", connection))
@@ -116,7 +127,7 @@ namespace RentalInvestmentAid.Database
                     {
                         while (reader.Read())
                         {
-                            _announcementInformation.Add(new AnnouncementInformation
+                            _announcementInformations.Add(new AnnouncementInformation
                             {
                                 Id = reader.GetInt32(0),
                                 City = reader.GetString(1),
@@ -156,7 +167,7 @@ namespace RentalInvestmentAid.Database
         }
         private void SetRateInformation()
         {
-            _ratelInformation = new List<RateInformation>();
+            _rateInformations = new List<RateInformation>();
             using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
             {
                 using (SqlCommand sqlCommand = new SqlCommand("uspGetRateInformations", connection))
@@ -167,7 +178,7 @@ namespace RentalInvestmentAid.Database
                     {
                         while (reader.Read())
                         {
-                            _ratelInformation.Add(new RateInformation
+                            _rateInformations.Add(new RateInformation
                             {
                                 Id = reader.GetInt32(0),
                                 DurationInYear = reader.GetInt32(1),
@@ -247,6 +258,56 @@ namespace RentalInvestmentAid.Database
                     sqlCommand.Parameters.AddWithValue("@insuranceRate", loanInformation.InsurranceRate);
                     sqlCommand.Parameters.AddWithValue("@totalCostWithInssurance", loanInformation.TotalCostWithInsurrance);
                     sqlCommand.Parameters.AddWithValue("@monthlyCostWithInssurance", loanInformation.MonthlyCostWithInsurrance);
+                    connection.Open();
+                    sqlCommand.ExecuteNonQuery();
+                }
+            }
+        }
+        private void SetRentInformation()
+        {
+            _rentInformations = new List<RentInformation>();
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspGetRentInformations", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    connection.Open();
+                    using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            _rentInformations.Add(new RentInformation
+                            {
+                                Id = reader.GetInt32(0),
+                                AnnouncementInformation = new AnnouncementInformation
+                                {
+                                    Id = reader.GetInt32(1)
+                                },
+                                RentalInformations = new RentalInformations
+                                {
+                                    Id = reader.GetInt32(2)
+                                },
+                                RentPrice = reader.GetDouble(3),
+                                Rental70Pourcent = reader.GetDouble(4),
+                                CreatedDate = reader.GetDateTime(5),
+                                UpdatedDate = reader.GetDateTime(6)
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        public void InsertRentInformation(RentInformation rentInformation)
+        {
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspInsertRentInformation", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.AddWithValue("@idAnnoncementInformation", rentInformation.AnnouncementInformation.Id);
+                    sqlCommand.Parameters.AddWithValue("@idRentalInformation", rentInformation.RentalInformations.Id);
+                    sqlCommand.Parameters.AddWithValue("@rentPrice", rentInformation.RentPrice);
+                    sqlCommand.Parameters.AddWithValue("@rent70Price", rentInformation.Rental70Pourcent);
                     connection.Open();
                     sqlCommand.ExecuteNonQuery();
                 }
