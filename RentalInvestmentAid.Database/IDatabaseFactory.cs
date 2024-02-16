@@ -1,4 +1,5 @@
-﻿using RentalInvestmentAid.Models.Announcement;
+﻿using RentalInvestmentAid.Models;
+using RentalInvestmentAid.Models.Announcement;
 using RentalInvestmentAid.Models.Bank;
 using RentalInvestmentAid.Models.Loan;
 using RentalInvestmentAid.Models.Rental;
@@ -27,7 +28,8 @@ namespace RentalInvestmentAid.Database
 
         public void InsertLoanInformation(LoanInformation loanInformation);
 
-        public List<RentInformation> rentInformation { get; }
+        public List<RentInformation> RentInformation { get; }
         public void InsertRentInformation(RentInformation rentInformation);
+        public List<RentabilityResult>  RentabilityResults  {get;}
     }
 }

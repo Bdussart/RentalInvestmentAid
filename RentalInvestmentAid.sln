@@ -20,7 +20,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "init", "init", "{FCC05192-7
 		init\init.sql = init\init.sql
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RentalInvestmentAid.Logger", "RentalInvestmentAid.Logger\RentalInvestmentAid.Logger.csproj", "{C48DC6A7-3142-4E65-8BF8-0C697E9C6FC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentalInvestmentAid.Logger", "RentalInvestmentAid.Logger\RentalInvestmentAid.Logger.csproj", "{C48DC6A7-3142-4E65-8BF8-0C697E9C6FC8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RentalInvestmentAid.Web", "RentalInvestmentAid.Web\RentalInvestmentAid.Web.csproj", "{1C51B43C-1280-433A-AE82-24C57362A5A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,6 +58,10 @@ Global
 		{C48DC6A7-3142-4E65-8BF8-0C697E9C6FC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C48DC6A7-3142-4E65-8BF8-0C697E9C6FC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C48DC6A7-3142-4E65-8BF8-0C697E9C6FC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C51B43C-1280-433A-AE82-24C57362A5A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C51B43C-1280-433A-AE82-24C57362A5A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C51B43C-1280-433A-AE82-24C57362A5A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C51B43C-1280-433A-AE82-24C57362A5A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

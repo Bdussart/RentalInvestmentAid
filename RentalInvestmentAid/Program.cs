@@ -105,48 +105,48 @@ namespace RentalInvestmentAid
             IDatabaseFactory databaseFactory = new SqlServerDatabase();
             IBankWebSiteData bankWebSiteData = new PAPWebSiteData();
 
-            //Task[] tasks = new Task[3];
+            Task[] tasks = new Task[3];
 
             Dictionary<int, string> dicoDepartements = new Dictionary<int, string>
             {
                 { 74, "haute-savoie" },
-                //{01, "ain" },
-                //{73, "savoie" }
+                {01, "ain" },
+                {73, "savoie" }
             };
 
             List<String> departements = dicoDepartements.Values.ToList();
 
-            //tasks[0] = Task.Factory.StartNew(() =>
-            //{
-            //    IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData();
-            //    Parallel.ForEach(dicoDepartements, departement =>
-            //    {
-            //        {
-            //            List<String> urls = new List<string>();
+            tasks[0] = Task.Factory.StartNew(() =>
+            {
+                IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData();
+                Parallel.ForEach(dicoDepartements, departement =>
+                {
+                    {
+                        List<String> urls = new List<string>();
 
-            //            urls = webSiteData.GetUrlForRentalInformation("rhone-alpes", departement.Value, departement.Key);
+                        urls = webSiteData.GetUrlForRentalInformation("rhone-alpes", departement.Value, departement.Key);
 
-            //            urls.ForEach(url =>
-            //            {
-            //                foreach (var info in GetRentalInformations(url))
-            //                {
-            //                    databaseFactory.InsertRentalInformation(info);
-            //                }
-            //            });
-            //        }
-            //    });
-            //});
-            //tasks[1] = Task.Factory.StartNew(() =>
-            //{
-            //    List<RateInformation> bankInformations = bankWebSiteData.GetRatesInformations("https://www.pap.fr/acheteur/barometre-taux-emprunt");
+                        urls.ForEach(url =>
+                        {
+                            foreach (var info in GetRentalInformations(url))
+                            {
+                                databaseFactory.InsertRentalInformation(info);
+                            }
+                        });
+                    }
+                });
+            });
+            tasks[1] = Task.Factory.StartNew(() =>
+            {
+                List<RateInformation> bankInformations = bankWebSiteData.GetRatesInformations("https://www.pap.fr/acheteur/barometre-taux-emprunt");
 
-            //    foreach (RateInformation rate in bankInformations)
-            //    {
-            //        databaseFactory.InsertRateInformation(rate);
-            //    }
-            //});
-            //tasks[2] = Task.Factory.StartNew(() =>
-            //{
+                foreach (RateInformation rate in bankInformations)
+                {
+                    databaseFactory.InsertRateInformation(rate);
+                }
+            });
+            tasks[2] = Task.Factory.StartNew(() =>
+            {
                 IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData();
 
                 Stopwatch stopwatch = new Stopwatch();
@@ -159,14 +159,14 @@ namespace RentalInvestmentAid
                     AnnouncementInformation announcementInformation = announcementWebSiteData.GetAnnouncementInformation(url);
                     databaseFactory.InsertAnnouncementInformation(announcementInformation);
                 });
-            //});
+            });
 
 
-            //Task.Factory.ContinueWhenAll(tasks, task =>
-            //{
-            //    Console.Write("DONE");
-            //    CheckAllDataRentability();
-            //});
+            Task.Factory.ContinueWhenAll(tasks, task =>
+            {
+                Console.Write("DONE");
+                CheckAllDataRentability();
+            });
 
             CheckAllDataRentability();
 
@@ -203,7 +203,6 @@ namespace RentalInvestmentAid
                         rent.AnnouncementInformation = announcement;
                         databaseFactory.InsertRentInformation(rent);
                     }
-
                     //RentalResult result = rentalTreament.CheckIfRentable(announcement.Price, realRentalCosts, loansInformation);
                 }
             }

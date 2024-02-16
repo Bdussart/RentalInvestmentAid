@@ -9,6 +9,7 @@ using System.Diagnostics;
 using RentalInvestmentAid.Models.Bank;
 using RentalInvestmentAid.Models.Rate;
 using RentalInvestmentAid.Models.Loan;
+using RentalInvestmentAid.Models;
 
 namespace RentalInvestmentAid.Database
 {
@@ -51,7 +52,7 @@ namespace RentalInvestmentAid.Database
             }
         }
 
-        public List<RentInformation> rentInformation
+        public List<RentInformation> RentInformation
         {
             get
             {
@@ -60,7 +61,16 @@ namespace RentalInvestmentAid.Database
                 return _rentInformations;
             }
         }
-
+        public List<RentabilityResult> RentabilityResults
+        {
+            get
+            {
+                if (_rentabilityResults == null)
+                    SetRentabilityResult();
+                return _rentabilityResults;
+            }
+        }
+        private List<RentabilityResult> _rentabilityResults = null;
         private List<RentalInformations> _rentalInformations = null;
         private List<AnnouncementInformation> _announcementInformations = null;
         private List<RateInformation> _rateInformations = null;
@@ -313,5 +323,45 @@ namespace RentalInvestmentAid.Database
                 }
             }
         }
+        private void SetRentabilityResult()
+        {
+            _rentabilityResults = new List<RentabilityResult>();
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspGetAnnoncementWithRentAndLoanInformation", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    connection.Open();
+                    using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                    {
+                        int lastAnnouncementId = -1;
+                        RentabilityResult current = new RentabilityResult();
+                        while (reader.Read())
+                        {
+
+                            int currentId = reader.GetInt32(0);
+                            int currentLoanId = reader.GetInt32(1);
+                            int currentRentId = reader.GetInt32(2);
+
+                            if (lastAnnouncementId != currentId && lastAnnouncementId != -1)
+                            {
+                                _rentabilityResults.Add(current);
+                                current = new RentabilityResult();
+                            }
+
+                            current.AnnouncementId = currentId;
+                            if (!current.LoanIds.Contains(currentLoanId))
+                                current.LoanIds.Add(currentLoanId);
+                            if (!current.RentsIds.Contains(currentRentId))
+                                current.RentsIds.Add(currentRentId);
+                            lastAnnouncementId = currentId;
+                        }
+
+                        _rentabilityResults.Add(current);
+                    }
+                }
+            }
+        }
+
     }
 }

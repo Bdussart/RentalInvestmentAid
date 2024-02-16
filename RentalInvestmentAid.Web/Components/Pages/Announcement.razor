@@ -1,0 +1,80 @@
+﻿@page "/announcement"
+@using RentalInvestmentAid.Database
+@using RentalInvestmentAid.Models
+@using RentalInvestmentAid.Models.Announcement
+@using RentalInvestmentAid.Models.Bank
+@using System.ComponentModel
+@rendermode InteractiveServer
+
+<h3>Announcement</h3>
+
+<ul>
+        <li>@rentabilityResults.Count</li>
+    @foreach (var announcement in announcementInformation)
+    {        
+        <li>@announcement.Description</li>
+        <div class="rates-informations">
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            Durée
+                        </th>
+                        <th>
+                            taux 
+                        </th>
+                        <th>
+                            type
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (RateInformation rate in ratesInformation)
+                    {
+                        var rateDescription = rate.RateType.GetType()
+                            .GetMember(rate.RateType.ToString())[0]
+                            .GetCustomAttributes(typeof(DescriptionAttribute), inherit: false)[0] as DescriptionAttribute;
+                        <tr>
+                        
+                        <td>
+                            @rate.DurationInYear
+                        </td>
+                        <td>
+                            @rate.Rate
+                        </td>
+                        <td>
+                            @rateDescription.Description
+                        </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</ul>
+
+@code {
+    private IDatabaseFactory databaseFactory = new SqlServerDatabase();
+
+    private List<AnnouncementInformation> announcementInformation {
+        get {
+            return   databaseFactory.AnnouncementInformations;
+        }
+    }
+
+    private List<RateInformation> ratesInformation
+    {
+        get
+        {
+            return databaseFactory.RateInformations;
+        }
+    }
+    private List<RentabilityResult> rentabilityResults
+    {
+        get
+        {
+            return databaseFactory.RentabilityResults;
+        }
+    }
+    
+}

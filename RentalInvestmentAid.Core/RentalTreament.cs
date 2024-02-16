@@ -18,7 +18,7 @@ namespace RentalInvestmentAid.Core
         public List<RentalInformations> FindRentalInformationForAnAnnoucement(List<RentalInformations> rentalInformations, AnnouncementInformation announcementInformation)
         {
             //SameCity name AND zipcode different not handled yet
-            return rentalInformations.Where(rent => rent.City.Equals(announcementInformation.City, StringComparison.CurrentCultureIgnoreCase) 
+            return rentalInformations.Where(rent => rent.City.Equals(announcementInformation.City, StringComparison.CurrentCultureIgnoreCase)
             && announcementInformation.RentalType == rent.RentalTypeOfTheRent).ToList();
         }
 
@@ -48,39 +48,6 @@ namespace RentalInvestmentAid.Core
             });
 
             return realCost;
-        }
-
-
-        public RentalResult CheckIfRentable(string price, List<RentInformation> realRentalCosts, List<LoanInformation> loansInformation)
-        {
-            RentalResult result = new RentalResult();
-            //result.LoanInformationWithRentalInformation = new List<LoanInformationWithRentalInformation>();
-            //foreach (LoanInformation loanInformations in loansInformation)
-            //{
-            //    LoanInformationWithRentalInformation loanInformationWithRentalInformation = new LoanInformationWithRentalInformation()
-            //    {
-            //        LoanInformation = loanInformations
-            //    };
-
-            //        loanInformationWithRentalInformation.RealRentalCosts = new List<RentInformation>();
-            //        foreach (RentInformation rentalCost in realRentalCosts)
-            //        {
-
-            //            loanInformationWithRentalInformation.RealRentalCosts.Add(new RentInformation()
-            //            {
-            //                Type = rentalCost.Type,
-            //                RentPrice = rentalCost.RentPrice,
-            //                PricePerSquareMeter = rentalCost.PricePerSquareMeter,
-            //                IsViable = rentalCost.Rental70Pourcent > loanInformationWithRentalInformation.LoanInformation.MonthlyCost
-            //            });
-            //        }
-            //        result.LoanInformationWithRentalInformation.Add(loanInformationWithRentalInformation);
-                
-            //}
-
-            
-
-            return result;
         }
     }
 }

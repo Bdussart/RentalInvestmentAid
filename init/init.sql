@@ -6,6 +6,7 @@ IF EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = N'RentalInvestm
 	alter database RentalInvestmentAid set single_user with rollback immediate
 	DROP DATABASE RentalInvestmentAid;
 GO
+
  -- Create the database
 CREATE DATABASE RentalInvestmentAid;
 GO
@@ -530,3 +531,55 @@ INSERT INTO [dbo].[rentInformation]
 
 END
 GO
+
+--CREATE PROCEDURE [dbo].[uspGetAnnoncementWithRentAndLoanInformation]
+--AS
+--BEGIN
+--SELECT 
+--		ann.id, --> Récupréer via le cache
+--		rat.durationInYear,
+--		rat.rate,
+--		loa.monthlyCost,
+--		loa.monthlyCostWithInssurance,
+--		loa.totalCost,
+--		loa.totalCostWithInssurance,
+--		loa.idRateInformation,
+--		ren.rentPrice,
+--		ren.rent70Price,
+--		ret.price as 'PriceByMeter',
+--		ret.idPriceType
+--  FROM [RentalInvestmentAid].[dbo].[annoncementInformation] ann
+--  INNER JOIN [RentalInvestmentAid].[dbo].loanInformation loa ON loa.idAnnoncementInformation = ann.id
+--  INNER JOIN [RentalInvestmentAid].[dbo].rateInformation rat ON rat.id = loa.idRateInformation
+--  INNER JOIN [RentalInvestmentAid].[dbo].rentInformation ren ON ren.idAnnoncementInformation = ann.id
+--  INNER JOIN [RentalInvestmentAid].[dbo].rentalInformation ret ON ret.id = ren.idRentalInformation
+--END
+
+
+--CREATE PROCEDURE [dbo].[uspGetAnnoncementWithRentAndLoanInformation]
+--AS
+--BEGIN
+--	 SELECT 
+--		ann.id as 'announcementId', --> Récupréer via le cache
+--		rat.id as 'rateId',
+--		loa.id as 'loanId',
+--		ren.id as 'rentId',
+--		ret.id as 'rentalId' 
+--  FROM [RentalInvestmentAid].[dbo].[annoncementInformation] ann
+--  INNER JOIN [RentalInvestmentAid].[dbo].loanInformation loa ON loa.idAnnoncementInformation = ann.id
+--  INNER JOIN [RentalInvestmentAid].[dbo].rateInformation rat ON rat.id = loa.idRateInformation
+--  INNER JOIN [RentalInvestmentAid].[dbo].rentInformation ren ON ren.idAnnoncementInformation = ann.id
+--  INNER JOIN [RentalInvestmentAid].[dbo].rentalInformation ret ON ret.id = ren.idRentalInformation
+--END
+
+CREATE PROCEDURE [dbo].[uspGetAnnoncementWithRentAndLoanInformation]
+AS
+BEGIN
+	   SELECT 
+		ann.id as 'announcementId', --> Récupréer via le cache
+		loa.id as 'loanId',
+		ren.id as 'rentId'
+  FROM [RentalInvestmentAid].[dbo].[annoncementInformation] ann
+  INNER JOIN [RentalInvestmentAid].[dbo].loanInformation loa ON loa.idAnnoncementInformation = ann.id
+  INNER JOIN [RentalInvestmentAid].[dbo].rentInformation ren ON ren.idAnnoncementInformation = ann.id
+END
