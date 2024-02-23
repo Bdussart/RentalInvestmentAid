@@ -1,6 +1,6 @@
 volumes:
   sqlserver_data:
-  
+    
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -22,3 +22,17 @@ services:
         fi
         echo "$Init";
         echo "All done!";'
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      
+networks:
+ default:
+  driver: bridge
+

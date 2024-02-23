@@ -4,77 +4,177 @@
 @using RentalInvestmentAid.Models.Announcement
 @using RentalInvestmentAid.Models.Bank
 @using System.ComponentModel
+@using RentalInvestmentAid.Models.Loan
+@using RentalInvestmentAid.Models.Rental
+@using System.Collections.Concurrent
 @rendermode InteractiveServer
 
 <h3>Announcement</h3>
 
-<ul>
-        <li>@rentabilityResults.Count</li>
-    @foreach (var announcement in announcementInformation)
-    {        
-        <li>@announcement.Description</li>
-        <div class="rates-informations">
-            <table>
-                <thead>
-                    <tr>
-                        <th>
-                            Durée
-                        </th>
-                        <th>
-                            taux 
-                        </th>
-                        <th>
-                            type
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (RateInformation rate in ratesInformation)
-                    {
-                        var rateDescription = rate.RateType.GetType()
-                            .GetMember(rate.RateType.ToString())[0]
-                            .GetCustomAttributes(typeof(DescriptionAttribute), inherit: false)[0] as DescriptionAttribute;
-                        <tr>
-                        
-                        <td>
-                            @rate.DurationInYear
-                        </td>
-                        <td>
-                            @rate.Rate
-                        </td>
-                        <td>
-                            @rateDescription.Description
-                        </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+<div class="container">
+    @if (_rentabilityResults == null)
+    {
+        <p><em>Loading...</em></p>
     }
-</ul>
+    else
+    {
+        @foreach (var result in _rentabilityResults.OrderBy(rent => rent.AnnouncementInformation.City))
+        {
+            <div id="annoucment_@result.AnnouncementId" class="announcement">
+                <div class="row text-center">
+                    <a href="@result.AnnouncementInformation.UrlWebSite" target="_blank" class="col-sm-2">
+                        <div class="card ">
+                            <div class="card-header">
+                                @result.AnnouncementInformation.City -  @result.AnnouncementInformation.ZipCode
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"> @result.AnnouncementInformation.Price €</li>
+                                <li class="list-group-item"> @result.AnnouncementInformation.Metrage m2</li>
+                            </ul>
+                        </div>
+                    </a>
+                    <div class="announcement_description col-sm-10 card-text">
+                        @result.AnnouncementInformation.Description
+                    </div>
+                </div>
+
+                <div class="row rents_and_loan">
+                <div class="rents col-sm-4">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Prix / m2
+                                </th>
+                                <th>
+                                    Location
+                                </th>
+                                <th>
+                                    70%
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>                                
+                            @foreach( var ren in result.Rents)
+                            {
+                                <tr>
+                                    <td>
+                                        @ren.RentalInformations.Price € 
+                                    </td>
+                                    <td>
+                                        @ren.RentPrice €
+                                    </td>
+                                    <td>
+                                        @ren.Rental70Pourcent €
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                    <div class="loans  col-sm-8">
+                    <div class="rates-informations">
+                            <table class="table table-dark table-hover text-center">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Durée ( en années )
+                                    </th>
+                                    <th>
+                                        taux 
+                                    </th>
+                                    <th>
+                                        Coût réel
+                                    </th>
+                                    <th>
+                                        Coût par mois
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (RateInformation rate in _rateInformation)
+                                {
+                                    var currentLoan = result.Loans.First(loan => loan.RateInformation.Id == rate.Id);
+                                    if (currentLoan != null)
+                                    { //Never be the Case !
+                                            <tr class="@CheckRentability(currentLoan, result.Rents)">
+                                            <td>
+                                                @rate.DurationInYear
+                                            </td>
+                                            <td>
+                                                @rate.Rate %
+                                            </td>
+                                            <td>
+                                                @currentLoan.TotalCostWithInsurrance €
+                                            </td>
+                                            <td>
+                                                @currentLoan.MonthlyCostWithInsurrance €
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+</div>
 
 @code {
+
     private IDatabaseFactory databaseFactory = new SqlServerDatabase();
+    private ConcurrentBag<RentabilityResult>? _rentabilityResults = null;
+    private ConcurrentBag<AnnouncementInformation> _announcementInformation = null;
+    private ConcurrentBag<RentInformation> _rentInformation = null;
+    private ConcurrentBag<LoanInformation> _loansInformation = null;
+    private ConcurrentBag<RentalInformations> _rentalInformation = null;
+    private List<RateInformation> _rateInformation = null;
 
-    private List<AnnouncementInformation> announcementInformation {
-        get {
-            return   databaseFactory.AnnouncementInformations;
-        }
+
+    protected override Task OnInitializedAsync()
+    {
+        _announcementInformation = new ConcurrentBag<AnnouncementInformation> (databaseFactory.AnnouncementInformations);
+        _rentInformation = new ConcurrentBag<RentInformation>(databaseFactory.RentInformation);
+        _loansInformation = new ConcurrentBag<LoanInformation>(databaseFactory.LoansInformations);
+        _rentalInformation = new ConcurrentBag<RentalInformations>(databaseFactory.RentalInformations);
+        _rentabilityResults = new ConcurrentBag<RentabilityResult>();
+        _rateInformation = databaseFactory.RateInformations;
+
+        ParallelOptions parallelOptions = new()
+            {
+                MaxDegreeOfParallelism = 3
+            };
+
+        return Parallel.ForEachAsync(databaseFactory.RentabilityResults, parallelOptions, async (info, token) =>
+        {
+            await Task.Run(() =>
+            {
+                info.AnnouncementInformation = _announcementInformation.First(ann => ann.Id == info.AnnouncementId);
+                info.Loans = _loansInformation.Where(loan => info.LoanIds.Contains(loan.Id)).ToList();
+                info.Rents = _rentInformation.Where(rent => info.RentsIds.Contains(rent.Id)).ToList();
+                info.Rents.ForEach(rent =>
+                {
+                    rent.RentalInformations = _rentalInformation.First(rental => rental.Id == rent.RentalInformations.Id);
+                });
+                _rentabilityResults.Add(info);
+            });
+        });
+
+
     }
 
-    private List<RateInformation> ratesInformation
+
+    public string CheckRentability(LoanInformation loan, List<RentInformation> rents)
     {
-        get
-        {
-            return databaseFactory.RateInformations;
-        }
+        string result = "table-danger not-rentable";
+
+        if (rents.Where(rent => rent.Rental70Pourcent >= loan.MonthlyCostWithInsurrance).Any())
+            result = "table-success rentable";
+        return result;
     }
-    private List<RentabilityResult> rentabilityResults
-    {
-        get
-        {
-            return databaseFactory.RentabilityResults;
-        }
-    }
-    
 }

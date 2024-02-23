@@ -222,7 +222,7 @@ namespace RentalInvestmentAid.Database
             _loansInformations = new List<LoanInformation>();
             using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
             {
-                using (SqlCommand sqlCommand = new SqlCommand("uspGetLoanInformations", connection))
+                using (SqlCommand sqlCommand = new SqlCommand("uspGetLoanInformation", connection))
                 {
                     sqlCommand.CommandType = CommandType.StoredProcedure;
                     connection.Open();
@@ -241,11 +241,11 @@ namespace RentalInvestmentAid.Database
                                 {
                                     Id = reader.GetInt32(2)
                                 },
-                                TotalCost = reader.GetDouble(3),
-                                MonthlyCost = reader.GetDouble(4),
-                                InsurranceRate = reader.GetDouble(5),
-                                TotalCostWithInsurrance = reader.GetDouble(6),
-                                MonthlyCostWithInsurrance = reader.GetDouble(7),
+                                TotalCost = Convert.ToDouble(reader.GetDecimal(3)),
+                                MonthlyCost = Convert.ToDouble(reader.GetDecimal(4)),
+                                InsurranceRate = Convert.ToDouble(reader.GetDecimal(5)),
+                                TotalCostWithInsurrance = Convert.ToDouble(reader.GetDecimal(6)),
+                                MonthlyCostWithInsurrance = Convert.ToDouble(reader.GetDecimal(7)),
                                 CreatedDate = reader.GetDateTime(8),
                                 UpdatedDate = reader.GetDateTime(9)
                             });
@@ -297,8 +297,8 @@ namespace RentalInvestmentAid.Database
                                 {
                                     Id = reader.GetInt32(2)
                                 },
-                                RentPrice = reader.GetDouble(3),
-                                Rental70Pourcent = reader.GetDouble(4),
+                                RentPrice = Convert.ToDouble(reader.GetDecimal(3)),
+                                Rental70Pourcent = Convert.ToDouble(reader.GetDecimal(4)),
                                 CreatedDate = reader.GetDateTime(5),
                                 UpdatedDate = reader.GetDateTime(6)
                             });

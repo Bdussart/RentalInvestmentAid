@@ -109,8 +109,8 @@ namespace RentalInvestmentAid
 
             Dictionary<int, string> dicoDepartements = new Dictionary<int, string>
             {
-                { 74, "haute-savoie" },
-                {01, "ain" },
+                //{ 74, "haute-savoie" },
+                //{01, "ain" },
                 {73, "savoie" }
             };
 
