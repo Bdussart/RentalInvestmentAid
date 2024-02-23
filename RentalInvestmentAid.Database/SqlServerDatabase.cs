@@ -15,70 +15,9 @@ namespace RentalInvestmentAid.Database
 {
     public class SqlServerDatabase : IDatabaseFactory
     {
-        public List<RentalInformations> RentalInformations
+        public List<RentalInformations> GetRentalsInformations()
         {
-            get
-            {
-                if (_rentalInformations == null)
-                    SetRentalsInformations();
-                return _rentalInformations;
-            }
-        }
-        public List<AnnouncementInformation> AnnouncementInformations
-        {
-            get
-            {
-                if (_announcementInformations == null)
-                    SetAnnoucementInformation();
-                return _announcementInformations;
-            }
-        }
-        public List<RateInformation> RateInformations
-        {
-            get
-            {
-                if (_rateInformations == null)
-                    SetRateInformation();
-                return _rateInformations;
-            }
-        }
-        public List<LoanInformation> LoansInformations
-        {
-            get
-            {
-                if (_loansInformations == null)
-                    SetLoanInformation();
-                return _loansInformations;
-            }
-        }
-
-        public List<RentInformation> RentInformation
-        {
-            get
-            {
-                if (_rateInformations == null)
-                    SetRentInformation();
-                return _rentInformations;
-            }
-        }
-        public List<RentabilityResult> RentabilityResults
-        {
-            get
-            {
-                if (_rentabilityResults == null)
-                    SetRentabilityResult();
-                return _rentabilityResults;
-            }
-        }
-        private List<RentabilityResult> _rentabilityResults = null;
-        private List<RentalInformations> _rentalInformations = null;
-        private List<AnnouncementInformation> _announcementInformations = null;
-        private List<RateInformation> _rateInformations = null;
-        private List<LoanInformation> _loansInformations = null;
-        private List<RentInformation> _rentInformations = null;
-        private void SetRentalsInformations()
-        {
-            _rentalInformations = new List<RentalInformations>();
+            List<RentalInformations> rentalInformations = new List<RentalInformations>();
             using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
             {
                 using (SqlCommand sqlCommand = new SqlCommand("uspGetRentalInformations", connection))
@@ -89,13 +28,13 @@ namespace RentalInvestmentAid.Database
                     {
                         while (reader.Read())
                         {
-                            _rentalInformations.Add(new RentalInformations
+                            rentalInformations.Add(new RentalInformations
                             {
                                 Id = reader.GetInt32(0),
                                 City = reader.GetString(1),
                                 ZipCode = reader.GetString(2),
                                 Price = reader.GetDecimal(3).ToString(),
-                                RentalPriceType= (RentalPriceType)reader.GetInt32(4),
+                                RentalPriceType = (RentalPriceType)reader.GetInt32(4),
                                 RentalTypeOfTheRent = (RentalTypeOfTheRent)reader.GetInt32(5),
                                 CreatedDate = reader.GetDateTime(6),
                                 UpdatedDate = reader.GetDateTime(7)
@@ -104,29 +43,12 @@ namespace RentalInvestmentAid.Database
                     }
                 }
             }
+            return rentalInformations;
         }
-        public void InsertRentalInformation(RentalInformations rental)
+        public List<AnnouncementInformation> GetAnnouncementsInformations()
         {
-            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
-            {
-                using (SqlCommand sqlCommand = new SqlCommand("uspInsertRentalInformation", connection))
-                {
-                    sqlCommand.CommandType = CommandType.StoredProcedure;
-                    sqlCommand.Parameters.AddWithValue("@city", rental.City);
-                    sqlCommand.Parameters.AddWithValue("@zipcode", rental.ZipCode);
-                    sqlCommand.Parameters.AddWithValue("@price", rental.Price);
-                    sqlCommand.Parameters.AddWithValue("@idPriceType", rental.RentalPriceType);
-                    sqlCommand.Parameters.AddWithValue("@idPropertyType", rental.RentalTypeOfTheRent);
-                    sqlCommand.Parameters.AddWithValue("@url", rental.Url);
 
-                    connection.Open();
-                    sqlCommand.ExecuteNonQuery();
-                }
-            }
-        }
-        private void SetAnnoucementInformation()
-        {
-            _announcementInformations = new List<AnnouncementInformation>();
+            List<AnnouncementInformation> announcementInformations = new List<AnnouncementInformation>();
             using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
             {
                 using (SqlCommand sqlCommand = new SqlCommand("uspGetAnnoncementInformations", connection))
@@ -137,47 +59,31 @@ namespace RentalInvestmentAid.Database
                     {
                         while (reader.Read())
                         {
-                            _announcementInformations.Add(new AnnouncementInformation
+                            announcementInformations.Add(new AnnouncementInformation
                             {
                                 Id = reader.GetInt32(0),
-                                City = reader.GetString(1),
-                                ZipCode = reader.GetString(2),
-                                Price = reader.GetDecimal(3).ToString(),
-                                Metrage = reader.GetDecimal(4).ToString(),
-                                Description = reader.GetString(5).ToString(),
-                                RentalType = (RentalTypeOfTheRent)reader.GetInt32(6),
-                                UrlWebSite = reader.GetString(7).ToString(),
-                                CreatedDate = reader.GetDateTime(8),
-                                UpdatedDate = reader.GetDateTime(9)
+                                IdFromProvider = reader.GetString(1),
+                                City = reader.GetString(2),
+                                ZipCode = reader.GetString(3),
+                                Price = reader.GetDecimal(4).ToString(),
+                                Metrage = reader.GetDecimal(5).ToString(),
+                                Description = reader.GetString(6).ToString(),
+                                RentalType = (RentalTypeOfTheRent)reader.GetInt32(7),
+                                UrlWebSite = reader.GetString(8).ToString(),
+                                rentabilityCalculated = reader.GetBoolean(9),
+                                CreatedDate = reader.GetDateTime(10),
+                                UpdatedDate = reader.GetDateTime(11)
                             });
                         }
                     }
                 }
             }
+            return announcementInformations;
         }
-        public void InsertAnnouncementInformation(AnnouncementInformation announcementInformation)
+        public List<RateInformation> GetRatesInformations()
         {
-            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
-            {
-                using (SqlCommand sqlCommand = new SqlCommand("uspInsertAnnoncementInformation", connection))
-                {
-                    sqlCommand.CommandType = CommandType.StoredProcedure;
-                    sqlCommand.Parameters.AddWithValue("@city", announcementInformation.City);
-                    sqlCommand.Parameters.AddWithValue("@zipcode", announcementInformation.ZipCode);
-                    sqlCommand.Parameters.AddWithValue("@price", announcementInformation.Price);
-                    sqlCommand.Parameters.AddWithValue("@metrage", announcementInformation.Metrage);
-                    sqlCommand.Parameters.AddWithValue("@description", announcementInformation.Description);
-                    sqlCommand.Parameters.AddWithValue("@idProptertyType", announcementInformation.RentalType);
-                    sqlCommand.Parameters.AddWithValue("@url", announcementInformation.UrlWebSite);
 
-                    connection.Open();
-                    sqlCommand.ExecuteNonQuery();
-                }
-            }
-        }
-        private void SetRateInformation()
-        {
-            _rateInformations = new List<RateInformation>();
+            List<RateInformation> rateInformations = new List<RateInformation>();
             using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
             {
                 using (SqlCommand sqlCommand = new SqlCommand("uspGetRateInformations", connection))
@@ -188,7 +94,7 @@ namespace RentalInvestmentAid.Database
                     {
                         while (reader.Read())
                         {
-                            _rateInformations.Add(new RateInformation
+                            rateInformations.Add(new RateInformation
                             {
                                 Id = reader.GetInt32(0),
                                 DurationInYear = reader.GetInt32(1),
@@ -201,25 +107,12 @@ namespace RentalInvestmentAid.Database
                     }
                 }
             }
+
+            return rateInformations;
         }
-        public void InsertRateInformation(RateInformation rateInformation)
+        public List<LoanInformation> GetLoansInformations()
         {
-            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
-            {
-                using (SqlCommand sqlCommand = new SqlCommand("uspInsertRateInformation", connection))
-                {
-                    sqlCommand.CommandType = CommandType.StoredProcedure;
-                    sqlCommand.Parameters.AddWithValue("@durationInYear", rateInformation.DurationInYear);
-                    sqlCommand.Parameters.AddWithValue("@rate", Convert.ToDecimal(rateInformation.Rate));
-                    sqlCommand.Parameters.AddWithValue("@rateType", Convert.ToDecimal(rateInformation.RateType));
-                    connection.Open();
-                    sqlCommand.ExecuteNonQuery();
-                }
-            }
-        }
-        private void SetLoanInformation()
-        {
-            _loansInformations = new List<LoanInformation>();
+            List<LoanInformation> loansInformations = new List<LoanInformation>();
             using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
             {
                 using (SqlCommand sqlCommand = new SqlCommand("uspGetLoanInformation", connection))
@@ -230,7 +123,7 @@ namespace RentalInvestmentAid.Database
                     {
                         while (reader.Read())
                         {
-                            _loansInformations.Add(new LoanInformation
+                            loansInformations.Add(new LoanInformation
                             {
                                 Id = reader.GetInt32(0),
                                 AnnouncementInformation = new AnnouncementInformation
@@ -253,29 +146,12 @@ namespace RentalInvestmentAid.Database
                     }
                 }
             }
+            return loansInformations;
         }
-        public void InsertLoanInformation(LoanInformation loanInformation)
+
+        public List<RentInformation> GetRentsInformations()
         {
-            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
-            {
-                using (SqlCommand sqlCommand = new SqlCommand("uspInsertLoanInformation", connection))
-                {
-                    sqlCommand.CommandType = CommandType.StoredProcedure;
-                    sqlCommand.Parameters.AddWithValue("@idAnnoncementInformation", loanInformation.AnnouncementInformation.Id);
-                    sqlCommand.Parameters.AddWithValue("@idRateInformation", loanInformation.RateInformation.Id);
-                    sqlCommand.Parameters.AddWithValue("@totalCost", loanInformation.TotalCost);
-                    sqlCommand.Parameters.AddWithValue("@monthlyCost", loanInformation.MonthlyCost);
-                    sqlCommand.Parameters.AddWithValue("@insuranceRate", loanInformation.InsurranceRate);
-                    sqlCommand.Parameters.AddWithValue("@totalCostWithInssurance", loanInformation.TotalCostWithInsurrance);
-                    sqlCommand.Parameters.AddWithValue("@monthlyCostWithInssurance", loanInformation.MonthlyCostWithInsurrance);
-                    connection.Open();
-                    sqlCommand.ExecuteNonQuery();
-                }
-            }
-        }
-        private void SetRentInformation()
-        {
-            _rentInformations = new List<RentInformation>();
+            List<RentInformation> rentInformations = new List<RentInformation>();
             using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
             {
                 using (SqlCommand sqlCommand = new SqlCommand("uspGetRentInformations", connection))
@@ -286,7 +162,7 @@ namespace RentalInvestmentAid.Database
                     {
                         while (reader.Read())
                         {
-                            _rentInformations.Add(new RentInformation
+                            rentInformations.Add(new RentInformation
                             {
                                 Id = reader.GetInt32(0),
                                 AnnouncementInformation = new AnnouncementInformation
@@ -306,26 +182,11 @@ namespace RentalInvestmentAid.Database
                     }
                 }
             }
+            return rentInformations;
         }
-        public void InsertRentInformation(RentInformation rentInformation)
+        public List<RentabilityResult> GetRentabilitiesResults()
         {
-            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
-            {
-                using (SqlCommand sqlCommand = new SqlCommand("uspInsertRentInformation", connection))
-                {
-                    sqlCommand.CommandType = CommandType.StoredProcedure;
-                    sqlCommand.Parameters.AddWithValue("@idAnnoncementInformation", rentInformation.AnnouncementInformation.Id);
-                    sqlCommand.Parameters.AddWithValue("@idRentalInformation", rentInformation.RentalInformations.Id);
-                    sqlCommand.Parameters.AddWithValue("@rentPrice", rentInformation.RentPrice);
-                    sqlCommand.Parameters.AddWithValue("@rent70Price", rentInformation.Rental70Pourcent);
-                    connection.Open();
-                    sqlCommand.ExecuteNonQuery();
-                }
-            }
-        }
-        private void SetRentabilityResult()
-        {
-            _rentabilityResults = new List<RentabilityResult>();
+            List<RentabilityResult> rentabilityResults = new List<RentabilityResult>();
             using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
             {
                 using (SqlCommand sqlCommand = new SqlCommand("uspGetAnnoncementWithRentAndLoanInformation", connection))
@@ -345,7 +206,7 @@ namespace RentalInvestmentAid.Database
 
                             if (lastAnnouncementId != currentId && lastAnnouncementId != -1)
                             {
-                                _rentabilityResults.Add(current);
+                                rentabilityResults.Add(current);
                                 current = new RentabilityResult();
                             }
 
@@ -357,8 +218,151 @@ namespace RentalInvestmentAid.Database
                             lastAnnouncementId = currentId;
                         }
 
-                        _rentabilityResults.Add(current);
+                        rentabilityResults.Add(current);
                     }
+                }
+            }
+
+            return rentabilityResults;
+        }
+        public RentalInformations InsertRentalInformation(RentalInformations rental)
+        {
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspInsertRentalInformation", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.AddWithValue("@city", rental.City);
+                    sqlCommand.Parameters.AddWithValue("@zipcode", rental.ZipCode);
+                    sqlCommand.Parameters.AddWithValue("@price", rental.Price);
+                    sqlCommand.Parameters.AddWithValue("@idPriceType", rental.RentalPriceType);
+                    sqlCommand.Parameters.AddWithValue("@idPropertyType", rental.RentalTypeOfTheRent);
+                    sqlCommand.Parameters.AddWithValue("@url", rental.Url);
+
+                    SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
+                    retval.Direction = ParameterDirection.ReturnValue;
+
+                    connection.Open();
+                    sqlCommand.ExecuteNonQuery();
+                    rental.Id =(int) sqlCommand.Parameters["@RETURN_VALUE"].Value;
+                }
+            }
+            return rental;
+        }
+
+        public AnnouncementInformation InsertAnnouncementInformation(AnnouncementInformation announcementInformation)
+        {
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspInsertAnnoncementInformation", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.AddWithValue("@city", announcementInformation.City);
+                    sqlCommand.Parameters.AddWithValue("@zipcode", announcementInformation.ZipCode);
+                    sqlCommand.Parameters.AddWithValue("@idFromProvider", announcementInformation.IdFromProvider);
+                    sqlCommand.Parameters.AddWithValue("@price", announcementInformation.Price);
+                    sqlCommand.Parameters.AddWithValue("@metrage", announcementInformation.Metrage);
+                    sqlCommand.Parameters.AddWithValue("@description", announcementInformation.Description);
+                    sqlCommand.Parameters.AddWithValue("@idProptertyType", announcementInformation.RentalType);
+                    sqlCommand.Parameters.AddWithValue("@url", announcementInformation.UrlWebSite);
+
+                    SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
+                    retval.Direction = ParameterDirection.ReturnValue;
+
+                    connection.Open();
+                    sqlCommand.ExecuteNonQuery();
+                    announcementInformation.Id = (int)sqlCommand.Parameters["@RETURN_VALUE"].Value;
+                }
+            }
+
+            return announcementInformation;
+        }
+
+        public RateInformation InsertRateInformation(RateInformation rateInformation)
+        {
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspInsertRateInformation", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.AddWithValue("@durationInYear", rateInformation.DurationInYear);
+                    sqlCommand.Parameters.AddWithValue("@rate", Convert.ToDecimal(rateInformation.Rate));
+                    sqlCommand.Parameters.AddWithValue("@rateType", Convert.ToDecimal(rateInformation.RateType));
+
+                    SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
+                    retval.Direction = ParameterDirection.ReturnValue;
+
+                    connection.Open();
+                    sqlCommand.ExecuteNonQuery();
+
+                    rateInformation.Id = (int)sqlCommand.Parameters["@RETURN_VALUE"].Value;
+                }
+            }
+
+            return rateInformation;
+        }
+ 
+        public LoanInformation InsertLoanInformation(LoanInformation loanInformation)
+        {
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspInsertLoanInformation", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.AddWithValue("@idAnnoncementInformation", loanInformation.AnnouncementInformation.Id);
+                    sqlCommand.Parameters.AddWithValue("@idRateInformation", loanInformation.RateInformation.Id);
+                    sqlCommand.Parameters.AddWithValue("@totalCost", loanInformation.TotalCost);
+                    sqlCommand.Parameters.AddWithValue("@monthlyCost", loanInformation.MonthlyCost);
+                    sqlCommand.Parameters.AddWithValue("@insuranceRate", loanInformation.InsurranceRate);
+                    sqlCommand.Parameters.AddWithValue("@totalCostWithInssurance", loanInformation.TotalCostWithInsurrance);
+                    sqlCommand.Parameters.AddWithValue("@monthlyCostWithInssurance", loanInformation.MonthlyCostWithInsurrance);
+
+                    SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
+                    retval.Direction = ParameterDirection.ReturnValue;
+
+                    connection.Open();
+                    sqlCommand.ExecuteNonQuery();
+                    loanInformation.Id = (int)sqlCommand.Parameters["@RETURN_VALUE"].Value;
+                }
+            }
+
+            return loanInformation;
+        }
+
+        public RentInformation InsertRentInformation(RentInformation rentInformation)
+        {
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspInsertRentInformation", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.AddWithValue("@idAnnoncementInformation", rentInformation.AnnouncementInformation.Id);
+                    sqlCommand.Parameters.AddWithValue("@idRentalInformation", rentInformation.RentalInformations.Id);
+                    sqlCommand.Parameters.AddWithValue("@rentPrice", rentInformation.RentPrice);
+                    sqlCommand.Parameters.AddWithValue("@rent70Price", rentInformation.Rental70Pourcent);
+
+                    SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
+                    retval.Direction = ParameterDirection.ReturnValue;
+
+                    connection.Open();
+                    sqlCommand.ExecuteNonQuery();
+                    rentInformation.Id = (int)sqlCommand.Parameters["@RETURN_VALUE"].Value;
+                }
+            }
+
+            return rentInformation;
+        }
+
+        public void UpdateRentabilityInformation(int announcementId)
+        {
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspUpdateRentabilityInformation", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.AddWithValue("@announcementId", announcementId);
+                    connection.Open();
+                    sqlCommand.ExecuteNonQuery();
                 }
             }
         }

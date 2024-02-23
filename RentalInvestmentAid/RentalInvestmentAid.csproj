@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -11,6 +11,7 @@
     <ProjectReference Include="..\RentalInvestmentAid.Core\RentalInvestmentAid.Core.csproj" />
     <ProjectReference Include="..\RentalInvestmentAid.Database\RentalInvestmentAid.Database.csproj" />
     <ProjectReference Include="..\RentalInvestmentAid.Logger\RentalInvestmentAid.Logger.csproj" />
+    <ProjectReference Include="..\RentalInvestmentAid.Queue\RentalInvestmentAid.Queue.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -158,13 +158,14 @@ INSERT INTO [dbo].[RentalInformation]
 		   ,@Now
 		   ,@Now
 		   )
-
+		  return SCOPE_IDENTITY()
 END
 GO
 
 
 CREATE TABLE [dbo].[annoncementInformation](
 	[id] [int] IDENTITY(1,1) NOT NULL,
+	[idFromProvider] [varchar](50) NOT NULL,
 	[city] [varchar](50) NOT NULL,
 	[zipCode] [varchar](5) NOT NULL,
 	[price] [decimal](10,0) NOT NULL,
@@ -172,8 +173,9 @@ CREATE TABLE [dbo].[annoncementInformation](
 	[description] [nvarchar](max) NOT NULL,
 	[url] [varchar](max) NOT NULL,
 	[idPropertyType] [int] NOT NULL,
+	[rentabilityCalculated] [bit] NOT NULL,
 	[createdDate] [datetime] NOT NULL,
-	[updatedDate] [datetime] NOT NULL,
+	[updatedDate] [datetime] NOT NULL
  CONSTRAINT [PK_annoncementInformation] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -192,6 +194,7 @@ GO
 CREATE PROCEDURE [dbo].[uspInsertAnnoncementInformation]
 (
 				@city			varchar(50),
+				@idFromProvider varchar(50),
 				@zipcode		varchar(5),
 				@price			decimal(10,0),
 				@metrage		decimal(5,0),
@@ -207,35 +210,59 @@ SET @Now = GETDATE()
 
 INSERT INTO [dbo].[annoncementInformation]
            ([city]
+		   ,[idFromProvider]
            ,[zipCode]
            ,[price]
            ,[metrage]
            ,[description]
 		   ,[idPropertyType]
            ,[url]
+		   ,[rentabilityCalculated]
 		   ,[createdDate]
 		   ,[updatedDate])
      VALUES
            (
 		   @city
+		   ,@idFromProvider
 		   ,@zipcode
 		   ,@price
 		   ,@metrage
 		   ,@description
 		   ,@idProptertyType
 		   ,@url
+		   ,0
 		   ,@Now
 		   ,@Now
 		   )
-
+		   
+		  return SCOPE_IDENTITY()
 END
 GO
 
+
+CREATE PROCEDURE [dbo].[uspUpdateRentabilityInformation]
+(
+				@announcementId int
+)
+AS
+BEGIN
+
+DECLARE @Now datetime
+SET @Now = GETDATE()
+
+UPDATE [dbo].[annoncementInformation]
+     SET [rentabilityCalculated] = 1,
+		[updatedDate] = @Now
+	WHERE id = @announcementId
+
+END
+GO
 
 CREATE PROCEDURE [dbo].[uspGetAnnoncementInformations]
 AS
 BEGIN
 SELECT  [id]
+	  ,[idFromProvider] 
       ,[city]
       ,[zipCode]
       ,[price]
@@ -243,6 +270,7 @@ SELECT  [id]
       ,[description]
 	  ,idPropertyType
       ,[url]
+	  ,[rentabilityCalculated]
       ,[createdDate]
       ,[updatedDate]
   FROM [RentalInvestmentAid].[dbo].[annoncementInformation]
@@ -293,7 +321,8 @@ INSERT INTO [dbo].[rateInformation]
 		   ,@Now
 		   ,@Now
 		   )
-
+		   
+		  return SCOPE_IDENTITY()
 END
 GO
 
@@ -448,7 +477,8 @@ INSERT INTO [dbo].[loanInformation]
 		   ,@Now
 		   ,@Now
 		   )
-
+		   
+		  return SCOPE_IDENTITY()
 END
 GO
 
@@ -528,7 +558,8 @@ INSERT INTO [dbo].[rentInformation]
 		   ,@Now
 		   ,@Now
 		   )
-
+		   
+		  return SCOPE_IDENTITY()
 END
 GO
 

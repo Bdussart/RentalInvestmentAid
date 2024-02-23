@@ -138,19 +138,19 @@
 
     protected override Task OnInitializedAsync()
     {
-        _announcementInformation = new ConcurrentBag<AnnouncementInformation> (databaseFactory.AnnouncementInformations);
-        _rentInformation = new ConcurrentBag<RentInformation>(databaseFactory.RentInformation);
-        _loansInformation = new ConcurrentBag<LoanInformation>(databaseFactory.LoansInformations);
-        _rentalInformation = new ConcurrentBag<RentalInformations>(databaseFactory.RentalInformations);
+        _announcementInformation = new ConcurrentBag<AnnouncementInformation> (databaseFactory.GetAnnouncementsInformations());
+        _rentInformation = new ConcurrentBag<RentInformation>(databaseFactory.GetRentsInformations());
+        _loansInformation = new ConcurrentBag<LoanInformation>(databaseFactory.GetLoansInformations());
+        _rentalInformation = new ConcurrentBag<RentalInformations>(databaseFactory.GetRentalsInformations());
         _rentabilityResults = new ConcurrentBag<RentabilityResult>();
-        _rateInformation = databaseFactory.RateInformations;
+        _rateInformation = databaseFactory.GetRatesInformations();
 
         ParallelOptions parallelOptions = new()
             {
                 MaxDegreeOfParallelism = 3
             };
 
-        return Parallel.ForEachAsync(databaseFactory.RentabilityResults, parallelOptions, async (info, token) =>
+        return Parallel.ForEachAsync(databaseFactory.GetRentabilitiesResults(), parallelOptions, async (info, token) =>
         {
             await Task.Run(() =>
             {

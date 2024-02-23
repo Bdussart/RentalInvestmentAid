@@ -54,8 +54,6 @@ namespace RentalInvestmentAid.Core.Announcement
                 urls.Add($"https://www.century21.fr/trouver_logement/detail/{annonceUid}");
             }
 
-
-
             return urls;
         }
 

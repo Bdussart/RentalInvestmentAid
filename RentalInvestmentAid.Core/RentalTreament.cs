@@ -43,8 +43,8 @@ namespace RentalInvestmentAid.Core
                 {
                     AnnouncementInformation = announcementInformation,
                     RentalInformations = rentalInformation,
-                    RentPrice = Convert.ToDouble(rentalInformation.Price) * Convert.ToDouble(metrage),
-                    Rental70Pourcent = (Convert.ToDouble(rentalInformation.Price) * Convert.ToDouble(metrage)) * 0.70
+                    RentPrice = Convert.ToDouble(rentalInformation.Price) * Convert.ToDouble(metrage.Replace(".", ",")),
+                    Rental70Pourcent = (Convert.ToDouble(rentalInformation.Price) * Convert.ToDouble(metrage.Replace(".", ","))) * 0.70
                 });
             });
 

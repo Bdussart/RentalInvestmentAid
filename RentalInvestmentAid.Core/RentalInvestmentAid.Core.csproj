@@ -20,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\RentalInvestmentAid.Logger\RentalInvestmentAid.Logger.csproj" />
     <ProjectReference Include="..\RentalInvestmentAid.Models\RentalInvestmentAid.Models.csproj" />
+    <ProjectReference Include="..\RentalInvestmentAid.Queue\RentalInvestmentAid.Queue.csproj" />
   </ItemGroup>
 
 </Project>

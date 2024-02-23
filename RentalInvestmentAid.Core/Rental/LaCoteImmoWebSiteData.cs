@@ -11,6 +11,7 @@ using OpenQA.Selenium.Support.UI;
 using OpenQA.Selenium.DevTools;
 using RentalInvestmentAid.Core.Helper;
 using RentalInvestmentAid.Logger;
+using RentalInvestmentAid.Queue;
 
 namespace RentalInvestmentAid.Core.Rental
 {
@@ -131,10 +132,9 @@ namespace RentalInvestmentAid.Core.Rental
             return rentalInformations;
         }
 
-        public List<string> GetUrlForRentalInformation(string area, string department, int departmentNumber)
+        public void EnQueueUrls(string area, string department, int departmentNumber)
         {
             LogHelper.LogInfo($" Area : {area}, departement : {department}, departmentNumber : {departmentNumber}");
-            List<string> urls = new List<string>();
             int iterator = 1;
             string baseUrl = string.Empty;
             string previousUrl = string.Empty;
@@ -142,10 +142,8 @@ namespace RentalInvestmentAid.Core.Rental
             ChromeOptions options = new ChromeOptions();
             options.AddArgument("--enable-javascript");
             options.AddArguments("--headless");
-            //options.AddArgument("--window-size=500,1080");
             options.AddArgument("incognito");
             options.AddArgument("no-sandbox");
-
 
             bool next = true;
             do
@@ -169,16 +167,14 @@ namespace RentalInvestmentAid.Core.Rental
                         next = false;
                     else
                     {
-                        urls.Add(driver.Url);
+                        RentalQueue.SendMessage(driver.Url);
+
                         previousUrl = driver.Url;
                     }
                     iterator++;
-                    //Thread.Sleep(TimeSpan.FromSeconds(1));
                 }
             } while (next);
 
-
-            return urls;
         }
     }
 }

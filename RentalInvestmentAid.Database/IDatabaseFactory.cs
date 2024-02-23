@@ -12,24 +12,22 @@ namespace RentalInvestmentAid.Database
         /// <summary>
         /// TODO : BULK INSERT !!!!!!
         /// </summary>
-        public List<RentalInformations> RentalInformations { get; }
 
-        public void InsertRentalInformation(RentalInformations rental);
+        public List<RentalInformations> GetRentalsInformations();
+        public List<RentabilityResult> GetRentabilitiesResults();
+        public List<AnnouncementInformation> GetAnnouncementsInformations();
+        public List<RateInformation> GetRatesInformations();
+        public List<LoanInformation> GetLoansInformations();
+        public List<RentInformation> GetRentsInformations();
 
-        public List<AnnouncementInformation> AnnouncementInformations { get; }
 
-        public void InsertAnnouncementInformation(AnnouncementInformation announcementInformation);
+        public RentalInformations InsertRentalInformation(RentalInformations rental);
+        public AnnouncementInformation InsertAnnouncementInformation(AnnouncementInformation announcementInformation);
+        public RateInformation InsertRateInformation(RateInformation announcementInformation);
+        public LoanInformation InsertLoanInformation(LoanInformation loanInformation);
+        public RentInformation InsertRentInformation(RentInformation rentInformation);
 
-        public List<RateInformation> RateInformations { get; }
 
-        public void InsertRateInformation(RateInformation announcementInformation);
-
-        public List<LoanInformation> LoansInformations { get; }
-
-        public void InsertLoanInformation(LoanInformation loanInformation);
-
-        public List<RentInformation> RentInformation { get; }
-        public void InsertRentInformation(RentInformation rentInformation);
-        public List<RentabilityResult>  RentabilityResults  {get;}
+        public void UpdateRentabilityInformation(int announcementId);
     }
 }
