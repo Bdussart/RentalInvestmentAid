@@ -113,9 +113,7 @@ namespace RentalInvestmentAid
 
             consumer.Received += ReceivedRentalInformation;
             RentalQueue.SetConsumer(consumer);
-
         }
-
 
         private static void ReceivedRentalInformation(object? model, BasicDeliverEventArgs ea)
         {
@@ -136,8 +134,8 @@ namespace RentalInvestmentAid
 
             Dictionary<int, string> dicoDepartements = new Dictionary<int, string>
             {
-                { 74, "haute-savoie" },
-                {01, "ain" },
+                {74, "haute-savoie" },
+               // {01, "ain" },
                 {73, "savoie" }
             };
 
@@ -180,9 +178,13 @@ namespace RentalInvestmentAid
                 urls.ForEach(url =>
                 {
                     Thread.Sleep(TimeSpan.FromSeconds(2));
-                    AnnouncementInformation announcementInformation = announcementWebSiteData.GetAnnouncementInformation(url);
-                    databaseFactory.InsertAnnouncementInformation(announcementInformation);
-                    CheckDataRentabilityForAnnouncement(announcementInformation);
+                    AnnouncementInformation? announcementInformation = announcementWebSiteData.GetAnnouncementInformation(url);
+
+                    if (announcementInformation != null)
+                    {
+                        databaseFactory.InsertAnnouncementInformation(announcementInformation);
+                        CheckDataRentabilityForAnnouncement(announcementInformation);
+                    }
                 });
             });
 

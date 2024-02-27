@@ -7,6 +7,7 @@
         public string ZipCode { get; set; } = string.Empty;
         public string Price { get; set; } = string.Empty;
         public string Url { get; set; } = string.Empty;
+        public string IdFromProvider { get; set; } = string.Empty;
         public RentalPriceType RentalPriceType { get; set; }
         public RentalTypeOfTheRent RentalTypeOfTheRent { get; set; }
         public DateTime CreatedDate { get; set; }

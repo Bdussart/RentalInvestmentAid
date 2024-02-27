@@ -28,6 +28,7 @@ GO
 
 CREATE TABLE [dbo].[rentalInformation](
 	[id] [int] IDENTITY(1,1) NOT NULL,
+	[idFromProvider] [varchar](50) NOT NULL,
 	[city] [varchar](50) NOT NULL,
 	[zipCode] [varchar](5) NOT NULL,
 	[price] [decimal](5, 2) NOT NULL,
@@ -111,13 +112,14 @@ CREATE PROCEDURE uspGetRentalInformations
 AS
 BEGIN
 SELECT  [id]
-      ,[city]
-      ,[zipCode]
-      ,[price]
-      ,[idPriceType]
-      ,[idPropertyType]
-      ,[createdDate]
-      ,[updatedDate]
+		,[idFromProvider]
+		,[city]
+		,[zipCode]
+		,[price]
+		,[idPriceType]
+		,[idPropertyType]
+		,[createdDate]
+		,[updatedDate]
   FROM [RentalInvestmentAid].[dbo].[RentalInformation]
 
 END
@@ -125,12 +127,13 @@ GO
 
 CREATE PROCEDURE uspInsertRentalInformation
 (
-				@city			varchar(50),
-				@zipcode		varchar(5),
-				@price		decimal(5,2),
-				@idPriceType	int,
-				@idPropertyType int,
-				@url			varchar(255)
+				@city				varchar(50),
+				@idFromProvider		varchar(50),
+				@zipcode			varchar(5),
+				@price				decimal(5,2),
+				@idPriceType		int,
+				@idPropertyType		int,
+				@url				varchar(255)
 )
 AS
 BEGIN
@@ -139,7 +142,8 @@ DECLARE @Now datetime
 SET @Now = GETDATE()
 
 INSERT INTO [dbo].[RentalInformation]
-           ([city]
+           ([idFromProvider]
+		   ,[city]
            ,[zipCode]
            ,[price]
            ,[idPriceType]
@@ -149,7 +153,8 @@ INSERT INTO [dbo].[RentalInformation]
            ,[updatedDate])
      VALUES
            (
-		   @city
+		   @idFromProvider
+		   ,@city
 		   ,@zipcode
 		   ,@price
 		   ,@idPriceType

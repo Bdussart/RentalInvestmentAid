@@ -39,6 +39,7 @@ namespace RentalInvestmentAid.Core.Rental
                 string zipCode = new string(nodeForZipCode[0].InnerText.Split("\n")[2].Where(char.IsDigit).ToArray());
 
                 string city = System.Net.WebUtility.HtmlDecode(nodes[0].InnerText);
+                string idFromProvider = url.Split("/").Last().Split(".").First();
                 rentalInformations.Add(new RentalInformations()
                 {
                     City = city,
@@ -46,7 +47,8 @@ namespace RentalInvestmentAid.Core.Rental
                     RentalPriceType = RentalPriceType.LowerPrice,
                     ZipCode = zipCode,
                     RentalTypeOfTheRent = RentalTypeOfTheRent.Apartment,
-                    Url = url
+                    Url = url,
+                    IdFromProvider = idFromProvider
                 });
 
                 rentalInformations.Add(new RentalInformations()
@@ -56,7 +58,8 @@ namespace RentalInvestmentAid.Core.Rental
                     RentalPriceType = RentalPriceType.MediumPrice,
                     ZipCode = zipCode,
                     RentalTypeOfTheRent = RentalTypeOfTheRent.Apartment,
-                    Url = url
+                    Url = url,
+                    IdFromProvider = idFromProvider
                 });
 
                 rentalInformations.Add(new RentalInformations()
@@ -66,7 +69,8 @@ namespace RentalInvestmentAid.Core.Rental
                     RentalPriceType = RentalPriceType.HigherPrice,
                     ZipCode = zipCode,
                     RentalTypeOfTheRent = RentalTypeOfTheRent.Apartment,
-                    Url = url
+                    Url = url,
+                    IdFromProvider = idFromProvider
                 });
             }
             catch (Exception ex)
@@ -96,6 +100,7 @@ namespace RentalInvestmentAid.Core.Rental
 
                 string zipCode = new string(nodeForZipCode[0].InnerText.Split("\n")[2].Where(char.IsDigit).ToArray());
                 string city = System.Net.WebUtility.HtmlDecode(nodeForCity[0].InnerText);
+                string idFromProvider = url.Split("/").Last().Split(".").First();
                 rentalInformations.Add(new RentalInformations()
                 {
                     City = city,
@@ -103,7 +108,8 @@ namespace RentalInvestmentAid.Core.Rental
                     RentalPriceType = RentalPriceType.LowerPrice,
                     ZipCode = zipCode,
                     RentalTypeOfTheRent = RentalTypeOfTheRent.House,
-                    Url = url
+                    Url = url,
+                    IdFromProvider = idFromProvider
                 });
                 rentalInformations.Add(new RentalInformations()
                 {
@@ -112,7 +118,8 @@ namespace RentalInvestmentAid.Core.Rental
                     RentalPriceType = RentalPriceType.MediumPrice,
                     ZipCode = zipCode,
                     RentalTypeOfTheRent = RentalTypeOfTheRent.House,
-                    Url = url
+                    Url = url,
+                    IdFromProvider = idFromProvider
                 });
                 rentalInformations.Add(new RentalInformations()
                 {
@@ -121,7 +128,8 @@ namespace RentalInvestmentAid.Core.Rental
                     RentalPriceType = RentalPriceType.HigherPrice,
                     ZipCode = zipCode,
                     RentalTypeOfTheRent = RentalTypeOfTheRent.House,
-                    Url = url
+                    Url = url,
+                    IdFromProvider = idFromProvider
                 });
 
             }
@@ -146,32 +154,39 @@ namespace RentalInvestmentAid.Core.Rental
             options.AddArgument("no-sandbox");
 
             bool next = true;
+            int tentative = 0;
             do
             {
-                using (IWebDriver driver = new ChromeDriver(options)) // why open a new driver in the loop ? => Because this website is heavy for the memory and the processor, i don't want to shutdown the website server and my computer :) 
+                try
                 {
-                    baseUrl = $"https://www.lacoteimmo.com/prix-de-l-immo/location/{area}/{department}/nothing/{departmentNumber}{iterator.ToString("0000")}.htm";
-                    LogHelper.LogInfo($"Get information for : {baseUrl}");
-                    try
+                    using (IWebDriver driver = new ChromeDriver(options)) // why open a new driver in the loop ? => Because this website is heavy for the memory and the processor, i don't want to shutdown the website server and my computer :) 
                     {
-                        SeleniumHelper.GoAndWaitPageIsReady(driver, baseUrl);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogHelper.LogException(ex);
-                    }
-                    LogHelper.LogInfo($"Get information for : {driver.Url}");
-                    if ((baseUrl.Equals(driver.Url, StringComparison.CurrentCultureIgnoreCase)) ||
-                        (previousUrl.Equals(driver.Url, StringComparison.CurrentCultureIgnoreCase)) ||
-                        driver.Url == string.Empty)
-                        next = false;
-                    else
-                    {
-                        RentalQueue.SendMessage(driver.Url);
+                        baseUrl = $"https://www.lacoteimmo.com/prix-de-l-immo/location/{area}/{department}/nothing/{departmentNumber}{iterator.ToString("0000")}.htm";
+                        LogHelper.LogInfo($"Get information for : {baseUrl}");
 
-                        previousUrl = driver.Url;
+                        SeleniumHelper.GoAndWaitPageIsReady(driver, baseUrl);
+                        LogHelper.LogInfo($"Get information for : {driver.Url}");
+                        if ((baseUrl.Equals(driver.Url, StringComparison.CurrentCultureIgnoreCase)) ||
+                            (previousUrl.Equals(driver.Url, StringComparison.CurrentCultureIgnoreCase)) ||
+                            driver.Url == string.Empty)
+                            next = false;
+                        else
+                        {
+                            RentalQueue.SendMessage(driver.Url);
+
+                            previousUrl = driver.Url;
+                            tentative = 0;
+                        }
+                        iterator++;
                     }
-                    iterator++;
+
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogHelper.LogException(ex);
+                    if (tentative == 3)
+                        next = false;
+                    tentative++;
                 }
             } while (next);
 

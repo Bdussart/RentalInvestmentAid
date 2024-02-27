@@ -31,13 +31,14 @@ namespace RentalInvestmentAid.Database
                             rentalInformations.Add(new RentalInformations
                             {
                                 Id = reader.GetInt32(0),
-                                City = reader.GetString(1),
-                                ZipCode = reader.GetString(2),
-                                Price = reader.GetDecimal(3).ToString(),
-                                RentalPriceType = (RentalPriceType)reader.GetInt32(4),
-                                RentalTypeOfTheRent = (RentalTypeOfTheRent)reader.GetInt32(5),
-                                CreatedDate = reader.GetDateTime(6),
-                                UpdatedDate = reader.GetDateTime(7)
+                                IdFromProvider = reader.GetString(1),
+                                City = reader.GetString(2),
+                                ZipCode = reader.GetString(3),
+                                Price = reader.GetDecimal(4).ToString(),
+                                RentalPriceType = (RentalPriceType)reader.GetInt32(5),
+                                RentalTypeOfTheRent = (RentalTypeOfTheRent)reader.GetInt32(6),
+                                CreatedDate = reader.GetDateTime(7),
+                                UpdatedDate = reader.GetDateTime(8)
                             });
                         }
                     }
@@ -232,6 +233,7 @@ namespace RentalInvestmentAid.Database
                 using (SqlCommand sqlCommand = new SqlCommand("uspInsertRentalInformation", connection))
                 {
                     sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.AddWithValue("@idFromProvider", rental.IdFromProvider);
                     sqlCommand.Parameters.AddWithValue("@city", rental.City);
                     sqlCommand.Parameters.AddWithValue("@zipcode", rental.ZipCode);
                     sqlCommand.Parameters.AddWithValue("@price", rental.Price);
