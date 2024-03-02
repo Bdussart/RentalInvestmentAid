@@ -1,4 +1,5 @@
 ﻿@page "/announcement"
+
 @using RentalInvestmentAid.Database
 @using RentalInvestmentAid.Models
 @using RentalInvestmentAid.Models.Announcement
@@ -6,6 +7,7 @@
 @using System.ComponentModel
 @using RentalInvestmentAid.Models.Loan
 @using RentalInvestmentAid.Models.Rental
+@using RentalInvestmentAid.Caching
 @using System.Collections.Concurrent
 @rendermode InteractiveServer
 
@@ -94,7 +96,7 @@
                             <tbody>
                                 @foreach (RateInformation rate in _rateInformation)
                                 {
-                                    var currentLoan = result.Loans.First(loan => loan.RateInformation.Id == rate.Id);
+                                    var currentLoan = result.Loans.FirstOrDefault(loan => loan.RateInformation.Id == rate.Id);
                                     if (currentLoan != null)
                                     { //Never be the Case !
                                             <tr class="@CheckRentability(currentLoan, result.Rents)">
@@ -133,18 +135,19 @@
     private ConcurrentBag<RentInformation> _rentInformation = null;
     private ConcurrentBag<LoanInformation> _loansInformation = null;
     private ConcurrentBag<RentalInformations> _rentalInformation = null;
+    private CachingManager _cachingManager = null;
     private List<RateInformation> _rateInformation = null;
 
 
     protected override Task OnInitializedAsync()
     {
-        _announcementInformation = new ConcurrentBag<AnnouncementInformation> (databaseFactory.GetAnnouncementsInformations());
+        _cachingManager = new CachingManager(databaseFactory);
+        _announcementInformation = new ConcurrentBag<AnnouncementInformation>(_cachingManager.GetAnnouncementInformation());
         _rentInformation = new ConcurrentBag<RentInformation>(databaseFactory.GetRentsInformations());
         _loansInformation = new ConcurrentBag<LoanInformation>(databaseFactory.GetLoansInformations());
-        _rentalInformation = new ConcurrentBag<RentalInformations>(databaseFactory.GetRentalsInformations());
+        _rentalInformation = new ConcurrentBag<RentalInformations>(_cachingManager.GetRentalInformations());
         _rentabilityResults = new ConcurrentBag<RentabilityResult>();
-        _rateInformation = databaseFactory.GetRatesInformations();
-
+        _rateInformation = _cachingManager.GetRatesInformation();
         ParallelOptions parallelOptions = new()
             {
                 MaxDegreeOfParallelism = 3

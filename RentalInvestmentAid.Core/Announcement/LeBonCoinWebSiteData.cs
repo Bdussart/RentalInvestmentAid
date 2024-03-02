@@ -11,11 +11,17 @@ using System.Threading.Tasks;
 using RentalInvestmentAid.Core.Announcement.Helper;
 using System.Reflection.Metadata;
 using RentalInvestmentAid.Core.Helper;
+using RentalInvestmentAid.Caching;
 
 namespace RentalInvestmentAid.Core.Announcement
 {
-    public class LeBonCoinWebSiteData : IAnnouncementWebSiteData
+    public class LeBonCoinWebSiteData : MustInitializeCache, IAnnouncementWebSiteData
     {
+        public LeBonCoinWebSiteData(CachingManager cachingManager) : base(cachingManager)
+        {
+            base._cachingManager = cachingManager;
+        }
+
         public List<string> GetAnnoucementUrl(List<string> department, int? maxPrice)
         {
             throw new NotImplementedException();

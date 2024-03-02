@@ -12,11 +12,16 @@ using OpenQA.Selenium.DevTools;
 using RentalInvestmentAid.Core.Helper;
 using RentalInvestmentAid.Logger;
 using RentalInvestmentAid.Queue;
+using RentalInvestmentAid.Caching;
 
 namespace RentalInvestmentAid.Core.Rental
 {
-    public class LaCoteImmoWebSiteData : IRentalWebSiteData
+    public class LaCoteImmoWebSiteData : MustInitializeCache, IRentalWebSiteData
     {
+        public LaCoteImmoWebSiteData(CachingManager cachingManager) : base(cachingManager)
+        {
+            base._cachingManager = cachingManager;
+        }
 
         //NOTE : Voici comment est fait le site lacoteImmo  :
         //https://www.lacoteimmo.com/prix-de-l-immo/location/rhone-alpes/haute-savoie/alby-sur-cheran/740002.htm
@@ -31,7 +36,6 @@ namespace RentalInvestmentAid.Core.Rental
 
                 HtmlDocument document = htmlWeb.Load(url);
 
-                LogHelper.LogDebug($"[{url}] => {document.Text}");
                 HtmlNodeCollection nodes = document.DocumentNode.SelectNodes("/html[1]/body[1]/div[2]/div[2]/div[2]/div[1]/div[1]/table[1]/tbody[1]/tr/td");
 
                 HtmlNodeCollection nodeForZipCode = document.DocumentNode.SelectNodes("//*[@id=\"wrapper\"]/script[2]/text()");
@@ -42,7 +46,7 @@ namespace RentalInvestmentAid.Core.Rental
                 string idFromProvider = url.Split("/").Last().Split(".").First();
                 rentalInformations.Add(new RentalInformations()
                 {
-                    City = city,
+                    City = city.Replace("-", " ").Trim(),
                     Price = nodes[1].InnerText.Split(" ")[0],
                     RentalPriceType = RentalPriceType.LowerPrice,
                     ZipCode = zipCode,
@@ -53,7 +57,7 @@ namespace RentalInvestmentAid.Core.Rental
 
                 rentalInformations.Add(new RentalInformations()
                 {
-                    City = city,
+                    City = city.Replace("-", " ").Trim(),
                     Price = nodes[2].InnerText.Split(" ")[0],
                     RentalPriceType = RentalPriceType.MediumPrice,
                     ZipCode = zipCode,
@@ -64,7 +68,7 @@ namespace RentalInvestmentAid.Core.Rental
 
                 rentalInformations.Add(new RentalInformations()
                 {
-                    City = city,
+                    City = city.Replace("-", " ").Trim(),
                     Price = nodes[3].InnerText.Split(" ")[0],
                     RentalPriceType = RentalPriceType.HigherPrice,
                     ZipCode = zipCode,
@@ -89,7 +93,6 @@ namespace RentalInvestmentAid.Core.Rental
                 HtmlWeb htmlWeb = new HtmlWeb();
 
                 HtmlDocument document = htmlWeb.Load(url);
-                LogHelper.LogDebug($"[{url}] => {document.Text}");
 
                 HtmlNodeCollection nodes = document.DocumentNode.SelectNodes("/html[1]/body[1]/div[2]/div[2]/div[2]/div[2]/div[1]/table[1]/tbody[1]/tr/td");
 
@@ -103,7 +106,7 @@ namespace RentalInvestmentAid.Core.Rental
                 string idFromProvider = url.Split("/").Last().Split(".").First();
                 rentalInformations.Add(new RentalInformations()
                 {
-                    City = city,
+                    City = city.Replace("-", " ").Trim(),
                     Price = nodes[0].InnerText.Split(" ")[0],
                     RentalPriceType = RentalPriceType.LowerPrice,
                     ZipCode = zipCode,
@@ -113,7 +116,7 @@ namespace RentalInvestmentAid.Core.Rental
                 });
                 rentalInformations.Add(new RentalInformations()
                 {
-                    City = city,
+                    City = city.Replace("-", " ").Trim(),
                     Price = nodes[1].InnerText.Split(" ")[0],
                     RentalPriceType = RentalPriceType.MediumPrice,
                     ZipCode = zipCode,
@@ -123,7 +126,7 @@ namespace RentalInvestmentAid.Core.Rental
                 });
                 rentalInformations.Add(new RentalInformations()
                 {
-                    City = city,
+                    City = city.Replace("-", " ").Trim(),
                     Price = nodes[2].InnerText.Split(" ")[0],
                     RentalPriceType = RentalPriceType.HigherPrice,
                     ZipCode = zipCode,
@@ -157,13 +160,12 @@ namespace RentalInvestmentAid.Core.Rental
             int tentative = 0;
             do
             {
+                baseUrl = $"https://www.lacoteimmo.com/prix-de-l-immo/location/{area}/{department}/nothing/{departmentNumber}{iterator.ToString("0000")}.htm";
+                LogHelper.LogInfo($"Get information for : {baseUrl}");
                 try
                 {
                     using (IWebDriver driver = new ChromeDriver(options)) // why open a new driver in the loop ? => Because this website is heavy for the memory and the processor, i don't want to shutdown the website server and my computer :) 
                     {
-                        baseUrl = $"https://www.lacoteimmo.com/prix-de-l-immo/location/{area}/{department}/nothing/{departmentNumber}{iterator.ToString("0000")}.htm";
-                        LogHelper.LogInfo($"Get information for : {baseUrl}");
-
                         SeleniumHelper.GoAndWaitPageIsReady(driver, baseUrl);
                         LogHelper.LogInfo($"Get information for : {driver.Url}");
                         if ((baseUrl.Equals(driver.Url, StringComparison.CurrentCultureIgnoreCase)) ||
@@ -172,7 +174,8 @@ namespace RentalInvestmentAid.Core.Rental
                             next = false;
                         else
                         {
-                            RentalQueue.SendMessage(driver.Url);
+                            if(!base._cachingManager.GetRentalInformations().Any(rental => rental.Url.Equals(driver.Url, StringComparison.InvariantCultureIgnoreCase)))
+                                RentalQueue.SendMessage(driver.Url);
 
                             previousUrl = driver.Url;
                             tentative = 0;

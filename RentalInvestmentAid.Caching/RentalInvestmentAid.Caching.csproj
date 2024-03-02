@@ -1,16 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RentalInvestmentAid.Caching\RentalInvestmentAid.Caching.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\RentalInvestmentAid.Database\RentalInvestmentAid.Database.csproj" />
-    <ProjectReference Include="..\RentalInvestmentAid.Logger\RentalInvestmentAid.Logger.csproj" />
     <ProjectReference Include="..\RentalInvestmentAid.Models\RentalInvestmentAid.Models.csproj" />
+    <ProjectReference Include="..\RentalInvestmentAid.Settings\RentalInvestmentAid.Settings.csproj" />
   </ItemGroup>
 
 </Project>

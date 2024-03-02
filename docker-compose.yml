@@ -17,11 +17,11 @@ services:
     command: >
       bash -c '
         if [ "$Init" = true ]; then
-            sleep 60 &&
+            sleep 30 &&
       /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P ${Sa_Password:-password123} -d master -i docker-entrypoint-initdb.d/init.sql;
         fi
         echo "$Init";
-        echo "All done!";'
+        echo "All done!";'    
   rabbitmq:
     image: rabbitmq:management
     container_name: rabbitmq

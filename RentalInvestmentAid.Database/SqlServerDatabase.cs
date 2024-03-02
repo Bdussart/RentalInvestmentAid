@@ -48,7 +48,6 @@ namespace RentalInvestmentAid.Database
         }
         public List<AnnouncementInformation> GetAnnouncementsInformations()
         {
-
             List<AnnouncementInformation> announcementInformations = new List<AnnouncementInformation>();
             using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
             {
@@ -149,7 +148,6 @@ namespace RentalInvestmentAid.Database
             }
             return loansInformations;
         }
-
         public List<RentInformation> GetRentsInformations()
         {
             List<RentInformation> rentInformations = new List<RentInformation>();
@@ -251,7 +249,6 @@ namespace RentalInvestmentAid.Database
             }
             return rental;
         }
-
         public AnnouncementInformation InsertAnnouncementInformation(AnnouncementInformation announcementInformation)
         {
             using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
@@ -279,7 +276,6 @@ namespace RentalInvestmentAid.Database
 
             return announcementInformation;
         }
-
         public RateInformation InsertRateInformation(RateInformation rateInformation)
         {
             using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
@@ -303,7 +299,6 @@ namespace RentalInvestmentAid.Database
 
             return rateInformation;
         }
- 
         public LoanInformation InsertLoanInformation(LoanInformation loanInformation)
         {
             using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
@@ -330,7 +325,6 @@ namespace RentalInvestmentAid.Database
 
             return loanInformation;
         }
-
         public RentInformation InsertRentInformation(RentInformation rentInformation)
         {
             using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))

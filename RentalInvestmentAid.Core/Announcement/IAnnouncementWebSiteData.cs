@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace RentalInvestmentAid.Core.Announcement
 {
-    public interface IAnnouncementWebSiteData
+    public interface IAnnouncementWebSiteData 
     {
+        
         public AnnouncementInformation? GetAnnouncementInformation(string url);
 
         public List<String> GetAnnoucementUrl(List<string> departments, int? maxPrice);

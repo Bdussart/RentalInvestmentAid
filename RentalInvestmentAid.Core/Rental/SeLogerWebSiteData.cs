@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using RentalInvestmentAid.Caching;
 using RentalInvestmentAid.Models.Rental;
 using System;
 using System.Collections.Generic;
@@ -8,8 +9,13 @@ using System.Threading.Tasks;
 
 namespace RentalInvestmentAid.Core.Rental
 {
-    public class SeLogerWebSiteData : IRentalWebSiteData
+    public class SeLogerWebSiteData : MustInitializeCache, IRentalWebSiteData
     {
+        public SeLogerWebSiteData(CachingManager cachingManager) : base(cachingManager)
+        {
+            base._cachingManager = cachingManager;
+        }
+
         public List<RentalInformations> GetApartmentRentalInformation(string url)
         {
             throw new NotImplementedException();

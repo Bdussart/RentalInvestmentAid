@@ -8,11 +8,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RentalInvestmentAid.Caching;
 
 namespace RentalInvestmentAid.Core.Announcement
 {
-    public class LogicImmoWebSiteData : IAnnouncementWebSiteData
+    public class LogicImmoWebSiteData : MustInitializeCache, IAnnouncementWebSiteData
     {
+        public LogicImmoWebSiteData(CachingManager cachingManager) : base(cachingManager)
+        {
+            base._cachingManager = cachingManager;
+        }
+
         public List<string> GetAnnoucementUrl(List<string> department, int? maxPrice)
         {
             throw new NotImplementedException();

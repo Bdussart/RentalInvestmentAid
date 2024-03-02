@@ -16,8 +16,32 @@ namespace RentalInvestmentAid.Settings
                 return configuration.GetConnectionString("RentalInvestmentAidDatabase");
             }
         }
-            
-            
-            
+
+        public static String RentalCacheKey
+        {
+            get
+            {
+                IConfiguration configuration = builder.Build();
+                return configuration.GetSection("Cache").GetSection("RentalCacheKey").Value.ToString() ;
+            }
+        }
+        public static String AnnouncementCacheKey
+        {
+            get
+            {
+                IConfiguration configuration = builder.Build();
+                return configuration.GetSection("Cache").GetSection("AnnouncementCacheKey").Value.ToString();
+            }
+        }
+        public static String RateCacheKey
+        {
+            get
+            {
+                IConfiguration configuration = builder.Build();
+                return configuration.GetSection("Cache").GetSection("RateCacheKey").Value.ToString();
+            }
+        }
+
     }
 }
+

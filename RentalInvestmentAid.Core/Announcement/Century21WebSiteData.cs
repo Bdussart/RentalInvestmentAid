@@ -14,23 +14,28 @@ using static System.Net.Mime.MediaTypeNames;
 using static System.Net.WebRequestMethods;
 using static System.Collections.Specialized.BitVector32;
 using OpenQA.Selenium.Interactions;
-using Microsoft.FSharp.Data.UnitSystems.SI.UnitNames;
 using RentalInvestmentAid.Core.Helper;
+using RentalInvestmentAid.Caching;
 
 namespace RentalInvestmentAid.Core.Announcement
 {
 
-    public class Century21WebSiteData : IAnnouncementWebSiteData
+    public class Century21WebSiteData : MustInitializeCache, IAnnouncementWebSiteData
     {
+        public Century21WebSiteData(CachingManager cachingManager) : base(cachingManager)
+        {
+            base._cachingManager = cachingManager;
+        }
+
         private string baseUrl { get; set; } = "https://www.century21.fr";
         
         private void ImitateHumanTyping(string sentenceToImitate,  IWebElement element)
         {
             foreach (char c in sentenceToImitate)
             {
-                Normal normalDist = new Normal(100, 10);
+                Normal normalDist = new Normal(50, 10);
                 int randomGaussianValue = (int)normalDist.Sample();
-                Thread.Sleep(randomGaussianValue * 15 + 100);
+                Thread.Sleep(randomGaussianValue * 15 + 50);
                 string s = new StringBuilder().Append(c).ToString();
                 element.SendKeys(s);
             }
@@ -51,7 +56,8 @@ namespace RentalInvestmentAid.Core.Announcement
                 HtmlNode divChild = node.ChildNodes.First(child => child.Name.Equals("div", StringComparison.CurrentCultureIgnoreCase));
                 string annonceUid = divChild.Attributes["data-uid"].Value;
 
-                urls.Add($"https://www.century21.fr/trouver_logement/detail/{annonceUid}");
+                if(!_cachingManager.GetAnnouncementInformation().Any(ann => ann.IdFromProvider.Equals(annonceUid)))
+                    urls.Add($"https://www.century21.fr/trouver_logement/detail/{annonceUid}");
             }
 
             return urls;
@@ -110,7 +116,7 @@ namespace RentalInvestmentAid.Core.Announcement
                 using (IWebDriver driver = new ChromeDriver(options))
                 {
                     SetSearchInformation(driver, maxPrice, department);
-                    urls.AddRange(FindUrlForEachAnnoncement(driver.PageSource));
+                    //urls.AddRange(FindUrlForEachAnnoncement(driver.PageSource));
                     bool nextPage = false;
                     do
                     {
@@ -160,15 +166,17 @@ namespace RentalInvestmentAid.Core.Announcement
                 else
                     metrage = HtmlWordsHelper.CleanHtml(spanInfos[1].InnerText.Trim().Split("-")[1].Split("m")[0].Trim()).Replace(",", ".");
 
+                var announcementIdFromProvider = url.Split("/").Last(); 
                 announcementInformation = new AnnouncementInformation()
                 {
                     RentalType = rentalType,
                     Metrage = metrage,
-                    City = HtmlWordsHelper.CleanHtml(locationInformations[0].Trim()),
+                    City = HtmlWordsHelper.CleanHtml(locationInformations[0].Replace("-", " ").Trim()),
                     ZipCode = HtmlWordsHelper.CleanHtml(locationInformations[1].Trim()),
                     Price = new string(HtmlWordsHelper.CleanHtml(nodesInformationWithPrice[0].InnerText).Where(char.IsDigit).ToArray()),
                     Description = HtmlWordsHelper.CleanHtml(nodesWithDescription[0].InnerText.Trim()),
-                    UrlWebSite = url
+                    UrlWebSite = url,
+                    IdFromProvider = announcementIdFromProvider
                 };
             }
             catch (Exception ex)
