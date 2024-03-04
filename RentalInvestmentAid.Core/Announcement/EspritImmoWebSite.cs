@@ -71,9 +71,7 @@ namespace RentalInvestmentAid.Core.Announcement
         {
             List<String> urls = new List<String>();
             string html = String.Empty;
-            ChromeOptions options = new ChromeOptions();
-            options.AddArgument("--enable-javascript");
-            options.AddArgument("--window-size=500,1080");
+            ChromeOptions options = SeleniumHelper.DefaultChromeOption();
 
             using (IWebDriver driver = new ChromeDriver(options))
             {
@@ -102,8 +100,6 @@ namespace RentalInvestmentAid.Core.Announcement
             {
                 HtmlWeb htmlWeb = new HtmlWeb();
                 HtmlDocument document = htmlWeb.Load(url);
-
-                HtmlNodeCollection informations = document.DocumentNode.SelectNodes("/html/body/div[7]/div/div[1]/div/div[2]/div[8]");
 
                 string type = document.DocumentNode.SelectSingleNode("/html[1]/body[1]/div[7]/div[1]/div[1]/div[1]/div[2]/div[8]/div[2]/div[1]/ul[1]/li[1]/div[1]/div[2]/b[1]").InnerText;
                 string zipCode = document.DocumentNode.SelectSingleNode("html[1]/body[1]/div[7]/div[1]/div[1]/div[1]/div[2]/div[8]/div[3]/div[1]/ul[1]/li[1]/div[1]/div[2]/b[1]").InnerText;

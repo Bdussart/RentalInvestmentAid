@@ -150,11 +150,8 @@ namespace RentalInvestmentAid.Core.Rental
             string baseUrl = string.Empty;
             string previousUrl = string.Empty;
 
-            ChromeOptions options = new ChromeOptions();
-            options.AddArgument("--enable-javascript");
+            ChromeOptions options = SeleniumHelper.DefaultChromeOption();
             options.AddArguments("--headless");
-            options.AddArgument("incognito");
-            options.AddArgument("no-sandbox");
 
             bool next = true;
             int tentative = 0;

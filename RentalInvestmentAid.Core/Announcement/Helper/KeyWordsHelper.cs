@@ -11,7 +11,7 @@ namespace RentalInvestmentAid.Core.Announcement.Helper
     {
         private static List<string> HouseKeyWord = new List<string>
         {
-            "Maison", "Villa", "proprité"
+            "Maison", "Villa", "proprieté"
         };
         private static List<string> ApartementKeyWord = new List<string>
         {

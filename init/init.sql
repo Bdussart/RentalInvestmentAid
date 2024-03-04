@@ -320,7 +320,10 @@ GO
   INSERT INTO [rentalInvestmentAid].[dbo].[announcementProvider]
   ([name])
   values ('Esprit-Immo')
-
+      
+  INSERT INTO [rentalInvestmentAid].[dbo].[announcementProvider]
+  ([name])
+  values ('iad')
 
 
 CREATE TABLE [dbo].[rateInformation](

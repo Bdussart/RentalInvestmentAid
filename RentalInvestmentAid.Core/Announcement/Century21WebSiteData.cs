@@ -16,6 +16,7 @@ using static System.Collections.Specialized.BitVector32;
 using OpenQA.Selenium.Interactions;
 using RentalInvestmentAid.Core.Helper;
 using RentalInvestmentAid.Caching;
+using System.Collections.Concurrent;
 
 namespace RentalInvestmentAid.Core.Announcement
 {
@@ -96,11 +97,9 @@ namespace RentalInvestmentAid.Core.Announcement
         }
         public List<string> GetAnnoucementUrl(List<string> departments = null, int? maxPrice = null)
         {
-            List<String> urls = new List<String>();
+            ConcurrentBag<String> urls = new ConcurrentBag<String>();
             string html = String.Empty;
-            ChromeOptions options = new ChromeOptions();
-            options.AddArgument("--enable-javascript");
-            options.AddArgument("--window-size=500,1080");
+            ChromeOptions options = SeleniumHelper.DefaultChromeOption();
             Parallel.ForEach(departments, department =>
             {
                 using (IWebDriver driver = new ChromeDriver(options))
@@ -110,7 +109,8 @@ namespace RentalInvestmentAid.Core.Announcement
                     bool nextPage = false;
                     do
                     {
-                        urls.AddRange(FindUrlForEachAnnoncement(driver.PageSource));
+                        foreach (string url in FindUrlForEachAnnoncement(driver.PageSource))
+                            urls.Add(url);
                         nextPage = ThereIsANextPage(driver.PageSource);
 
                         if (nextPage)
@@ -129,7 +129,7 @@ namespace RentalInvestmentAid.Core.Announcement
 
                 }
             });
-            return urls;
+            return urls.ToList();
         }
 
         public AnnouncementInformation? GetAnnouncementInformation(string url)

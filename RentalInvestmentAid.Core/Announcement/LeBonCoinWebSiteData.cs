@@ -36,9 +36,7 @@ namespace RentalInvestmentAid.Core.Announcement
                 HtmlWeb htmlWeb = new HtmlWeb();
                 string html = string.Empty;
 
-                ChromeOptions options = new ChromeOptions();
-                options.AddArgument("--enable-javascript");
-                options.AddArgument("--window-size=500,1080");
+                ChromeOptions options = SeleniumHelper.DefaultChromeOption();
                 using (IWebDriver driver = new ChromeDriver(options))
                 {
 

@@ -12,7 +12,9 @@ namespace RentalInvestmentAid.Models.Announcement
         [Description("Century21")]
         century21 = 1,
         [Description("Esprit-immo")]
-        espritIimmo = 2
+        espritIimmo = 2,
+        [Description("IAD")]
+        IAD = 3
 
     }
 }

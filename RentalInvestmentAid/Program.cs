@@ -14,6 +14,7 @@ using RentalInvestmentAid.Caching;
 using System.Diagnostics;
 using RentalInvestmentAid.Queue;
 using RabbitMQ.Client.Events;
+using RentalInvestmentAid.Core.Announcement.Helper;
 
 namespace RentalInvestmentAid
 {
@@ -23,7 +24,17 @@ namespace RentalInvestmentAid
 
         private static CachingManager _cachingManager = null;
 
-        private static IDatabaseFactory databaseFactory = new SqlServerDatabase();
+        private static IDatabaseFactory _databaseFactory = new SqlServerDatabase();
+
+        private static Dictionary<int, string> _dicoDepartements = new Dictionary<int, string>
+            {
+                {74, "haute-savoie" },
+                {01, "ain" },
+                {73, "savoie" }
+            };
+
+        private static int? _maxPrice = null;
+
         private static List<RentalInformations> GetRentalInformations(string url)
         {
             IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData(_cachingManager);
@@ -37,28 +48,39 @@ namespace RentalInvestmentAid
             rentalInformations.AddRange(webSiteData.GetHouseRentalInformation(url));
             return (rentalInformations);
         }
-        
+
         public static void Main(string[] args)
         {
-            _cachingManager = new CachingManager(databaseFactory);
+            _cachingManager = new CachingManager(_databaseFactory);
             Console.OutputEncoding = Encoding.UTF8;
 
+            //IAnnouncementWebSiteData announcementWebSite = new EspritImmoWebSite(_cachingManager);
+            //IAnnouncementWebSiteData IADWebSite = new IADWebSite(_cachingManager); 
+            //List<IAnnouncementWebSiteData> workers = new List<IAnnouncementWebSiteData>
+            //    {
+            //        { IADWebSite },
+            //        {announcementWebSite }
+            //    };
 
-            IAnnouncementWebSiteData announcementWebSite = new EspritImmoWebSite(_cachingManager);
-            List<string> urls  = announcementWebSite.GetAnnoucementUrl();
-            urls.ForEach(url =>
-            {
-                Thread.Sleep(TimeSpan.FromSeconds(2));
-                AnnouncementInformation? announcementInformation = announcementWebSite.GetAnnouncementInformation(url);
 
-                if (announcementInformation != null)
-                {
-                    databaseFactory.InsertAnnouncementInformation(announcementInformation);
-                    _cachingManager.ForceCacheUpdateAnnouncementInformation();
-                    CheckDataRentabilityForAnnouncement(announcementInformation);
-                }
-            });
-            //DoLoadDataJob();
+            //List<string> urls = IADWebSite.GetAnnoucementUrl(_dicoDepartements.Values.ToList(), _maxPrice);
+            //urls.AddRange(announcementWebSite.GetAnnoucementUrl(maxPrice : _maxPrice));
+
+
+
+            //urls.ForEach(url =>
+            //{
+            //    Thread.Sleep(TimeSpan.FromSeconds(2));
+            //    AnnouncementInformation? announcementInformation = HeirsHelper.FindTheRightHeir(url, workers).GetAnnouncementInformation(url);
+
+            //    if (announcementInformation != null)
+            //    {
+            //        _databaseFactory.InsertAnnouncementInformation(announcementInformation);
+            //        _cachingManager.ForceCacheUpdateAnnouncementInformation();
+            //        CheckDataRentabilityForAnnouncement(announcementInformation);
+            //    }
+            //});
+            DoLoadDataJob();
         }
 
 
@@ -78,7 +100,7 @@ namespace RentalInvestmentAid
             Logger.LogHelper.LogInfo($"Received {message}");
             foreach (var info in GetRentalInformations(message))
             {
-                databaseFactory.InsertRentalInformation(info);
+                _databaseFactory.InsertRentalInformation(info);
             };
             _cachingManager.ForceCacheUpdateRentalInformations();
         }
@@ -87,16 +109,11 @@ namespace RentalInvestmentAid
         {
             IBankWebSiteData bankWebSiteData = new PAPWebSiteData();
 
-            Dictionary<int, string> dicoDepartements = new Dictionary<int, string>
-            {
-                {74, "haute-savoie" },
-                {01, "ain" },
-                {73, "savoie" }
-            };
+
 
             LoopGetRentalData();
 
-            List<String> departements = dicoDepartements.Values.ToList();
+            List<String> departements = _dicoDepartements.Values.ToList();
 
             Task.Factory.StartNew(() =>
             {
@@ -107,32 +124,48 @@ namespace RentalInvestmentAid
 
             foreach (RateInformation rate in bankInformations)
             {
-                databaseFactory.InsertRateInformation(rate);
+                _databaseFactory.InsertRateInformation(rate);
             }
             _cachingManager.ForceCacheUpdateRatesInformation();
 
 
             IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData(_cachingManager);
+            IAnnouncementWebSiteData announcementWebSite = new EspritImmoWebSite(_cachingManager);
+            IAnnouncementWebSiteData IADWebSite = new IADWebSite(_cachingManager);
+            List<IAnnouncementWebSiteData> workers = new List<IAnnouncementWebSiteData>
+                {
+                    { IADWebSite },
+                    
+                    //{announcementWebSite },
+
+                    {announcementWebSiteData }
+                };
+
+            List<string> urls = new List<string>();
+            foreach (var worker in workers)
+            {
+                worker.GetAnnoucementUrl(_dicoDepartements.Values.ToList(), _maxPrice);
+                urls.AddRange(announcementWebSite.GetAnnoucementUrl(maxPrice: _maxPrice));
+            }
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            List<String> urls = announcementWebSiteData.GetAnnoucementUrl(departements, 200000);
             urls.ForEach(url =>
             {
                 Thread.Sleep(TimeSpan.FromSeconds(2));
-                AnnouncementInformation? announcementInformation = announcementWebSiteData.GetAnnouncementInformation(url);
+                AnnouncementInformation? announcementInformation = HeirsHelper.FindTheRightHeir(url, workers).GetAnnouncementInformation(url);
 
                 if (announcementInformation != null)
                 {
-                    databaseFactory.InsertAnnouncementInformation(announcementInformation);
+                    _databaseFactory.InsertAnnouncementInformation(announcementInformation);
                     _cachingManager.ForceCacheUpdateAnnouncementInformation();
                     CheckDataRentabilityForAnnouncement(announcementInformation);
                 }
             });
 
             IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData(_cachingManager);
-            Parallel.ForEach(dicoDepartements, departement =>
+            Parallel.ForEach(_dicoDepartements, departement =>
             {
                 webSiteData.EnQueueUrls("rhone-alpes", departement.Value, departement.Key);
             });
@@ -165,24 +198,24 @@ namespace RentalInvestmentAid
                 foreach (LoanInformation loan in loansInformation)
                 {
                     loan.AnnouncementInformation = announcement;
-                    databaseFactory.InsertLoanInformation(loan);
+                    _databaseFactory.InsertLoanInformation(loan);
                 }
 
                 List<RentInformation> realRentalCosts = rentalTreament.CalculAllRentalPrices(currentsRentalInformation, announcement);
                 foreach (RentInformation rent in realRentalCosts)
                 {
                     rent.AnnouncementInformation = announcement;
-                    databaseFactory.InsertRentInformation(rent);
+                    _databaseFactory.InsertRentInformation(rent);
                 }
 
-                databaseFactory.UpdateRentabilityInformation(announcement.Id);
+                _databaseFactory.UpdateRentabilityInformation(announcement.Id);
                 //RentalResult result = rentalTreament.CheckIfRentable(announcement.Price, realRentalCosts, loansInformation);
             }
         }
 
         private static void CheckAllDataRentability()
         {
-            foreach (AnnouncementInformation announcement in databaseFactory.GetAnnouncementsInformations().Where(ann => !ann.rentabilityCalculated)) { 
+            foreach (AnnouncementInformation announcement in _databaseFactory.GetAnnouncementsInformations().Where(ann => !ann.rentabilityCalculated)) { 
                 CheckDataRentabilityForAnnouncement(announcement);
                 Thread.Sleep(TimeSpan.FromMilliseconds(2));
             }
