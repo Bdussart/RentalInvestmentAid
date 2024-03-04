@@ -12,7 +12,7 @@ namespace RentalInvestmentAid.Core.Announcement
         
         public AnnouncementInformation? GetAnnouncementInformation(string url);
 
-        public List<String> GetAnnoucementUrl(List<string> departments, int? maxPrice);
+        public List<String> GetAnnoucementUrl(List<string> departments = null, int? maxPrice = null);
 
         public string GetKeyword();
     }

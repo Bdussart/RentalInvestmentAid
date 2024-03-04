@@ -70,6 +70,8 @@ ALTER TABLE [dbo].[rentalInformation] CHECK CONSTRAINT [FK_rentalInformation_pri
 GO
 
 
+
+
   INSERT INTO [rentalInvestmentAid].[dbo].priceType
   (type)
   values ('LowerPrice')
@@ -170,6 +172,7 @@ GO
 
 CREATE TABLE [dbo].[annoncementInformation](
 	[id] [int] IDENTITY(1,1) NOT NULL,
+	[idAnnouncementProvider] [int] NOT NULL,
 	[idFromProvider] [varchar](50) NOT NULL,
 	[city] [varchar](50) NOT NULL,
 	[zipCode] [varchar](5) NOT NULL,
@@ -198,14 +201,15 @@ GO
 
 CREATE PROCEDURE [dbo].[uspInsertAnnoncementInformation]
 (
-				@city			varchar(50),
-				@idFromProvider varchar(50),
-				@zipcode		varchar(5),
-				@price			decimal(10,0),
-				@metrage		decimal(5,0),
-				@description	varchar(max),
-				@idProptertyType int,
-				@url			varchar(max)
+				@idAnnouncementProvider	int,
+				@city					varchar(50),
+				@idFromProvider			varchar(50),
+				@zipcode				varchar(5),
+				@price					decimal(10,0),
+				@metrage				decimal(5,0),
+				@description			varchar(max),
+				@idProptertyType		int,
+				@url					varchar(max)
 )
 AS
 BEGIN
@@ -214,7 +218,8 @@ DECLARE @Now datetime
 SET @Now = GETDATE()
 
 INSERT INTO [dbo].[annoncementInformation]
-           ([city]
+           ([idAnnouncementProvider]
+		   ,[city]
 		   ,[idFromProvider]
            ,[zipCode]
            ,[price]
@@ -227,7 +232,8 @@ INSERT INTO [dbo].[annoncementInformation]
 		   ,[updatedDate])
      VALUES
            (
-		   @city
+		   @idAnnouncementProvider
+		   ,@city
 		   ,@idFromProvider
 		   ,@zipcode
 		   ,@price
@@ -243,6 +249,7 @@ INSERT INTO [dbo].[annoncementInformation]
 		  return SCOPE_IDENTITY()
 END
 GO
+
 
 
 CREATE PROCEDURE [dbo].[uspUpdateRentabilityInformation]
@@ -267,6 +274,7 @@ CREATE PROCEDURE [dbo].[uspGetAnnoncementInformations]
 AS
 BEGIN
 SELECT  [id]
+	  ,[idAnnouncementProvider]
 	  ,[idFromProvider] 
       ,[city]
       ,[zipCode]
@@ -283,6 +291,37 @@ SELECT  [id]
 
 END
 GO
+
+
+CREATE TABLE [dbo].[announcementProvider](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[name] [varchar](15) NOT NULL,
+ CONSTRAINT [PK_announcementProvider] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+ALTER TABLE [dbo].[annoncementInformation]  WITH CHECK ADD  CONSTRAINT [FK_annoncementInformation_announcementProvider] FOREIGN KEY([idAnnouncementProvider])
+REFERENCES [dbo].[announcementProvider] ([id])
+GO
+
+ALTER TABLE [dbo].[annoncementInformation] CHECK CONSTRAINT [FK_annoncementInformation_announcementProvider]
+GO
+
+
+  INSERT INTO [rentalInvestmentAid].[dbo].[announcementProvider]
+  ([name])
+  values ('Century21')
+
+      
+  INSERT INTO [rentalInvestmentAid].[dbo].[announcementProvider]
+  ([name])
+  values ('Esprit-Immo')
+
+
 
 CREATE TABLE [dbo].[rateInformation](
 	[id] [int] IDENTITY(1,1) NOT NULL,

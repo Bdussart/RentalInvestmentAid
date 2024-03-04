@@ -42,7 +42,23 @@ namespace RentalInvestmentAid
         {
             _cachingManager = new CachingManager(databaseFactory);
             Console.OutputEncoding = Encoding.UTF8;
-            DoLoadDataJob();
+
+
+            IAnnouncementWebSiteData announcementWebSite = new EspritImmoWebSite(_cachingManager);
+            List<string> urls  = announcementWebSite.GetAnnoucementUrl();
+            urls.ForEach(url =>
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(2));
+                AnnouncementInformation? announcementInformation = announcementWebSite.GetAnnouncementInformation(url);
+
+                if (announcementInformation != null)
+                {
+                    databaseFactory.InsertAnnouncementInformation(announcementInformation);
+                    _cachingManager.ForceCacheUpdateAnnouncementInformation();
+                    CheckDataRentabilityForAnnouncement(announcementInformation);
+                }
+            });
+            //DoLoadDataJob();
         }
 
 

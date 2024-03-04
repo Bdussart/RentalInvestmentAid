@@ -10,6 +10,7 @@ namespace RentalInvestmentAid.Models.Announcement
     public class AnnouncementInformation
     {
         public int Id { get; set; }
+        public AnnouncementProvider AnnouncementProvider { get; set; }
         public RentalTypeOfTheRent RentalType { get; set; }
         public string City { get; set; } = String.Empty;
         public string IdFromProvider { get; set; } = String.Empty;

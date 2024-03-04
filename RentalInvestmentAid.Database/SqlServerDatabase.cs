@@ -62,17 +62,18 @@ namespace RentalInvestmentAid.Database
                             announcementInformations.Add(new AnnouncementInformation
                             {
                                 Id = reader.GetInt32(0),
-                                IdFromProvider = reader.GetString(1),
-                                City = reader.GetString(2),
-                                ZipCode = reader.GetString(3),
-                                Price = reader.GetDecimal(4).ToString(),
-                                Metrage = reader.GetDecimal(5).ToString(),
-                                Description = reader.GetString(6).ToString(),
-                                RentalType = (RentalTypeOfTheRent)reader.GetInt32(7),
-                                UrlWebSite = reader.GetString(8).ToString(),
-                                rentabilityCalculated = reader.GetBoolean(9),
-                                CreatedDate = reader.GetDateTime(10),
-                                UpdatedDate = reader.GetDateTime(11)
+                                AnnouncementProvider = (AnnouncementProvider)reader.GetInt32(1),
+                                IdFromProvider = reader.GetString(2),
+                                City = reader.GetString(3),
+                                ZipCode = reader.GetString(4),
+                                Price = reader.GetDecimal(5).ToString(),
+                                Metrage = reader.GetDecimal(6).ToString(),
+                                Description = reader.GetString(7).ToString(),
+                                RentalType = (RentalTypeOfTheRent)reader.GetInt32(8),
+                                UrlWebSite = reader.GetString(9).ToString(),
+                                rentabilityCalculated = reader.GetBoolean(10),
+                                CreatedDate = reader.GetDateTime(11),
+                                UpdatedDate = reader.GetDateTime(12)
                             });
                         }
                     }
@@ -257,6 +258,8 @@ namespace RentalInvestmentAid.Database
                 {
                     sqlCommand.CommandType = CommandType.StoredProcedure;
                     sqlCommand.Parameters.AddWithValue("@city", announcementInformation.City);
+                    sqlCommand.Parameters.AddWithValue("@idAnnouncementProvider", announcementInformation.AnnouncementProvider);
+                    
                     sqlCommand.Parameters.AddWithValue("@zipcode", announcementInformation.ZipCode);
                     sqlCommand.Parameters.AddWithValue("@idFromProvider", announcementInformation.IdFromProvider);
                     sqlCommand.Parameters.AddWithValue("@price", announcementInformation.Price);
