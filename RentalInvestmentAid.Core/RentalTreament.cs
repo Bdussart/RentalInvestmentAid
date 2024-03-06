@@ -17,9 +17,7 @@ namespace RentalInvestmentAid.Core
     {
         public List<RentalInformations> FindRentalInformationForAnAnnoucement(List<RentalInformations> rentalInformations, AnnouncementInformation announcementInformation)
         {
-            //SameCity name AND zipcode different not handled yet
-            return rentalInformations.Where(rent => (String.Compare(rent.CityInfo.CityName, announcementInformation.CityInformations.CityName, 
-                CultureInfo.InvariantCulture, CompareOptions.IgnoreNonSpace | CompareOptions.IgnoreCase) == 0)
+            return rentalInformations.Where(rent => rent.CityInfo.Id == announcementInformation.CityInformations.Id
                 && announcementInformation.RentalType == rent.RentalTypeOfTheRent).ToList();
         }
 

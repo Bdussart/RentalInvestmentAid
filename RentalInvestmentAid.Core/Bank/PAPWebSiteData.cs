@@ -16,6 +16,11 @@ namespace RentalInvestmentAid.Core.Bank
 {
     public class PAPWebSiteData : IBankWebSiteData
     {
+        private BankTreatment _bankTreatment = null;
+        public PAPWebSiteData(BankTreatment bankTreatment)
+        {
+            _bankTreatment = bankTreatment;
+        }
         public List<RateInformation> GetRatesInformations(string url)
         {
             List<RateInformation> bankInformation = new List<RateInformation>();
@@ -34,6 +39,7 @@ namespace RentalInvestmentAid.Core.Bank
                 HtmlDocument document = new HtmlDocument();
                 document.LoadHtml(html);
 
+                string title = document.DocumentNode.SelectSingleNode("/html/body/div[1]/div[1]/h1").InnerText;
                 HtmlNodeCollection nodes = document.DocumentNode.SelectNodes("/html/body/div[1]/div[1]/div[1]/table/tbody/tr");
 
                 foreach (HtmlNode node in nodes)
@@ -43,21 +49,24 @@ namespace RentalInvestmentAid.Core.Bank
                     {
                         DurationInYear = int.Parse(childs[0].InnerText),
                         Rate = childs[4].InnerText.Replace("%", "").Trim(),
-                        RateType = RateType.LowRate
+                        RateType = RateType.LowRate,
+                        Title = title
                     });
 
                     bankInformation.Add(new RateInformation
                     {
                         DurationInYear = int.Parse(childs[0].InnerText),
                         Rate = childs[3].InnerText.Replace("%", "").Trim(),
-                        RateType = RateType.MediumRate
+                        RateType = RateType.MediumRate,
+                        Title = title
                     });
 
                     bankInformation.Add(new RateInformation
                     {
                         DurationInYear = int.Parse(childs[0].InnerText),
                         Rate = childs[2].InnerText.Replace("%", "").Trim(),
-                        RateType = RateType.HighRate
+                        RateType = RateType.HighRate,
+                        Title = title
                     });
                 }
             }

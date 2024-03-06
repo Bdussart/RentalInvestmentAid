@@ -107,8 +107,9 @@ namespace RentalInvestmentAid.Database
                                 DurationInYear = reader.GetInt32(1),
                                 Rate = reader.GetDecimal(2).ToString(),
                                 RateType = (RateType)reader.GetInt32(3),
-                                CreatedDate = reader.GetDateTime(4),
-                                UpdatedDate = reader.GetDateTime(5)
+                                Title = reader.GetString(4),
+                                CreatedDate = reader.GetDateTime(5),
+                                UpdatedDate = reader.GetDateTime(6)
                             });
                         }
                     }
@@ -299,6 +300,7 @@ namespace RentalInvestmentAid.Database
                     sqlCommand.Parameters.AddWithValue("@durationInYear", rateInformation.DurationInYear);
                     sqlCommand.Parameters.AddWithValue("@rate", Convert.ToDecimal(rateInformation.Rate));
                     sqlCommand.Parameters.AddWithValue("@rateType", Convert.ToDecimal(rateInformation.RateType));
+                    sqlCommand.Parameters.AddWithValue("@title", rateInformation.Title);
 
                     SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
                     retval.Direction = ParameterDirection.ReturnValue;

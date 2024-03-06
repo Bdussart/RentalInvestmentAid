@@ -30,6 +30,7 @@ namespace RentalInvestmentAid
         private static IDatabaseFactory _databaseFactory = new SqlServerDatabase();
         private static CityTreatment _cityTreatment = null;
         private static AnnouncementTreatment _announcementTreatment = null;
+        private static BankTreatment _bankTreatment = null;
 
         private static Dictionary<int, string> _dicoDepartements = new Dictionary<int, string>
             {
@@ -43,7 +44,6 @@ namespace RentalInvestmentAid
         private static List<RentalInformations> GetRentalInformations(string url)
         {
             IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData(_cachingManager);
-
             List<RentalInformations> rentalInformations = new List<RentalInformations>();
 
             Thread.Sleep(TimeSpan.FromSeconds(2)); //Take easy for the external server :)
@@ -59,6 +59,7 @@ namespace RentalInvestmentAid
             _cachingManager = new CachingManager(_databaseFactory);
             _cityTreatment = new CityTreatment(_cachingManager, _databaseFactory);
             _announcementTreatment = new AnnouncementTreatment(_cachingManager, _databaseFactory);
+            _bankTreatment = new BankTreatment(_cachingManager, _databaseFactory);
             Console.OutputEncoding = Encoding.UTF8;
 
             //IAnnouncementWebSiteData announcementWebSite = new EspritImmoWebSite(_cachingManager);
@@ -116,7 +117,7 @@ namespace RentalInvestmentAid
 
         private static void DoLoadDataJob()
         {
-            IBankWebSiteData bankWebSiteData = new PAPWebSiteData();
+            IBankWebSiteData bankWebSiteData = new PAPWebSiteData(_bankTreatment);
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -145,10 +146,8 @@ namespace RentalInvestmentAid
 
             foreach (RateInformation rate in bankInformations)
             {
-                _databaseFactory.InsertRateInformation(rate);
+                _bankTreatment.InsertRate(rate);
             }
-            _cachingManager.ForceCacheUpdateRatesInformation();
-
 
             IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData(_announcementTreatment);
             //IAnnouncementWebSiteData announcementWebSite = new EspritImmoWebSite(_cachingManager);
@@ -233,7 +232,7 @@ namespace RentalInvestmentAid
                     _databaseFactory.InsertRentInformation(rent);
                 }
 
-                _databaseFactory.UpdateRentabilityInformation(announcement.Id);
+                _announcementTreatment.UpdateRentabilityInformation(announcement.Id);
                 //RentalResult result = rentalTreament.CheckIfRentable(announcement.Price, realRentalCosts, loansInformation);
             }
         }

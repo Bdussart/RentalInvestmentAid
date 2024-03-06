@@ -370,6 +370,7 @@ CREATE TABLE [dbo].[rateInformation](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[durationInYear] [int] NOT NULL,
 	[rate] [decimal](5, 2) NOT NULL,
+	title varchar(100) NOT NULL,
 	[idRateType] [int] NOT NULL,
 	[createdDate] [datetime] NOT NULL,
 	[updatedDate] [datetime] NOT NULL,
@@ -386,7 +387,8 @@ CREATE PROCEDURE [dbo].[uspInsertRateInformation]
 (
 				@durationInYear	int,
 				@rate		    decimal(5,2),
-				@rateType		int
+				@rateType		int,
+				@title			varchar(100)
 )
 AS
 BEGIN
@@ -398,6 +400,7 @@ INSERT INTO [dbo].[rateInformation]
            ([durationInYear]
            ,[rate]
            ,[idRateType]
+		   ,title
            ,[createdDate]
            ,[updatedDate])
      VALUES
@@ -405,6 +408,7 @@ INSERT INTO [dbo].[rateInformation]
 		   @durationInYear
 		   ,@rate
 		   ,@rateType
+		   ,@title
 		   ,@Now
 		   ,@Now
 		   )
@@ -421,6 +425,7 @@ SELECT  [id]
       ,[durationInYear]
       ,[rate]
       ,[idRateType]
+	  ,title
       ,[createdDate]
       ,[updatedDate]
   FROM [RentalInvestmentAid].[dbo].[rateInformation]

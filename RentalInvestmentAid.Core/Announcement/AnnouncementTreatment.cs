@@ -69,5 +69,11 @@ namespace RentalInvestmentAid.Core.Announcement
 
             return result;
         }
+
+        public void UpdateRentabilityInformation(int announcementId)
+        {
+            _databaseFactory.UpdateRentabilityInformation(announcementId);
+            _cachingManager.ForceCacheUpdateAnnouncementInformation();
+        }
     }
 }
