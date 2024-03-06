@@ -66,6 +66,7 @@ namespace RentalInvestmentAid.Core.Announcement
                 SeleniumHelper.GoAndWaitPageIsReady(driver, baseUrl);
                 InteratiorHelper.ImitateHumanTyping(department, driver.FindElement(By.Id("q")));
                 driver.FindElement(By.XPath("/html/body/main/article/header/div/div[2]/div/div/div[2]/div/form/div[2]/div")).Click();
+                SeleniumHelper.WaitPageIsReady(driver);
                 if (maxPrice.HasValue)
                 {
                     if (!driver.FindElement(By.Id("price_max")).Displayed)
@@ -74,7 +75,6 @@ namespace RentalInvestmentAid.Core.Announcement
                     InteratiorHelper.ImitateHumanTyping(maxPrice.Value.ToString(), driver.FindElement(By.Id("price_max")));
                     driver.FindElement(By.XPath("/html/body/main/section/section/div[2]/div[3]")).Click();
                 }
-                SeleniumHelper.WaitPageIsReady(driver);
             }
             catch (Exception ex)
             {

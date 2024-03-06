@@ -16,7 +16,7 @@
     {
         <div class="cities-information row">
 
-        @foreach (CityInformations city in  _cityTreatment.GetCities().OrderBy(x => x.CityName))
+            @foreach (CityInformations city in _cityTreatment.GetCitiesWithAnnouncement().OrderBy(x => x.CityName))
             {
                 <AnnouncementPerCity City=city />
             }

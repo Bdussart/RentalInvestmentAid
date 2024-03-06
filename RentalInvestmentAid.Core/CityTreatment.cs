@@ -42,6 +42,15 @@ namespace RentalInvestmentAid.Core
             
         }
 
+        public List<CityInformations> GetCitiesWithAnnouncement()
+        {
+            List<CityInformations> cityInformations = new List<CityInformations>();
+
+            List<int> citiesID  = _cachingManager.GetAnnouncementInformation().Select(ann => ann.CityInformations.Id).Distinct().ToList();
+
+            return _cachingManager.GetCities().Where(city => citiesID.Contains(city.Id)).ToList();
+        }
+
         public CityInformations GetAndInsertIfNotExisiting(string cityName, string departement, string zipCode) {
             
             CityInformations? city = GetCity(cityName, departement);
