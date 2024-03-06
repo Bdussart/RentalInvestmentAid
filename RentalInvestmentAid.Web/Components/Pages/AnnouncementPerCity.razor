@@ -1,0 +1,55 @@
+﻿@page "/AnnouncementPerCity"
+@using RentalInvestmentAid.Caching
+@using RentalInvestmentAid.Core
+@using RentalInvestmentAid.Core.Announcement
+@using RentalInvestmentAid.Database
+@using RentalInvestmentAid.Models.Announcement
+@using RentalInvestmentAid.Models.City
+
+@rendermode InteractiveServer
+
+<div class="col-sm-2">
+    <div class="row text-center">
+            <div class="card ">
+                <div class="card-header">
+                @City.CityName -  @City.ZipCode
+                </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"> @AnnouncementInformation.Count() Annonces</li>
+                <li class="list-group-item"> @AnnouncementInformation.Where(ann => ann.RentabilityCalculated).Count() Calcul effectué</li>
+                <li class="list-group-item"> @AnnouncementInformation.Where(ann => !ann.RentabilityCalculated).Count() Calcul NON effectué</li>
+                </ul>
+            </div>
+    </div>
+</div>
+
+
+@code {
+
+    private IDatabaseFactory _databaseFactory = new SqlServerDatabase();
+    private CachingManager _cachingManager = null;
+    private AnnouncementTreatment _announcementTreatment = null;
+
+    [Parameter]
+    public CityInformations City { get; set; }
+    public List<AnnouncementInformation> AnnouncementInformation
+    {
+        get
+        {
+            if (_announcementInformation is null || _announcementInformation.Count () == 0)
+            {
+                _announcementInformation = _announcementTreatment.GetAnnouncementInformationByCityId(City.Id);
+            }
+            return _announcementInformation;
+        }
+    }
+    private List<AnnouncementInformation> _announcementInformation;
+
+    protected override Task OnInitializedAsync()
+    {
+        _cachingManager = new CachingManager(_databaseFactory);
+        _announcementTreatment = new AnnouncementTreatment(_cachingManager, _databaseFactory);
+
+        return base.OnInitializedAsync();
+    }
+}

@@ -43,7 +43,6 @@ namespace RentalInvestmentAid.Core.Bank
                 _cachingManager.ForceCacheUpdateRatesInformation();
             }
             return rateInformation;
-        }       
-
+        }
     }
 }

@@ -1,0 +1,50 @@
+﻿@page "/AnnouncementPerCities"
+@using RentalInvestmentAid.Caching
+@using RentalInvestmentAid.Core
+@using RentalInvestmentAid.Core.Announcement
+@using RentalInvestmentAid.Database
+@using RentalInvestmentAid.Models.City
+
+@rendermode InteractiveServer
+
+<div class="container">
+    @if(_cityTreatment.GetCities()?.Count  == 0)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <div class="cities-information row">
+
+        @foreach (CityInformations city in  _cityTreatment.GetCities().OrderBy(x => x.CityName))
+            {
+                <AnnouncementPerCity City=city />
+            }
+
+        </div>
+    }
+</div>
+
+
+@code {
+    private IDatabaseFactory _databaseFactory = new SqlServerDatabase();
+    private CachingManager _cachingManager = null;
+    private CityTreatment _cityTreatment = null;
+
+    protected override Task OnInitializedAsync()
+    {
+        _cachingManager = new CachingManager(_databaseFactory);
+        _cityTreatment = new CityTreatment(_cachingManager, _databaseFactory);
+
+        return base.OnInitializedAsync();
+    }
+
+    public void CityLoaded(int cityId, ProgressEventArgs e)
+    {
+        Console.WriteLine($"City {cityId} loaded");
+        InvokeAsync(base.StateHasChanged);
+    }
+
+
+    
+}

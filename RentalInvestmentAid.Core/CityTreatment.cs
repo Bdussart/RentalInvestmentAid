@@ -29,6 +29,11 @@ namespace RentalInvestmentAid.Core
             return result;
         }
 
+        public List<CityInformations> GetCities()
+        {
+            return _cachingManager.GetCities();
+        }
+
         public CityInformations InsertCity(CityInformations city)
         {
             city = _databaseFactory.InsertCity(city);
