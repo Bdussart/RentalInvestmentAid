@@ -14,6 +14,8 @@ using RentalInvestmentAid.Logger;
 using RentalInvestmentAid.Queue;
 using RentalInvestmentAid.Caching;
 using OpenQA.Selenium.Remote;
+using RentalInvestmentAid.Models.City;
+using System.Runtime;
 
 namespace RentalInvestmentAid.Core.Rental
 {
@@ -42,41 +44,53 @@ namespace RentalInvestmentAid.Core.Rental
                 HtmlNodeCollection nodeForZipCode = document.DocumentNode.SelectNodes("//*[@id=\"wrapper\"]/script[2]/text()");
 
                 string zipCode = new string(nodeForZipCode[0].InnerText.Split("\n")[2].Where(char.IsDigit).ToArray());
-
                 string city = System.Net.WebUtility.HtmlDecode(nodes[0].InnerText);
-                string idFromProvider = url.Split("/").Last().Split(".").First();
-                rentalInformations.Add(new RentalInformations()
-                {
-                    City = city.Replace("-", " ").Trim(),
-                    Price = nodes[1].InnerText.Split(" ")[0],
-                    RentalPriceType = RentalPriceType.LowerPrice,
-                    ZipCode = zipCode,
-                    RentalTypeOfTheRent = RentalTypeOfTheRent.Apartment,
-                    Url = url,
-                    IdFromProvider = idFromProvider
-                });
 
-                rentalInformations.Add(new RentalInformations()
+                if (!String.IsNullOrWhiteSpace(city) && !String.IsNullOrWhiteSpace(zipCode))
                 {
-                    City = city.Replace("-", " ").Trim(),
-                    Price = nodes[2].InnerText.Split(" ")[0],
-                    RentalPriceType = RentalPriceType.MediumPrice,
-                    ZipCode = zipCode,
-                    RentalTypeOfTheRent = RentalTypeOfTheRent.Apartment,
-                    Url = url,
-                    IdFromProvider = idFromProvider
-                });
+                    string idFromProvider = url.Split("/").Last().Split(".").First();
+                    rentalInformations.Add(new RentalInformations()
+                    {
+                        CityInfo = new CityInformations
+                        {
+                            CityName = city.Replace("-", " ").Trim(),
+                            ZipCode = zipCode
+                        },
+                        Price = nodes[1].InnerText.Split(" ")[0],
+                        RentalPriceType = RentalPriceType.LowerPrice,
+                        RentalTypeOfTheRent = RentalTypeOfTheRent.Apartment,
+                        Url = url,
+                        IdFromProvider = idFromProvider
+                    });
 
-                rentalInformations.Add(new RentalInformations()
-                {
-                    City = city.Replace("-", " ").Trim(),
-                    Price = nodes[3].InnerText.Split(" ")[0],
-                    RentalPriceType = RentalPriceType.HigherPrice,
-                    ZipCode = zipCode,
-                    RentalTypeOfTheRent = RentalTypeOfTheRent.Apartment,
-                    Url = url,
-                    IdFromProvider = idFromProvider
-                });
+                    rentalInformations.Add(new RentalInformations()
+                    {
+                        CityInfo = new CityInformations
+                        {
+                            CityName = city.Replace("-", " ").Trim(),
+                            ZipCode = zipCode
+                        },
+                        Price = nodes[2].InnerText.Split(" ")[0],
+                        RentalPriceType = RentalPriceType.MediumPrice,
+                        RentalTypeOfTheRent = RentalTypeOfTheRent.Apartment,
+                        Url = url,
+                        IdFromProvider = idFromProvider
+                    });
+
+                    rentalInformations.Add(new RentalInformations()
+                    {
+                        CityInfo = new CityInformations
+                        {
+                            CityName = city.Replace("-", " ").Trim(),
+                            ZipCode = zipCode
+                        },
+                        Price = nodes[3].InnerText.Split(" ")[0],
+                        RentalPriceType = RentalPriceType.HigherPrice,
+                        RentalTypeOfTheRent = RentalTypeOfTheRent.Apartment,
+                        Url = url,
+                        IdFromProvider = idFromProvider
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -105,37 +119,49 @@ namespace RentalInvestmentAid.Core.Rental
                 string zipCode = new string(nodeForZipCode[0].InnerText.Split("\n")[2].Where(char.IsDigit).ToArray());
                 string city = System.Net.WebUtility.HtmlDecode(nodeForCity[0].InnerText);
                 string idFromProvider = url.Split("/").Last().Split(".").First();
-                rentalInformations.Add(new RentalInformations()
+                if (!String.IsNullOrWhiteSpace(city) && !String.IsNullOrWhiteSpace(zipCode))
                 {
-                    City = city.Replace("-", " ").Trim(),
-                    Price = nodes[0].InnerText.Split(" ")[0],
-                    RentalPriceType = RentalPriceType.LowerPrice,
-                    ZipCode = zipCode,
-                    RentalTypeOfTheRent = RentalTypeOfTheRent.House,
-                    Url = url,
-                    IdFromProvider = idFromProvider
-                });
-                rentalInformations.Add(new RentalInformations()
-                {
-                    City = city.Replace("-", " ").Trim(),
-                    Price = nodes[1].InnerText.Split(" ")[0],
-                    RentalPriceType = RentalPriceType.MediumPrice,
-                    ZipCode = zipCode,
-                    RentalTypeOfTheRent = RentalTypeOfTheRent.House,
-                    Url = url,
-                    IdFromProvider = idFromProvider
-                });
-                rentalInformations.Add(new RentalInformations()
-                {
-                    City = city.Replace("-", " ").Trim(),
-                    Price = nodes[2].InnerText.Split(" ")[0],
-                    RentalPriceType = RentalPriceType.HigherPrice,
-                    ZipCode = zipCode,
-                    RentalTypeOfTheRent = RentalTypeOfTheRent.House,
-                    Url = url,
-                    IdFromProvider = idFromProvider
-                });
+                    rentalInformations.Add(new RentalInformations()
+                    {
+                        CityInfo = new CityInformations
+                        {
+                            CityName = city.Replace("-", " ").Trim(),
+                            ZipCode = zipCode
+                        },
+                        Price = nodes[0].InnerText.Split(" ")[0],
+                        RentalPriceType = RentalPriceType.LowerPrice,
+                        RentalTypeOfTheRent = RentalTypeOfTheRent.House,
+                        Url = url,
+                        IdFromProvider = idFromProvider
+                    });
+                    rentalInformations.Add(new RentalInformations()
+                    {
+                        CityInfo = new CityInformations
+                        {
+                            CityName = city.Replace("-", " ").Trim(),
+                            ZipCode = zipCode
+                        },
+                        Price = nodes[1].InnerText.Split(" ")[0],
+                        RentalPriceType = RentalPriceType.MediumPrice,
+                        RentalTypeOfTheRent = RentalTypeOfTheRent.House,
+                        Url = url,
+                        IdFromProvider = idFromProvider
+                    });
+                    rentalInformations.Add(new RentalInformations()
+                    {
+                        CityInfo = new CityInformations
+                        {
+                            CityName = city.Replace("-", " ").Trim(),
+                            ZipCode = zipCode
+                        },
+                        Price = nodes[2].InnerText.Split(" ")[0],
+                        RentalPriceType = RentalPriceType.HigherPrice,
+                        RentalTypeOfTheRent = RentalTypeOfTheRent.House,
+                        Url = url,
+                        IdFromProvider = idFromProvider
+                    });
 
+                }
             }
             catch (Exception ex)
             {

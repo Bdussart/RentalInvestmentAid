@@ -18,6 +18,8 @@ using RentalInvestmentAid.Core.Helper;
 using RentalInvestmentAid.Caching;
 using System.Collections.Concurrent;
 using OpenQA.Selenium.Remote;
+using System.Reflection.Emit;
+using OpenQA.Selenium.Support.UI;
 
 namespace RentalInvestmentAid.Core.Announcement
 {
@@ -70,6 +72,7 @@ namespace RentalInvestmentAid.Core.Announcement
                     InteratiorHelper.ImitateHumanTyping(maxPrice.Value.ToString(), driver.FindElement(By.Id("price_max")));
                     driver.FindElement(By.XPath("/html/body/main/section/section/div[2]/div[3]")).Click();
                 }
+                SeleniumHelper.WaitPageIsReady(driver);
             }
             catch (Exception ex)
             {
@@ -158,13 +161,18 @@ namespace RentalInvestmentAid.Core.Announcement
                     metrage = HtmlWordsHelper.CleanHtml(spanInfos[1].InnerText.Trim().Split("-")[1].Split("m")[0].Trim()).Replace(",", ".");
 
                 var announcementIdFromProvider = url.Split("/").Last();
+                string zipCode = HtmlWordsHelper.CleanHtml(locationInformations[1].Trim());
                 announcementInformation = new AnnouncementInformation()
                 {
+                    CityInformations = new Models.City.CityInformations
+                    {
+                        CityName = HtmlWordsHelper.CleanHtml(locationInformations[0].Replace("-", " ").Trim()),
+                        ZipCode =  zipCode,
+                        Departement = zipCode.Substring(0, 2),
+                    },
                     RentalType = rentalType,
                     AnnouncementProvider = _announcementProvider,
                     Metrage = metrage,
-                    City = HtmlWordsHelper.CleanHtml(locationInformations[0].Replace("-", " ").Trim()),
-                    ZipCode = HtmlWordsHelper.CleanHtml(locationInformations[1].Trim()),
                     Price = new string(HtmlWordsHelper.CleanHtml(nodesInformationWithPrice[0].InnerText).Where(char.IsDigit).ToArray()),
                     Description = HtmlWordsHelper.CleanHtml(nodesWithDescription[0].InnerText.Trim()),
                     UrlWebSite = url,

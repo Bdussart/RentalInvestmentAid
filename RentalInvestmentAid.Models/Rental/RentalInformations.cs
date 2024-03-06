@@ -1,10 +1,11 @@
-﻿namespace RentalInvestmentAid.Models.Rental
+﻿using RentalInvestmentAid.Models.City;
+
+namespace RentalInvestmentAid.Models.Rental
 {
     public class RentalInformations
     {
         public int Id { get; set; }
-        public string City { get; set; } = string.Empty;
-        public string ZipCode { get; set; } = string.Empty;
+        public CityInformations CityInfo { get; set; } = null;
         public string Price { get; set; } = string.Empty;
         public string Url { get; set; } = string.Empty;
         public string IdFromProvider { get; set; } = string.Empty;

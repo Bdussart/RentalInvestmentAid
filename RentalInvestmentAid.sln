@@ -26,7 +26,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentalInvestmentAid.Web", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentalInvestmentAid.Queue", "RentalInvestmentAid.Queue\RentalInvestmentAid.Queue.csproj", "{A36C45FD-0BA1-45DD-938F-97DD21963184}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RentalInvestmentAid.Caching", "RentalInvestmentAid.Caching\RentalInvestmentAid.Caching.csproj", "{544C921E-53C0-40C2-B047-0C88879CE675}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentalInvestmentAid.Caching", "RentalInvestmentAid.Caching\RentalInvestmentAid.Caching.csproj", "{544C921E-53C0-40C2-B047-0C88879CE675}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Queries", "Queries", "{95A16BBB-04A5-473C-BE70-9A2022199502}"
+	ProjectSection(SolutionItems) = preProject
+		Queries\Dump database.sql = Queries\Dump database.sql
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

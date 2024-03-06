@@ -19,6 +19,12 @@ namespace RentalInvestmentAid.Core.Helper
             wait.Until(d => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
         }
 
+        public static void WaitPageIsReady(IWebDriver driver)
+        {
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            wait.Until(d => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
+        }
+
         public static ChromeOptions DefaultChromeOption()
         {
             ChromeOptions options =  new ChromeOptions();

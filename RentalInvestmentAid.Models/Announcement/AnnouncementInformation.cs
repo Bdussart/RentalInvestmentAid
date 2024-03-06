@@ -1,4 +1,5 @@
-﻿using RentalInvestmentAid.Models.Rental;
+﻿using RentalInvestmentAid.Models.City;
+using RentalInvestmentAid.Models.Rental;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,9 @@ namespace RentalInvestmentAid.Models.Announcement
         public int Id { get; set; }
         public AnnouncementProvider AnnouncementProvider { get; set; }
         public RentalTypeOfTheRent RentalType { get; set; }
-        public string City { get; set; } = String.Empty;
+
+        public CityInformations CityInformations { get; set; } = null;
         public string IdFromProvider { get; set; } = String.Empty;
-        public string ZipCode { get; set; } = String.Empty;
         public string Price { get; set; } = String.Empty;
         public string Metrage { get; set; } = String.Empty;
         public string Description { get; set; } = String.Empty;
@@ -33,7 +34,7 @@ namespace RentalInvestmentAid.Models.Announcement
 
         public override string ToString()
         {
-            return $"[{Id} - {IdFromProvider}] {City} - {ZipCode} - {Price} - {Metrage} : {UrlWebSite}";
+            return $"[{Id} - {IdFromProvider}] {CityInformations?.CityName} - {CityInformations?.ZipCode} - {Price} - {Metrage} : {UrlWebSite}";
         }
     }
 }

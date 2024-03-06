@@ -126,35 +126,44 @@ namespace RentalInvestmentAid.Core.Announcement
                 HtmlDocument document = new HtmlDocument();
                 document.LoadHtml(html);
 
+                HtmlNode priceInfo = document.DocumentNode.SelectSingleNode("//div[contains(@class, 'adPrice')]");
 
-                string price = document.DocumentNode.SelectSingleNode("//div[contains(@class, 'adPrice')]").InnerText.Trim().Replace(" ", "").Split("€")[0];
-
-                string zipCodeAndCityToClear = document.DocumentNode.SelectSingleNode("//*[@id=\"advertisement\"]/div[1]/div[1]/div[4]/a").InnerText;
-
-                int indexOfSeparator = zipCodeAndCityToClear.IndexOf('-') + 1;
-                zipCodeAndCityToClear = zipCodeAndCityToClear.Remove(0, indexOfSeparator).Trim();
-
-                string[] zipCodeAndCity = zipCodeAndCityToClear.Split("(");
-
-                string zipCode = zipCodeAndCity[1].Replace("(", "").Replace(")", "").Trim();
-                string city = zipCodeAndCity[0].Trim().Replace("-", " ");
-
-                string description = document.DocumentNode.SelectSingleNode("//div[contains(@class, 'addescription')]").InnerText.Trim();
-
-                RentalTypeOfTheRent rentalType = KeyWordsHelper.GetRentalType(type);
-
-                announcementInformation = new AnnouncementInformation()
+                if (priceInfo != null)
                 {
-                    RentalType = rentalType,
-                    AnnouncementProvider = _announcementProvider,
-                    Metrage = metrage,
-                    City = city,
-                    ZipCode = zipCode,
-                    Price = price,
-                    Description = description,
-                    UrlWebSite = url,
-                    IdFromProvider = announcementIdFromProvider
-                };
+                    string price = priceInfo.InnerText.Trim().Replace(" ", "").Split("€")[0];
+
+                    string zipCodeAndCityToClear = document.DocumentNode.SelectSingleNode("//*[@id=\"advertisement\"]/div[1]/div[1]/div[4]/a").InnerText;
+
+                    int indexOfSeparator = zipCodeAndCityToClear.IndexOf('-') + 1;
+                    zipCodeAndCityToClear = zipCodeAndCityToClear.Remove(0, indexOfSeparator).Trim();
+
+                    string[] zipCodeAndCity = zipCodeAndCityToClear.Split("(");
+
+                    string zipCode = zipCodeAndCity[1].Replace("(", "").Replace(")", "").Trim();
+                    string city = zipCodeAndCity[0].Trim().Replace("-", " ");
+
+
+                    string description = document.DocumentNode.SelectSingleNode("//div[contains(@class, 'addescription')]").InnerText.Trim();
+
+                    RentalTypeOfTheRent rentalType = KeyWordsHelper.GetRentalType(type);
+
+                    announcementInformation = new AnnouncementInformation()
+                    {
+                        CityInformations = new Models.City.CityInformations
+                        {
+                            CityName = city,
+                            ZipCode = zipCode,
+                            Departement = zipCode.Substring(0, 2),
+                        },
+                        RentalType = rentalType,
+                        AnnouncementProvider = _announcementProvider,
+                        Metrage = metrage,
+                        Price = price,
+                        Description = description,
+                        UrlWebSite = url,
+                        IdFromProvider = announcementIdFromProvider
+                    };
+                }
             }
             catch (Exception ex)
             {

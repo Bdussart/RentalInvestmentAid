@@ -9,25 +9,26 @@
 @using RentalInvestmentAid.Models.Rental
 @using RentalInvestmentAid.Caching
 @using System.Collections.Concurrent
+
 @rendermode InteractiveServer
 
 <h3>Announcement</h3>
 
 <div class="container">
-    @if (_rentabilityResults == null)
+    @if (_rentabilityResults?.Count == 0)
     {
         <p><em>Loading...</em></p>
     }
     else
     {
-        @foreach (var result in _rentabilityResults.OrderBy(rent => rent.AnnouncementInformation.City))
+        @foreach (var result in _rentabilityResults.OrderBy(rent => rent.AnnouncementInformation.CityInformations.CityName))
         {
             <div id="annoucment_@result.AnnouncementId" class="announcement">
                 <div class="row text-center">
                     <a href="@result.AnnouncementInformation.UrlWebSite" target="_blank" class="col-sm-2">
                         <div class="card ">
                             <div class="card-header">
-                                @result.AnnouncementInformation.City -  @result.AnnouncementInformation.ZipCode
+                                @result.AnnouncementInformation.CityInformations.CityName -  @result.AnnouncementInformation.CityInformations.ZipCode
                             </div>
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item"> @result.AnnouncementInformation.Price €</li>
@@ -35,90 +36,21 @@
                             </ul>
                         </div>
                     </a>
-                    <div class="announcement_description col-sm-10 card-text">
+                    <div class="announcement_description col-sm-9 card-text">
                         @result.AnnouncementInformation.Description
                     </div>
+                    <div class="announcement_read col-sm-1 ">
+                        <input type="checkbox" checked="@result.AnnouncementInformation.Readed" @oninput="args => CheckboxChanged(result.AnnouncementId, args)">
+                    </div>
                 </div>
-
                 <div class="row rents_and_loan">
                 <div class="rents col-sm-4">
-                    <table class="table table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>
-                                    Prix / m2
-                                </th>
-                                <th>
-                                    Location
-                                </th>
-                                <th>
-                                    70%
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>                                
-                            @foreach( var ren in result.Rents)
-                            {
-                                <tr>
-                                    <td>
-                                        @ren.RentalInformations.Price € 
-                                    </td>
-                                    <td>
-                                        @ren.RentPrice €
-                                    </td>
-                                    <td>
-                                        @ren.Rental70Pourcent €
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                    <Rents RentsInformation="@result.Rents" />
                 </div>
                     <div class="loans  col-sm-8">
-                    <div class="rates-informations">
-                            <table class="table table-dark table-hover text-center">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        Durée ( en années )
-                                    </th>
-                                    <th>
-                                        taux 
-                                    </th>
-                                    <th>
-                                        Coût réel
-                                    </th>
-                                    <th>
-                                        Coût par mois
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (RateInformation rate in _rateInformation)
-                                {
-                                    var currentLoan = result.Loans.FirstOrDefault(loan => loan.RateInformation.Id == rate.Id);
-                                    if (currentLoan != null)
-                                    { //Never be the Case !
-                                            <tr class="@CheckRentability(currentLoan, result.Rents)">
-                                            <td>
-                                                @rate.DurationInYear
-                                            </td>
-                                            <td>
-                                                @rate.Rate %
-                                            </td>
-                                            <td>
-                                                @currentLoan.TotalCostWithInsurrance €
-                                            </td>
-                                            <td>
-                                                @currentLoan.MonthlyCostWithInsurrance €
-                                            </td>
-                                        </tr>
-                                    }
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-
+                        <div class="rates-informations">
+                            <Rates RentsInformation="@result.Rents" RateInformation="_rateInformation" LoansInformations="@result.Loans" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -150,24 +82,29 @@
         _rateInformation = _cachingManager.GetRatesInformation();
         ParallelOptions parallelOptions = new()
             {
-                MaxDegreeOfParallelism = 3
+                MaxDegreeOfParallelism = 3,
             };
 
-        return Parallel.ForEachAsync(databaseFactory.GetRentabilitiesResults(), parallelOptions, async (info, token) =>
+        Task.Factory.StartNew(() =>
+        {
+            Parallel.ForEachAsync(databaseFactory.GetRentabilitiesResults(), parallelOptions, async (info, token) =>
         {
             await Task.Run(() =>
-            {
-                info.AnnouncementInformation = _announcementInformation.First(ann => ann.Id == info.AnnouncementId);
-                info.Loans = _loansInformation.Where(loan => info.LoanIds.Contains(loan.Id)).ToList();
-                info.Rents = _rentInformation.Where(rent => info.RentsIds.Contains(rent.Id)).ToList();
-                info.Rents.ForEach(rent =>
-                {
-                    rent.RentalInformations = _rentalInformation.First(rental => rental.Id == rent.RentalInformations.Id);
+        {
+                    info.AnnouncementInformation = _announcementInformation.FirstOrDefault(ann => ann.Id == info.AnnouncementId);
+                    info.Loans = _loansInformation.Where(loan => info.LoanIds.Contains(loan.Id)).ToList();
+                    info.Rents = _rentInformation.Where(rent => info.RentsIds.Contains(rent.Id)).ToList();
+                    info.Rents.ForEach(rent =>
+                    {
+                        rent.RentalInformations = _rentalInformation.First(rental => rental.Id == rent.RentalInformations.Id);
+                    });
+                    _rentabilityResults.Add(info);
+                    InvokeAsync(base.StateHasChanged);
                 });
-                _rentabilityResults.Add(info);
             });
         });
 
+        return base.OnInitializedAsync();
 
     }
 
@@ -179,5 +116,12 @@
         if (rents.Where(rent => rent.Rental70Pourcent >= loan.MonthlyCostWithInsurrance).Any())
             result = "table-success rentable";
         return result;
+    }
+
+    private void CheckboxChanged(int announcementid, ChangeEventArgs e)
+    {
+        // get the checkbox state
+        var value = e.Value;
+        Console.WriteLine($"Checkbox changed");
     }
 }

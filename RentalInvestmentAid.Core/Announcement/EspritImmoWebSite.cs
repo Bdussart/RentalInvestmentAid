@@ -116,11 +116,15 @@ namespace RentalInvestmentAid.Core.Announcement
 
                 announcementInformation = new AnnouncementInformation()
                 {
+                    CityInformations = new Models.City.CityInformations
+                    {
+                        CityName = city,
+                        ZipCode = zipCode,
+                        Departement = zipCode.Substring(0, 2),
+                    },
                     RentalType = rentalType,
                     AnnouncementProvider = _announcementProvider,
                     Metrage = metrage,
-                    City = city,
-                    ZipCode = zipCode,
                     Price = price,
                     Description = description,
                     UrlWebSite = url,

@@ -10,6 +10,7 @@ using RentalInvestmentAid.Models.Bank;
 using RentalInvestmentAid.Models.Rate;
 using RentalInvestmentAid.Models.Loan;
 using RentalInvestmentAid.Models;
+using RentalInvestmentAid.Models.City;
 
 namespace RentalInvestmentAid.Database
 {
@@ -32,13 +33,15 @@ namespace RentalInvestmentAid.Database
                             {
                                 Id = reader.GetInt32(0),
                                 IdFromProvider = reader.GetString(1),
-                                City = reader.GetString(2),
-                                ZipCode = reader.GetString(3),
-                                Price = reader.GetDecimal(4).ToString(),
-                                RentalPriceType = (RentalPriceType)reader.GetInt32(5),
-                                RentalTypeOfTheRent = (RentalTypeOfTheRent)reader.GetInt32(6),
-                                CreatedDate = reader.GetDateTime(7),
-                                UpdatedDate = reader.GetDateTime(8)
+                                CityInfo = new CityInformations
+                                {
+                                    Id = reader.GetInt32(2)
+                                },
+                                Price = reader.GetDecimal(3).ToString(),
+                                RentalPriceType = (RentalPriceType)reader.GetInt32(4),
+                                RentalTypeOfTheRent = (RentalTypeOfTheRent)reader.GetInt32(5),
+                                CreatedDate = reader.GetDateTime(6),
+                                UpdatedDate = reader.GetDateTime(7)
                             });
                         }
                     }
@@ -64,17 +67,19 @@ namespace RentalInvestmentAid.Database
                                 Id = reader.GetInt32(0),
                                 AnnouncementProvider = (AnnouncementProvider)reader.GetInt32(1),
                                 IdFromProvider = reader.GetString(2),
-                                City = reader.GetString(3),
-                                ZipCode = reader.GetString(4),
-                                Price = reader.GetDecimal(5).ToString(),
-                                Metrage = reader.GetDecimal(6).ToString(),
-                                Description = reader.GetString(7).ToString(),
-                                RentalType = (RentalTypeOfTheRent)reader.GetInt32(8),
-                                UrlWebSite = reader.GetString(9).ToString(),
-                                RentabilityCalculated = reader.GetBoolean(10),
-                                Readed = reader.GetBoolean(11),
-                                CreatedDate = reader.GetDateTime(12),
-                                UpdatedDate = reader.GetDateTime(13)
+                                CityInformations = new CityInformations
+                                {
+                                    Id = reader.GetInt32(3),
+                                },
+                                Price = reader.GetDecimal(4).ToString(),
+                                Metrage = reader.GetDecimal(5).ToString(),
+                                Description = reader.GetString(6).ToString(),
+                                RentalType = (RentalTypeOfTheRent)reader.GetInt32(7),
+                                UrlWebSite = reader.GetString(8).ToString(),
+                                RentabilityCalculated = reader.GetBoolean(9),
+                                Readed = reader.GetBoolean(10),
+                                CreatedDate = reader.GetDateTime(11),
+                                UpdatedDate = reader.GetDateTime(12)
                             });
                         }
                     }
@@ -234,13 +239,11 @@ namespace RentalInvestmentAid.Database
                 {
                     sqlCommand.CommandType = CommandType.StoredProcedure;
                     sqlCommand.Parameters.AddWithValue("@idFromProvider", rental.IdFromProvider);
-                    sqlCommand.Parameters.AddWithValue("@city", rental.City);
-                    sqlCommand.Parameters.AddWithValue("@zipcode", rental.ZipCode);
+                    sqlCommand.Parameters.AddWithValue("@idCity", rental.CityInfo.Id);
                     sqlCommand.Parameters.AddWithValue("@price", rental.Price);
                     sqlCommand.Parameters.AddWithValue("@idPriceType", rental.RentalPriceType);
                     sqlCommand.Parameters.AddWithValue("@idPropertyType", rental.RentalTypeOfTheRent);
                     sqlCommand.Parameters.AddWithValue("@url", rental.Url);
-
                     SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
                     retval.Direction = ParameterDirection.ReturnValue;
 
@@ -260,18 +263,16 @@ namespace RentalInvestmentAid.Database
                     using (SqlCommand sqlCommand = new SqlCommand("uspInsertAnnoncementInformation", connection))
                     {
                         sqlCommand.CommandType = CommandType.StoredProcedure;
-                        sqlCommand.Parameters.AddWithValue("@city", announcementInformation.City);
                         sqlCommand.Parameters.AddWithValue("@idAnnouncementProvider", announcementInformation.AnnouncementProvider);
-
-                        sqlCommand.Parameters.AddWithValue("@zipcode", announcementInformation.ZipCode);
+                        sqlCommand.Parameters.AddWithValue("@idCity", announcementInformation.CityInformations.Id);
                         sqlCommand.Parameters.AddWithValue("@idFromProvider", announcementInformation.IdFromProvider);
                         sqlCommand.Parameters.AddWithValue("@price", announcementInformation.Price);
                         sqlCommand.Parameters.AddWithValue("@metrage", announcementInformation.Metrage);
                         sqlCommand.Parameters.AddWithValue("@description", announcementInformation.Description);
                         sqlCommand.Parameters.AddWithValue("@idProptertyType", announcementInformation.RentalType);
                         sqlCommand.Parameters.AddWithValue("@url", announcementInformation.UrlWebSite);
-
                         SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
+
                         retval.Direction = ParameterDirection.ReturnValue;
 
                         connection.Open();
@@ -360,7 +361,6 @@ namespace RentalInvestmentAid.Database
 
             return rentInformation;
         }
-
         public void UpdateRentabilityInformation(int announcementId)
         {
             using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
@@ -374,6 +374,54 @@ namespace RentalInvestmentAid.Database
                 }
             }
         }
+        public List<CityInformations> GetCities()
+        {
+            List<CityInformations> cities = new List<CityInformations>();
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspGetCity", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    connection.Open();
+                    using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            cities.Add(new CityInformations
+                            {
+                                Id = reader.GetInt32(0),
+                                CityName = reader.GetString(1),
+                                ZipCode = reader.GetString(2),
+                                Departement = reader.GetString(3),
+                                CreatedDate = reader.GetDateTime(4),
+                            });
+                        }
+                    }
+                }
+            }
+            return cities;
+        }
 
+        public CityInformations InsertCity(CityInformations city)
+        {
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspInsertCity", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.AddWithValue("@cityName", city.CityName);
+                    sqlCommand.Parameters.AddWithValue("@zipcode", city.ZipCode);
+                    sqlCommand.Parameters.AddWithValue("@departement", city.Departement);
+
+                    SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
+                    retval.Direction = ParameterDirection.ReturnValue;
+
+                    connection.Open();
+                    sqlCommand.ExecuteNonQuery();
+                    city.Id = (int)sqlCommand.Parameters["@RETURN_VALUE"].Value;
+                }
+            }
+            return city;
+        }
     }
 }

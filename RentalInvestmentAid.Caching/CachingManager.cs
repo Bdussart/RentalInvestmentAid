@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RentalInvestmentAid.Models.Rental;
 using RentalInvestmentAid.Models.Bank;
+using RentalInvestmentAid.Models.City;
 
 namespace RentalInvestmentAid.Caching
 {
@@ -75,7 +76,6 @@ namespace RentalInvestmentAid.Caching
 
         #endregion
 
-
         #region RatesInformation
         public List<RateInformation> GetRatesInformation()
         {
@@ -83,10 +83,23 @@ namespace RentalInvestmentAid.Caching
                     () => _databaseFactory.GetRatesInformations().Cast<Object>().ToList()).Cast<RateInformation>().ToList();
         }
 
-
         public void ForceCacheUpdateRatesInformation()
         {
             SetCache(SettingsManager.RateCacheKey, _databaseFactory.GetRatesInformations().Cast<Object>().ToList());
+        }
+
+        #endregion
+
+        #region Cities
+        public List<CityInformations> GetCities()
+        {
+            return GetFromCache(SettingsManager.CityCacheKey,
+                    () => _databaseFactory.GetCities().Cast<Object>().ToList()).Cast<CityInformations>().ToList();
+        }
+
+        public void ForceCacheUpdateCities()
+        {
+            SetCache(SettingsManager.CityCacheKey, _databaseFactory.GetCities().Cast<Object>().ToList());
         }
 
         #endregion

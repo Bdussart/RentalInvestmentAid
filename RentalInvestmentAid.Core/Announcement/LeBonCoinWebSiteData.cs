@@ -55,10 +55,14 @@ namespace RentalInvestmentAid.Core.Announcement
 
                 announcementInformation = new AnnouncementInformation()
                 {
+                    CityInformations = new Models.City.CityInformations
+                    {
+
+                        CityName = HtmlWordsHelper.CleanHtml(htmlNodesMetrageAndCity[2].InnerText.Trim().Split(" ")[0]),
+                        ZipCode = HtmlWordsHelper.CleanHtml(htmlNodesMetrageAndCity[2].InnerText.Trim().Split(" ")[1]),
+                    },
                     RentalType = KeyWordsHelper.GetRentalType(htmlNodesRentalType[0].InnerText.Trim()),
                     Metrage = HtmlWordsHelper.CleanHtml(htmlNodesMetrageAndCity[1].InnerText.Trim().Split("m")[0].Trim()),
-                    City = HtmlWordsHelper.CleanHtml(htmlNodesMetrageAndCity[2].InnerText.Trim().Split(" ")[0]),
-                    ZipCode = HtmlWordsHelper.CleanHtml(htmlNodesMetrageAndCity[2].InnerText.Trim().Split(" ")[1]),
                     Price = new string(HtmlWordsHelper.CleanHtml(htmlNodesPrice[0].InnerText).Where(char.IsDigit).ToArray()),
                     Description = HtmlWordsHelper.CleanHtml(htmlNodesDescription[0].InnerText.Trim()),
                     UrlWebSite = url

@@ -2,6 +2,7 @@
 using RentalInvestmentAid.Models;
 using RentalInvestmentAid.Models.Announcement;
 using RentalInvestmentAid.Models.Bank;
+using RentalInvestmentAid.Models.City;
 using RentalInvestmentAid.Models.Loan;
 using RentalInvestmentAid.Models.Rental;
 using System;
@@ -15,6 +16,11 @@ namespace RentalInvestmentAid.Test.Mock
     internal class MockDatabase : IDatabaseFactory
     {
         public List<AnnouncementInformation> GetAnnouncementsInformations()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<CityInformations> GetCities()
         {
             throw new NotImplementedException();
         }
@@ -45,6 +51,11 @@ namespace RentalInvestmentAid.Test.Mock
         }
 
         public AnnouncementInformation InsertAnnouncementInformation(AnnouncementInformation announcementInformation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public CityInformations InsertCity(CityInformations city)
         {
             throw new NotImplementedException();
         }

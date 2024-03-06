@@ -15,6 +15,8 @@ using System.Diagnostics;
 using RentalInvestmentAid.Queue;
 using RabbitMQ.Client.Events;
 using RentalInvestmentAid.Core.Announcement.Helper;
+using RentalInvestmentAid.Models.City;
+using System.Runtime;
 
 namespace RentalInvestmentAid
 {
@@ -26,6 +28,7 @@ namespace RentalInvestmentAid
         private static CachingManager _cachingManager = null;
 
         private static IDatabaseFactory _databaseFactory = new SqlServerDatabase();
+        private static CityTreatment cityTreatment = null;
 
         private static Dictionary<int, string> _dicoDepartements = new Dictionary<int, string>
             {
@@ -53,6 +56,7 @@ namespace RentalInvestmentAid
         public static void Main(string[] args)
         {
             _cachingManager = new CachingManager(_databaseFactory);
+            cityTreatment = new CityTreatment(_cachingManager, _databaseFactory);
             Console.OutputEncoding = Encoding.UTF8;
 
             //IAnnouncementWebSiteData announcementWebSite = new EspritImmoWebSite(_cachingManager);
@@ -99,8 +103,10 @@ namespace RentalInvestmentAid
             var body = ea.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);
             Logger.LogHelper.LogInfo($"Received {message}");
-            foreach (var info in GetRentalInformations(message))
+            foreach (RentalInformations info in GetRentalInformations(message))
             {
+                CityInformations city = cityTreatment.GetAndInsertIfNotExisiting(info.CityInfo.CityName, info.CityInfo.ZipCode.Substring(0, 2), info.CityInfo.ZipCode);
+                info.CityInfo.Id = city.Id;
                 _databaseFactory.InsertRentalInformation(info);
             };
             _cachingManager.ForceCacheUpdateRentalInformations();
@@ -112,9 +118,19 @@ namespace RentalInvestmentAid
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-
-
             LoopGetRentalData();
+
+            IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData(_cachingManager);
+            Task.Factory.StartNew(() => {
+                Parallel.ForEach(_dicoDepartements,
+                            new ParallelOptions { MaxDegreeOfParallelism = 3 },
+                            departement =>
+                            {
+                                Console.WriteLine($"******{Task.CurrentId} Start work for getting price per departement* ****");
+                                webSiteData.EnQueueUrls("rhone-alpes", departement.Value, departement.Key);
+                                Console.WriteLine($"******{Task.CurrentId} End work for getting price per departement* ****");
+                            });
+            });
 
             List<String> departements = _dicoDepartements.Values.ToList();
 
@@ -158,9 +174,9 @@ namespace RentalInvestmentAid
                                 Console.WriteLine($"****** [{Task.CurrentId}] [{worker.GetKeyword()}]  Url to get data : {url}*****");
                                 Thread.Sleep(TimeSpan.FromSeconds(1));
                                 AnnouncementInformation? announcementInformation = worker.GetAnnouncementInformation(url);
-
-                                if (announcementInformation != null)
-                                {
+                                if (announcementInformation != null)                                {
+                                    CityInformations city = cityTreatment.GetAndInsertIfNotExisiting(announcementInformation.CityInformations.CityName, announcementInformation.CityInformations.Departement, announcementInformation.CityInformations.ZipCode);
+                                    announcementInformation.CityInformations.Id = city.Id;
                                     Console.WriteLine($"****** [{Task.CurrentId}] [{worker.GetKeyword()} - {url}]  Announcement : {announcementInformation?.ToString()} *****");
                                     _databaseFactory.InsertAnnouncementInformation(announcementInformation);
                                     Console.WriteLine($"****** [{Task.CurrentId}] [{worker.GetKeyword()} - {url}]  Announcement : {announcementInformation?.ToString()} - Inserted *****");
@@ -177,15 +193,7 @@ namespace RentalInvestmentAid
                     Console.WriteLine($"{Task.CurrentId}Damn an Exception ! {ex}");
                 }
             });
-            IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData(_cachingManager);
 
-            Parallel.ForEach(_dicoDepartements, departement =>
-            {
-                Console.WriteLine($"******{Task.CurrentId} Start work for getting price per departement* ****");
-                webSiteData.EnQueueUrls("rhone-alpes", departement.Value, departement.Key);
-
-                Console.WriteLine($"******{Task.CurrentId} End work for getting price per departement* ****");
-            });
 
             Console.ReadKey();
             _loop = false;

@@ -1,0 +1,39 @@
+﻿@page "/rents"
+@using RentalInvestmentAid.Models.Rental
+
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>
+                Prix / m2
+            </th>
+            <th>
+                Location
+            </th>
+            <th>
+                70%
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ren in RentsInformation)
+        {
+            <tr>
+                <td>
+                    @ren.RentalInformations.Price €
+                </td>
+                <td>
+                    @ren.RentPrice €
+                </td>
+                <td>
+                    @ren.Rental70Pourcent €
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter]
+    public List<RentInformation> RentsInformation { get; set; } = new List<RentInformation>();
+}

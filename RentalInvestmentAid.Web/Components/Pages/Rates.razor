@@ -1,0 +1,67 @@
+﻿@using RentalInvestmentAid.Models.Bank
+@using RentalInvestmentAid.Models.Loan
+@using RentalInvestmentAid.Models.Rental
+@page "/rates"
+
+<table class="table table-dark table-hover text-center">
+    <thead>
+        <tr>
+            <th>
+                Durée ( en années )
+            </th>
+            <th>
+                taux
+            </th>
+            <th>
+                Coût réel
+            </th>
+            <th>
+                Coût par mois
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (RateInformation rate in RateInformation)
+        {
+            var currentLoan = LoansInformations.FirstOrDefault(loan => loan.RateInformation.Id == rate.Id);
+            if (currentLoan != null)
+            { //Never be the Case !
+                <tr class="@CheckRentability(currentLoan, RentsInformation)">
+                    <td>
+                        @rate.DurationInYear
+                    </td>
+                    <td>
+                        @rate.Rate %
+                    </td>
+                    <td>
+                        @currentLoan.TotalCostWithInsurrance €
+                    </td>
+                    <td>
+                        @currentLoan.MonthlyCostWithInsurrance €
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter]
+    public List<RateInformation> RateInformation { get; set; } = new List<RateInformation>();
+    [Parameter]
+    public List<LoanInformation> LoansInformations { get; set; } = new List<LoanInformation>();
+    [Parameter]
+    public List<RentInformation> RentsInformation { get; set; } = new List<RentInformation>();
+
+
+
+
+    public string CheckRentability(LoanInformation loan, List<RentInformation> rents)
+    {
+        string result = "table-danger not-rentable";
+
+        if (rents.Where(rent => rent.Rental70Pourcent >= loan.MonthlyCostWithInsurrance).Any())
+            result = "table-success rentable";
+        return result;
+    }
+}

@@ -18,7 +18,7 @@ namespace RentalInvestmentAid.Core
         public List<RentalInformations> FindRentalInformationForAnAnnoucement(List<RentalInformations> rentalInformations, AnnouncementInformation announcementInformation)
         {
             //SameCity name AND zipcode different not handled yet
-            return rentalInformations.Where(rent => (String.Compare(rent.City, announcementInformation.City, 
+            return rentalInformations.Where(rent => (String.Compare(rent.CityInfo.CityName, announcementInformation.CityInformations.CityName, 
                 CultureInfo.InvariantCulture, CompareOptions.IgnoreNonSpace | CompareOptions.IgnoreCase) == 0)
                 && announcementInformation.RentalType == rent.RentalTypeOfTheRent).ToList();
         }
@@ -39,12 +39,13 @@ namespace RentalInvestmentAid.Core
             List<RentInformation> realCost = new List<RentInformation>();
             rentalInformation.ForEach(rentalInformation =>
             {
+                double price = Convert.ToDouble(rentalInformation.Price) * Convert.ToDouble(metrage.Replace(".", ","));
                 realCost.Add(new RentInformation()
                 {
                     AnnouncementInformation = announcementInformation,
                     RentalInformations = rentalInformation,
-                    RentPrice = Convert.ToDouble(rentalInformation.Price) * Convert.ToDouble(metrage.Replace(".", ",")),
-                    Rental70Pourcent = (Convert.ToDouble(rentalInformation.Price) * Convert.ToDouble(metrage.Replace(".", ","))) * 0.70
+                    RentPrice = price,
+                    Rental70Pourcent = price * 0.70
                 });
             });
 

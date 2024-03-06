@@ -25,12 +25,63 @@ CREATE TABLE [dbo].[typeProperty](
 ) ON [PRIMARY]
 GO
 
+CREATE TABLE [dbo].city(
+	id int IDENTITY(1,1) NOT NULL,
+	cityName varchar(30) NOT NULL,
+	zipCode varchar(5) NOT NULL,
+	departement varchar(2) NOT NULL,
+	createdDate datetime NOT NULL,
+	CONSTRAINT PK_city_id PRIMARY KEY CLUSTERED (id)
+)
+GO
+
+
+CREATE PROCEDURE uspGetCity
+AS
+BEGIN
+SELECT  id
+		,cityName
+		,zipCode
+		,departement
+		,createdDate
+  FROM [RentalInvestmentAid].[dbo].city
+
+END
+GO
+
+CREATE PROCEDURE uspInsertCity
+(
+				@cityName			varchar(30),
+				@zipcode			varchar(5),
+				@departement		varchar(2)
+)
+AS
+BEGIN
+
+DECLARE @Now datetime
+SET @Now = GETDATE()
+
+INSERT INTO [dbo].city
+           ( cityName
+			,zipCode
+			,departement
+			,createdDate)
+     VALUES
+           (
+		   @cityName
+		   ,@zipcode
+		   ,@departement
+		   ,@Now
+		   )
+		  return SCOPE_IDENTITY()
+END
+GO
+
 
 CREATE TABLE [dbo].[rentalInformation](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[idFromProvider] [varchar](50) NOT NULL,
-	[city] [varchar](50) NOT NULL,
-	[zipCode] [varchar](5) NOT NULL,
+	[idCity] int NOT NULL,
 	[price] [decimal](5, 2) NOT NULL,
 	[idPriceType] int NOT NULL,
 	[idPropertyType] [int] NOT NULL,
@@ -70,8 +121,6 @@ ALTER TABLE [dbo].[rentalInformation] CHECK CONSTRAINT [FK_rentalInformation_pri
 GO
 
 
-
-
   INSERT INTO [rentalInvestmentAid].[dbo].priceType
   (type)
   values ('LowerPrice')
@@ -84,17 +133,14 @@ GO
   (type)
   values ('HigherPrice')
 
-
   INSERT INTO [rentalInvestmentAid].[dbo].[typeProperty]
   (type)
   values ('Apartement')
-
-  
+    
   INSERT INTO [rentalInvestmentAid].[dbo].[typeProperty]
   (type)
   values ('House')
-
-  
+    
   INSERT INTO [rentalInvestmentAid].[dbo].[typeProperty]
   (type)
   values ('Land')
@@ -102,8 +148,7 @@ GO
   INSERT INTO [rentalInvestmentAid].[dbo].[typeProperty]
   (type)
   values ('Parking')
-
-      
+        
   INSERT INTO [rentalInvestmentAid].[dbo].[typeProperty]
   (type)
   values ('Other')
@@ -115,8 +160,7 @@ AS
 BEGIN
 SELECT  [id]
 		,[idFromProvider]
-		,[city]
-		,[zipCode]
+		,[idCity]
 		,[price]
 		,[idPriceType]
 		,[idPropertyType]
@@ -129,9 +173,8 @@ GO
 
 CREATE PROCEDURE uspInsertRentalInformation
 (
-				@city				varchar(50),
 				@idFromProvider		varchar(50),
-				@zipcode			varchar(5),
+				@idCity				int,
 				@price				decimal(5,2),
 				@idPriceType		int,
 				@idPropertyType		int,
@@ -145,8 +188,7 @@ SET @Now = GETDATE()
 
 INSERT INTO [dbo].[RentalInformation]
            ([idFromProvider]
-		   ,[city]
-           ,[zipCode]
+		   ,[idCity]
            ,[price]
            ,[idPriceType]
            ,[idPropertyType]
@@ -156,8 +198,7 @@ INSERT INTO [dbo].[RentalInformation]
      VALUES
            (
 		   @idFromProvider
-		   ,@city
-		   ,@zipcode
+		   ,@idCity	
 		   ,@price
 		   ,@idPriceType
 		   ,@idPropertyType
@@ -174,8 +215,7 @@ CREATE TABLE [dbo].[annoncementInformation](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[idAnnouncementProvider] [int] NOT NULL,
 	[idFromProvider] [varchar](50) NOT NULL,
-	[city] [varchar](50) NOT NULL,
-	[zipCode] [varchar](5) NOT NULL,
+	[idCity] int NOT NULL,
 	[price] [decimal](10,0) NOT NULL,
 	[metrage] [decimal](6,0) NOT NULL,
 	[description] [nvarchar](max) NOT NULL,
@@ -203,9 +243,8 @@ GO
 CREATE PROCEDURE [dbo].[uspInsertAnnoncementInformation]
 (
 				@idAnnouncementProvider	int,
-				@city					varchar(50),
+				@idCity					int,
 				@idFromProvider			varchar(50),
-				@zipcode				varchar(5),
 				@price					decimal(10,0),
 				@metrage				decimal(5,0),
 				@description			varchar(max),
@@ -220,9 +259,8 @@ SET @Now = GETDATE()
 
 INSERT INTO [dbo].[annoncementInformation]
            ([idAnnouncementProvider]
-		   ,[city]
+		   ,[idCity] 
 		   ,[idFromProvider]
-           ,[zipCode]
            ,[price]
            ,[metrage]
            ,[description]
@@ -235,9 +273,8 @@ INSERT INTO [dbo].[annoncementInformation]
      VALUES
            (
 		   @idAnnouncementProvider
-		   ,@city
+		   ,@idCity
 		   ,@idFromProvider
-		   ,@zipcode
 		   ,@price
 		   ,@metrage
 		   ,@description
@@ -279,8 +316,7 @@ BEGIN
 SELECT  [id]
 	  ,[idAnnouncementProvider]
 	  ,[idFromProvider] 
-      ,[city]
-      ,[zipCode]
+	  ,[idCity]
       ,[price]
       ,[metrage]
       ,[description]
