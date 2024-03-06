@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RentalInvestmentAid.Caching\RentalInvestmentAid.Caching.csproj" />
+    <ProjectReference Include="..\RentalInvestmentAid.Core\RentalInvestmentAid.Core.csproj" />
     <ProjectReference Include="..\RentalInvestmentAid.Database\RentalInvestmentAid.Database.csproj" />
     <ProjectReference Include="..\RentalInvestmentAid.Logger\RentalInvestmentAid.Logger.csproj" />
     <ProjectReference Include="..\RentalInvestmentAid.Models\RentalInvestmentAid.Models.csproj" />

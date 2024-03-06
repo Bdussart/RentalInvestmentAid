@@ -28,7 +28,8 @@ namespace RentalInvestmentAid
         private static CachingManager _cachingManager = null;
 
         private static IDatabaseFactory _databaseFactory = new SqlServerDatabase();
-        private static CityTreatment cityTreatment = null;
+        private static CityTreatment _cityTreatment = null;
+        private static AnnouncementTreatment _announcementTreatment = null;
 
         private static Dictionary<int, string> _dicoDepartements = new Dictionary<int, string>
             {
@@ -56,7 +57,8 @@ namespace RentalInvestmentAid
         public static void Main(string[] args)
         {
             _cachingManager = new CachingManager(_databaseFactory);
-            cityTreatment = new CityTreatment(_cachingManager, _databaseFactory);
+            _cityTreatment = new CityTreatment(_cachingManager, _databaseFactory);
+            _announcementTreatment = new AnnouncementTreatment(_cachingManager, _databaseFactory);
             Console.OutputEncoding = Encoding.UTF8;
 
             //IAnnouncementWebSiteData announcementWebSite = new EspritImmoWebSite(_cachingManager);
@@ -105,7 +107,7 @@ namespace RentalInvestmentAid
             Logger.LogHelper.LogInfo($"Received {message}");
             foreach (RentalInformations info in GetRentalInformations(message))
             {
-                CityInformations city = cityTreatment.GetAndInsertIfNotExisiting(info.CityInfo.CityName, info.CityInfo.ZipCode.Substring(0, 2), info.CityInfo.ZipCode);
+                CityInformations city = _cityTreatment.GetAndInsertIfNotExisiting(info.CityInfo.CityName, info.CityInfo.ZipCode.Substring(0, 2), info.CityInfo.ZipCode);
                 info.CityInfo.Id = city.Id;
                 _databaseFactory.InsertRentalInformation(info);
             };
@@ -148,9 +150,9 @@ namespace RentalInvestmentAid
             _cachingManager.ForceCacheUpdateRatesInformation();
 
 
-            IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData(_cachingManager);
+            IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData(_announcementTreatment);
             //IAnnouncementWebSiteData announcementWebSite = new EspritImmoWebSite(_cachingManager);
-            IAnnouncementWebSiteData IADWebSite = new IADWebSite(_cachingManager);
+            IAnnouncementWebSiteData IADWebSite = new IADWebSite(_announcementTreatment);
             List<IAnnouncementWebSiteData> workers = new List<IAnnouncementWebSiteData>
                 {
                     {announcementWebSiteData },
@@ -175,12 +177,9 @@ namespace RentalInvestmentAid
                                 Thread.Sleep(TimeSpan.FromSeconds(1));
                                 AnnouncementInformation? announcementInformation = worker.GetAnnouncementInformation(url);
                                 if (announcementInformation != null)                                {
-                                    CityInformations city = cityTreatment.GetAndInsertIfNotExisiting(announcementInformation.CityInformations.CityName, announcementInformation.CityInformations.Departement, announcementInformation.CityInformations.ZipCode);
+                                    CityInformations city = _cityTreatment.GetAndInsertIfNotExisiting(announcementInformation.CityInformations.CityName, announcementInformation.CityInformations.Departement, announcementInformation.CityInformations.ZipCode);
                                     announcementInformation.CityInformations.Id = city.Id;
-                                    Console.WriteLine($"****** [{Task.CurrentId}] [{worker.GetKeyword()} - {url}]  Announcement : {announcementInformation?.ToString()} *****");
-                                    _databaseFactory.InsertAnnouncementInformation(announcementInformation);
-                                    Console.WriteLine($"****** [{Task.CurrentId}] [{worker.GetKeyword()} - {url}]  Announcement : {announcementInformation?.ToString()} - Inserted *****");
-                                    _cachingManager.ForceCacheUpdateAnnouncementInformation();
+                                    _announcementTreatment.InsertAnnouncementInformation(announcementInformation);
                                     Console.WriteLine($"******[{Task.CurrentId}] [{worker.GetKeyword()} - {url}]  Announcement : {announcementInformation?.ToString()} - Check rentability *****");
                                     CheckDataRentabilityForAnnouncement(announcementInformation);
                                     Console.WriteLine($"****** [{Task.CurrentId}] [{worker.GetKeyword()} - {url}]  Announcement : {announcementInformation?.ToString()} - DONE Check rentability *****");
@@ -241,7 +240,7 @@ namespace RentalInvestmentAid
 
         private static void CheckAllDataRentability()
         {
-            foreach (AnnouncementInformation announcement in _databaseFactory.GetAnnouncementsInformations().Where(ann => !ann.RentabilityCalculated))
+            foreach (AnnouncementInformation announcement in _announcementTreatment.GetAnnouncementInformationWithRentabilityNotCalculated())
             {
                 CheckDataRentabilityForAnnouncement(announcement);
                 Thread.Sleep(TimeSpan.FromMilliseconds(2));

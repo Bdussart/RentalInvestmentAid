@@ -24,12 +24,14 @@ using OpenQA.Selenium.Support.UI;
 namespace RentalInvestmentAid.Core.Announcement
 {
 
-    public class Century21WebSiteData : MustInitializeCache, IAnnouncementWebSiteData
+    public class Century21WebSiteData : IAnnouncementWebSiteData
     {
         private readonly AnnouncementProvider _announcementProvider = AnnouncementProvider.century21;
-        public Century21WebSiteData(CachingManager cachingManager) : base(cachingManager)
+        private AnnouncementTreatment _announcementTreatment = null;
+
+        public Century21WebSiteData(AnnouncementTreatment announcementTreatment )
         {
-            base._cachingManager = cachingManager;
+            _announcementTreatment = announcementTreatment;
         }
 
         private string baseUrl { get; set; } = "https://www.century21.fr";
@@ -50,7 +52,7 @@ namespace RentalInvestmentAid.Core.Announcement
                 HtmlNode divChild = node.ChildNodes.First(child => child.Name.Equals("div", StringComparison.CurrentCultureIgnoreCase));
                 string annonceUid = divChild.Attributes["data-uid"].Value;
 
-                if(!_cachingManager.GetAnnouncementInformation().Any(ann => ann.IdFromProvider.Equals(annonceUid) && ann.AnnouncementProvider.Equals(_announcementProvider)))
+                if(!_announcementTreatment.ExistAnnouncementByProviderAndProviderId(annonceUid, _announcementProvider))
                     urls.Add($"https://www.century21.fr/trouver_logement/detail/{annonceUid}");
             }
 

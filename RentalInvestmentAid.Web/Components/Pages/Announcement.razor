@@ -1,5 +1,6 @@
 ﻿@page "/announcement"
 
+@using RentalInvestmentAid.Core.Announcement
 @using RentalInvestmentAid.Database
 @using RentalInvestmentAid.Models
 @using RentalInvestmentAid.Models.Announcement
@@ -60,8 +61,7 @@
 </div>
 
 @code {
-
-    private IDatabaseFactory databaseFactory = new SqlServerDatabase();
+    private IDatabaseFactory _databaseFactory = new SqlServerDatabase();
     private ConcurrentBag<RentabilityResult>? _rentabilityResults = null;
     private ConcurrentBag<AnnouncementInformation> _announcementInformation = null;
     private ConcurrentBag<RentInformation> _rentInformation = null;
@@ -69,17 +69,21 @@
     private ConcurrentBag<RentalInformations> _rentalInformation = null;
     private CachingManager _cachingManager = null;
     private List<RateInformation> _rateInformation = null;
+    private AnnouncementTreatment _announcementTreatment = null;
 
 
     protected override Task OnInitializedAsync()
     {
-        _cachingManager = new CachingManager(databaseFactory);
-        _announcementInformation = new ConcurrentBag<AnnouncementInformation>(_cachingManager.GetAnnouncementInformation());
-        _rentInformation = new ConcurrentBag<RentInformation>(databaseFactory.GetRentsInformations());
-        _loansInformation = new ConcurrentBag<LoanInformation>(databaseFactory.GetLoansInformations());
+        _cachingManager = new CachingManager(_databaseFactory);
+        _announcementTreatment = new AnnouncementTreatment(_cachingManager, _databaseFactory);
+        _announcementInformation = new ConcurrentBag<AnnouncementInformation>(_announcementTreatment.GetAnnouncementsInformation());
+        _rentInformation = new ConcurrentBag<RentInformation>(_databaseFactory.GetRentsInformations());
+        _loansInformation = new ConcurrentBag<LoanInformation>(_databaseFactory.GetLoansInformations());
         _rentalInformation = new ConcurrentBag<RentalInformations>(_cachingManager.GetRentalInformations());
         _rentabilityResults = new ConcurrentBag<RentabilityResult>();
         _rateInformation = _cachingManager.GetRatesInformation();
+
+
         ParallelOptions parallelOptions = new()
             {
                 MaxDegreeOfParallelism = 3,
@@ -87,7 +91,7 @@
 
         Task.Factory.StartNew(() =>
         {
-            Parallel.ForEachAsync(databaseFactory.GetRentabilitiesResults(), parallelOptions, async (info, token) =>
+            Parallel.ForEachAsync(_databaseFactory.GetRentabilitiesResults(), parallelOptions, async (info, token) =>
         {
             await Task.Run(() =>
         {

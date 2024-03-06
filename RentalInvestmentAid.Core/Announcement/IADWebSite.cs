@@ -21,13 +21,14 @@ using OpenQA.Selenium.Remote;
 
 namespace RentalInvestmentAid.Core.Announcement
 {
-    public class IADWebSite : MustInitializeCache, IAnnouncementWebSiteData
+    public class IADWebSite : IAnnouncementWebSiteData
     {
         private readonly AnnouncementProvider _announcementProvider = AnnouncementProvider.IAD;
+        private AnnouncementTreatment _announcementTreatment = null;
         private string baseUrl { get; set; } = "https://www.iadfrance.fr/";
-        public IADWebSite(CachingManager cachingManager) : base(cachingManager)
+        public IADWebSite(AnnouncementTreatment announcementTreatment)
         {
-            base._cachingManager = cachingManager;
+            _announcementTreatment = announcementTreatment;
         }
 
         private List<String> FindUrlForEachAnnoncement(string html)
@@ -45,7 +46,7 @@ namespace RentalInvestmentAid.Core.Announcement
                 {
                     string announceUid = $"r{node.Attributes["data-gtm"].Value.Split("_")[2]}";
 
-                    if (!_cachingManager.GetAnnouncementInformation().Any(ann => ann.IdFromProvider.Equals(announceUid) && ann.AnnouncementProvider.Equals(_announcementProvider)))
+                    if (!_announcementTreatment.ExistAnnouncementByProviderAndProviderId(announceUid, _announcementProvider))
                         urls.Add($"https://www.iadfrance.fr/annonce/{announceUid}");
                 }
             }

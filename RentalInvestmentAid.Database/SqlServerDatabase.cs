@@ -223,8 +223,8 @@ namespace RentalInvestmentAid.Database
                                 current.RentsIds.Add(currentRentId);
                             lastAnnouncementId = currentId;
                         }
-
-                        rentabilityResults.Add(current);
+                        if (current.AnnouncementId != 0)
+                            rentabilityResults.Add(current);
                     }
                 }
             }
