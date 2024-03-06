@@ -182,6 +182,7 @@ CREATE TABLE [dbo].[annoncementInformation](
 	[url] [varchar](max) NOT NULL,
 	[idPropertyType] [int] NOT NULL,
 	[rentabilityCalculated] [bit] NOT NULL,
+	[readed] [bit] NOT NULL,
 	[createdDate] [datetime] NOT NULL,
 	[updatedDate] [datetime] NOT NULL
  CONSTRAINT [PK_annoncementInformation] PRIMARY KEY CLUSTERED 
@@ -228,6 +229,7 @@ INSERT INTO [dbo].[annoncementInformation]
 		   ,[idPropertyType]
            ,[url]
 		   ,[rentabilityCalculated]
+		   ,[readed]
 		   ,[createdDate]
 		   ,[updatedDate])
      VALUES
@@ -241,6 +243,7 @@ INSERT INTO [dbo].[annoncementInformation]
 		   ,@description
 		   ,@idProptertyType
 		   ,@url
+		   ,0
 		   ,0
 		   ,@Now
 		   ,@Now
@@ -284,6 +287,7 @@ SELECT  [id]
 	  ,idPropertyType
       ,[url]
 	  ,[rentabilityCalculated]
+	  ,[readed]
       ,[createdDate]
       ,[updatedDate]
   FROM [RentalInvestmentAid].[dbo].[annoncementInformation]

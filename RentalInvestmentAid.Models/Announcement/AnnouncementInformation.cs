@@ -19,7 +19,8 @@ namespace RentalInvestmentAid.Models.Announcement
         public string Metrage { get; set; } = String.Empty;
         public string Description { get; set; } = String.Empty;
         public string UrlWebSite { get; set; } = String.Empty;
-        public bool rentabilityCalculated { get; set; }
+        public bool RentabilityCalculated { get; set; }
+        public bool Readed { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public List<RentInformation> RentalCost { get; private set; } = new List<RentInformation>();
@@ -32,7 +33,7 @@ namespace RentalInvestmentAid.Models.Announcement
 
         public override string ToString()
         {
-            return $"[{Id}] {City} - {ZipCode} - {Price} : {UrlWebSite}";
+            return $"[{Id} - {IdFromProvider}] {City} - {ZipCode} - {Price} - {Metrage} : {UrlWebSite}";
         }
     }
 }

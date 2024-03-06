@@ -12,6 +12,7 @@ using RentalInvestmentAid.Core.Announcement.Helper;
 using System.Reflection.Metadata;
 using RentalInvestmentAid.Core.Helper;
 using RentalInvestmentAid.Caching;
+using OpenQA.Selenium.Remote;
 
 namespace RentalInvestmentAid.Core.Announcement
 {
@@ -37,7 +38,7 @@ namespace RentalInvestmentAid.Core.Announcement
                 string html = string.Empty;
 
                 ChromeOptions options = SeleniumHelper.DefaultChromeOption();
-                using (IWebDriver driver = new ChromeDriver(options))
+                using (IWebDriver driver = new RemoteWebDriver(options))
                 {
 
                     SeleniumHelper.GoAndWaitPageIsReady(driver, url);

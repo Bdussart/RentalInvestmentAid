@@ -17,6 +17,7 @@ using System.Collections.Concurrent;
 using OpenQA.Selenium.DevTools.V119.WebAudio;
 using System.Text.RegularExpressions;
 using OpenQA.Selenium.DevTools.V119.Fetch;
+using OpenQA.Selenium.Remote;
 
 namespace RentalInvestmentAid.Core.Announcement
 {
@@ -57,23 +58,24 @@ namespace RentalInvestmentAid.Core.Announcement
             ConcurrentBag<String> urls = new ConcurrentBag<String>();
             string html = String.Empty;
             ChromeOptions options = SeleniumHelper.DefaultChromeOption();
-            Parallel.ForEach(departments, department =>
+            Parallel.ForEach(departments, new ParallelOptions { MaxDegreeOfParallelism = 3 }, department =>
             {
                 int page = 1;
-                bool next = false ;
+                bool next = false;
 
-                using (IWebDriver driver = new ChromeDriver(options))
+                using (IWebDriver driver = new RemoteWebDriver(options))
                 {
                     do
                     {
                         string url = $"{baseUrl}annonces/{department}?page={page}";
                         if (maxPrice.HasValue)
-                            url += $"?price_max={maxPrice}";
+                            url += $"&price_max={maxPrice}";
 
                         SeleniumHelper.GoAndWaitPageIsReady(driver, url);
+                        //Handle cookie banner
                         if (driver.FindElements(By.Id("didomi-notice-disagree-button")).Count > 0)
                             driver.FindElement(By.Id("didomi-notice-disagree-button")).Click();
-                        //Handle cookie banner
+
                         List<string> urlsForAnnouncement = FindUrlForEachAnnoncement(driver.PageSource);
 
                         page++;
@@ -95,16 +97,18 @@ namespace RentalInvestmentAid.Core.Announcement
 
         public AnnouncementInformation? GetAnnouncementInformation(string url)
         {
+
+            //https://www.iadfrance.fr/annonce/r1256029
             AnnouncementInformation? announcementInformation = null;
             ChromeOptions options = SeleniumHelper.DefaultChromeOption();
             try
             {
                 string metrage = String.Empty;
-                string city = String.Empty;
+
                 string html = string.Empty;
                 string type = string.Empty;
                 string announcementIdFromProvider = string.Empty;
-                using (IWebDriver driver = new ChromeDriver(options))
+                using (IWebDriver driver = new RemoteWebDriver(options))
                 {
                     SeleniumHelper.GoAndWaitPageIsReady(driver, url);
 
@@ -112,7 +116,6 @@ namespace RentalInvestmentAid.Core.Announcement
                     announcementIdFromProvider = keywords.Last();
                     string[] lightDescription = keywords[4].Split("-");
 
-                    city = lightDescription[lightDescription.Length - 2];
                     metrage = lightDescription.Last().Split("m")[0];
 
                     type = string.Join(" ", lightDescription);
@@ -124,11 +127,19 @@ namespace RentalInvestmentAid.Core.Announcement
                 document.LoadHtml(html);
 
 
-                string zipCode = document.DocumentNode.SelectSingleNode("//*[@id=\"advertisement\"]/div[1]/div[1]/div[4]/a").InnerText.Trim().Split(" ")[3];
-                string price = document.DocumentNode.SelectSingleNode("//*[@id=\"advertisement\"]/div[1]/div[1]/div[6]/div/div[1]").InnerText.Trim().Replace(" ", "").Split("€")[0];
-                
-                zipCode = zipCode.Replace("(", "").Replace(")", "");
-                string description = document.DocumentNode.SelectSingleNode("//*[@id=\"advertisement\"]/div[1]/div[1]/div[9]/section/div").InnerText.Trim();
+                string price = document.DocumentNode.SelectSingleNode("//div[contains(@class, 'adPrice')]").InnerText.Trim().Replace(" ", "").Split("€")[0];
+
+                string zipCodeAndCityToClear = document.DocumentNode.SelectSingleNode("//*[@id=\"advertisement\"]/div[1]/div[1]/div[4]/a").InnerText;
+
+                int indexOfSeparator = zipCodeAndCityToClear.IndexOf('-') + 1;
+                zipCodeAndCityToClear = zipCodeAndCityToClear.Remove(0, indexOfSeparator).Trim();
+
+                string[] zipCodeAndCity = zipCodeAndCityToClear.Split("(");
+
+                string zipCode = zipCodeAndCity[1].Replace("(", "").Replace(")", "").Trim();
+                string city = zipCodeAndCity[0].Trim().Replace("-", " ");
+
+                string description = document.DocumentNode.SelectSingleNode("//div[contains(@class, 'addescription')]").InnerText.Trim();
 
                 RentalTypeOfTheRent rentalType = KeyWordsHelper.GetRentalType(type);
 

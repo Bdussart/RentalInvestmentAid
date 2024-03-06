@@ -17,6 +17,7 @@ using OpenQA.Selenium.Interactions;
 using RentalInvestmentAid.Core.Helper;
 using RentalInvestmentAid.Caching;
 using System.Collections.Concurrent;
+using OpenQA.Selenium.Remote;
 
 namespace RentalInvestmentAid.Core.Announcement
 {
@@ -102,7 +103,7 @@ namespace RentalInvestmentAid.Core.Announcement
             ChromeOptions options = SeleniumHelper.DefaultChromeOption();
             Parallel.ForEach(departments, department =>
             {
-                using (IWebDriver driver = new ChromeDriver(options))
+                using (IWebDriver driver = new RemoteWebDriver(options))
                 {
                     SetSearchInformation(driver, maxPrice, department);
                     //urls.AddRange(FindUrlForEachAnnoncement(driver.PageSource));

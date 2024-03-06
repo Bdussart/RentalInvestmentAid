@@ -18,7 +18,8 @@ using RentalInvestmentAid.Core.Announcement.Helper;
 
 namespace RentalInvestmentAid
 {
-    public class Program {
+    public class Program
+    {
 
         private static bool _loop = true;
 
@@ -33,7 +34,7 @@ namespace RentalInvestmentAid
                 {73, "savoie" }
             };
 
-        private static int? _maxPrice = null;
+        private static int? _maxPrice = 200000;
 
         private static List<RentalInformations> GetRentalInformations(string url)
         {
@@ -109,6 +110,8 @@ namespace RentalInvestmentAid
         {
             IBankWebSiteData bankWebSiteData = new PAPWebSiteData();
 
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
 
 
             LoopGetRentalData();
@@ -130,44 +133,58 @@ namespace RentalInvestmentAid
 
 
             IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData(_cachingManager);
-            IAnnouncementWebSiteData announcementWebSite = new EspritImmoWebSite(_cachingManager);
+            //IAnnouncementWebSiteData announcementWebSite = new EspritImmoWebSite(_cachingManager);
             IAnnouncementWebSiteData IADWebSite = new IADWebSite(_cachingManager);
             List<IAnnouncementWebSiteData> workers = new List<IAnnouncementWebSiteData>
                 {
+                    {announcementWebSiteData },
                     { IADWebSite },
                     
                     //{announcementWebSite },
 
-                    {announcementWebSiteData }
                 };
 
-            List<string> urls = new List<string>();
-            foreach (var worker in workers)
+            workers.ForEach(worker =>
             {
-                worker.GetAnnoucementUrl(_dicoDepartements.Values.ToList(), _maxPrice);
-                urls.AddRange(announcementWebSite.GetAnnoucementUrl(maxPrice: _maxPrice));
-            }
-
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            urls.ForEach(url =>
-            {
-                Thread.Sleep(TimeSpan.FromSeconds(2));
-                AnnouncementInformation? announcementInformation = HeirsHelper.FindTheRightHeir(url, workers).GetAnnouncementInformation(url);
-
-                if (announcementInformation != null)
+                try
                 {
-                    _databaseFactory.InsertAnnouncementInformation(announcementInformation);
-                    _cachingManager.ForceCacheUpdateAnnouncementInformation();
-                    CheckDataRentabilityForAnnouncement(announcementInformation);
+                    Console.WriteLine($"******{Task.CurrentId} Start work for worker {worker.GetKeyword()}* ****");
+                    List<String> urls = worker.GetAnnoucementUrl(_dicoDepartements.Values.ToList(), _maxPrice);
+                    Console.WriteLine($"******{Task.CurrentId} Urls count : {urls.Count} * ****");
+                    Parallel.ForEach(urls,
+                            new ParallelOptions { MaxDegreeOfParallelism = 3 },
+                            url =>
+                            {
+                                Console.WriteLine($"****** [{Task.CurrentId}] [{worker.GetKeyword()}]  Url to get data : {url}*****");
+                                Thread.Sleep(TimeSpan.FromSeconds(1));
+                                AnnouncementInformation? announcementInformation = worker.GetAnnouncementInformation(url);
+
+                                if (announcementInformation != null)
+                                {
+                                    Console.WriteLine($"****** [{Task.CurrentId}] [{worker.GetKeyword()} - {url}]  Announcement : {announcementInformation?.ToString()} *****");
+                                    _databaseFactory.InsertAnnouncementInformation(announcementInformation);
+                                    Console.WriteLine($"****** [{Task.CurrentId}] [{worker.GetKeyword()} - {url}]  Announcement : {announcementInformation?.ToString()} - Inserted *****");
+                                    _cachingManager.ForceCacheUpdateAnnouncementInformation();
+                                    Console.WriteLine($"******[{Task.CurrentId}] [{worker.GetKeyword()} - {url}]  Announcement : {announcementInformation?.ToString()} - Check rentability *****");
+                                    CheckDataRentabilityForAnnouncement(announcementInformation);
+                                    Console.WriteLine($"****** [{Task.CurrentId}] [{worker.GetKeyword()} - {url}]  Announcement : {announcementInformation?.ToString()} - DONE Check rentability *****");
+                                }
+                            });
+                    Console.WriteLine($"{Task.CurrentId}****** END work for worker {worker.GetKeyword()}* ****");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"{Task.CurrentId}Damn an Exception ! {ex}");
                 }
             });
-
             IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData(_cachingManager);
+
             Parallel.ForEach(_dicoDepartements, departement =>
             {
+                Console.WriteLine($"******{Task.CurrentId} Start work for getting price per departement* ****");
                 webSiteData.EnQueueUrls("rhone-alpes", departement.Value, departement.Key);
+
+                Console.WriteLine($"******{Task.CurrentId} End work for getting price per departement* ****");
             });
 
             Console.ReadKey();
@@ -177,9 +194,10 @@ namespace RentalInvestmentAid
 
         private static void LoopForCheckRentability()
         {
-            while (_loop) { 
+            while (_loop)
+            {
                 CheckAllDataRentability();
-                Thread.Sleep(TimeSpan.FromSeconds(10));
+                Thread.Sleep(TimeSpan.FromMinutes(5));
             }
         }
 
@@ -215,10 +233,11 @@ namespace RentalInvestmentAid
 
         private static void CheckAllDataRentability()
         {
-            foreach (AnnouncementInformation announcement in _databaseFactory.GetAnnouncementsInformations().Where(ann => !ann.rentabilityCalculated)) { 
+            foreach (AnnouncementInformation announcement in _databaseFactory.GetAnnouncementsInformations().Where(ann => !ann.RentabilityCalculated))
+            {
                 CheckDataRentabilityForAnnouncement(announcement);
                 Thread.Sleep(TimeSpan.FromMilliseconds(2));
             }
-        }            
+        }
     }
 }

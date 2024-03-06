@@ -71,9 +71,10 @@ namespace RentalInvestmentAid.Database
                                 Description = reader.GetString(7).ToString(),
                                 RentalType = (RentalTypeOfTheRent)reader.GetInt32(8),
                                 UrlWebSite = reader.GetString(9).ToString(),
-                                rentabilityCalculated = reader.GetBoolean(10),
-                                CreatedDate = reader.GetDateTime(11),
-                                UpdatedDate = reader.GetDateTime(12)
+                                RentabilityCalculated = reader.GetBoolean(10),
+                                Readed = reader.GetBoolean(11),
+                                CreatedDate = reader.GetDateTime(12),
+                                UpdatedDate = reader.GetDateTime(13)
                             });
                         }
                     }
@@ -252,29 +253,37 @@ namespace RentalInvestmentAid.Database
         }
         public AnnouncementInformation InsertAnnouncementInformation(AnnouncementInformation announcementInformation)
         {
-            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            try
             {
-                using (SqlCommand sqlCommand = new SqlCommand("uspInsertAnnoncementInformation", connection))
+                using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
                 {
-                    sqlCommand.CommandType = CommandType.StoredProcedure;
-                    sqlCommand.Parameters.AddWithValue("@city", announcementInformation.City);
-                    sqlCommand.Parameters.AddWithValue("@idAnnouncementProvider", announcementInformation.AnnouncementProvider);
-                    
-                    sqlCommand.Parameters.AddWithValue("@zipcode", announcementInformation.ZipCode);
-                    sqlCommand.Parameters.AddWithValue("@idFromProvider", announcementInformation.IdFromProvider);
-                    sqlCommand.Parameters.AddWithValue("@price", announcementInformation.Price);
-                    sqlCommand.Parameters.AddWithValue("@metrage", announcementInformation.Metrage);
-                    sqlCommand.Parameters.AddWithValue("@description", announcementInformation.Description);
-                    sqlCommand.Parameters.AddWithValue("@idProptertyType", announcementInformation.RentalType);
-                    sqlCommand.Parameters.AddWithValue("@url", announcementInformation.UrlWebSite);
+                    using (SqlCommand sqlCommand = new SqlCommand("uspInsertAnnoncementInformation", connection))
+                    {
+                        sqlCommand.CommandType = CommandType.StoredProcedure;
+                        sqlCommand.Parameters.AddWithValue("@city", announcementInformation.City);
+                        sqlCommand.Parameters.AddWithValue("@idAnnouncementProvider", announcementInformation.AnnouncementProvider);
 
-                    SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
-                    retval.Direction = ParameterDirection.ReturnValue;
+                        sqlCommand.Parameters.AddWithValue("@zipcode", announcementInformation.ZipCode);
+                        sqlCommand.Parameters.AddWithValue("@idFromProvider", announcementInformation.IdFromProvider);
+                        sqlCommand.Parameters.AddWithValue("@price", announcementInformation.Price);
+                        sqlCommand.Parameters.AddWithValue("@metrage", announcementInformation.Metrage);
+                        sqlCommand.Parameters.AddWithValue("@description", announcementInformation.Description);
+                        sqlCommand.Parameters.AddWithValue("@idProptertyType", announcementInformation.RentalType);
+                        sqlCommand.Parameters.AddWithValue("@url", announcementInformation.UrlWebSite);
 
-                    connection.Open();
-                    sqlCommand.ExecuteNonQuery();
-                    announcementInformation.Id = (int)sqlCommand.Parameters["@RETURN_VALUE"].Value;
+                        SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
+                        retval.Direction = ParameterDirection.ReturnValue;
+
+                        connection.Open();
+                        sqlCommand.ExecuteNonQuery();
+                        announcementInformation.Id = (int)sqlCommand.Parameters["@RETURN_VALUE"].Value;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogHelper.LogException(ex, objectInfo: announcementInformation);
+                throw;
             }
 
             return announcementInformation;

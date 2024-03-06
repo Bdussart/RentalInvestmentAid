@@ -20,22 +20,20 @@ namespace RentalInvestmentAid.Logger
             _logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
                 .CreateLogger();
-
-            _logger.Information("InitDone");
         }
 
         public static void LogInfo(string  message, [CallerMemberName] string callerName = "")
         {
-            _logger.Information($"[{callerName}]{message}");
+            _logger.Information($"[{Task.CurrentId}][{callerName}]{message}");
         }
 
-        public static void LogException(Exception exception, [CallerMemberName] string callerName = "")
+        public static void LogException(Exception exception, [CallerMemberName] string callerName = "", object objectInfo = null)
         {
-            _logger.Warning(exception, $"[{callerName}]{exception.Message}");
+            _logger.Error(exception, $"[{Task.CurrentId}][{callerName}]{objectInfo?.ToString()} {exception.ToString()}");
         }
         public static void LogDebug(string message, [CallerMemberName] string callerName = "")
         {
-            _logger.Debug($"[{callerName}]{message}");
+            _logger.Debug($"[{Task.CurrentId}][{callerName}]{message}");
         }
 
     }

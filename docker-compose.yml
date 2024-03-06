@@ -1,7 +1,14 @@
+version: '3.8'
+
 volumes:
   sqlserver_data:
+  
+
+
     
 services:
+
+        
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2019-latest
     environment:
@@ -17,7 +24,7 @@ services:
     command: >
       bash -c '
         if [ "$Init" = true ]; then
-            sleep 30 &&
+            sleep 60 &&
       /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P ${Sa_Password:-password123} -d master -i docker-entrypoint-initdb.d/init.sql;
         fi
         echo "$Init";
@@ -31,7 +38,18 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-      
+  chrome:
+    image: selenium/standalone-chrome:latest
+    hostname: chrome
+    privileged: true
+    shm_size: 2g
+    environment:
+      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+      - SE_NODE_MAX_SESSIONS=5
+    ports:
+      - "5900:5900"
+      - "4444:4444"
+
 networks:
  default:
   driver: bridge

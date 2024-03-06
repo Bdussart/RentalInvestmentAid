@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Remote;
 using RentalInvestmentAid.Core.Helper;
 using RentalInvestmentAid.Models.Bank;
 using RentalInvestmentAid.Models.Rate;
@@ -24,7 +25,7 @@ namespace RentalInvestmentAid.Core.Bank
                 string html = string.Empty;
 
                 ChromeOptions options = SeleniumHelper.DefaultChromeOption();
-                using (IWebDriver driver = new ChromeDriver(options))
+                using (IWebDriver driver = new RemoteWebDriver(options))
                 {
                     SeleniumHelper.GoAndWaitPageIsReady(driver, url);
                     html = driver.PageSource;

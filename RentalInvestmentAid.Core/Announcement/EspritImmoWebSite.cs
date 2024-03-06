@@ -13,6 +13,7 @@ using RentalInvestmentAid.Core.Announcement.Helper;
 using Microsoft.Extensions.Options;
 using HtmlAgilityPack;
 using RentalInvestmentAid.Models.Rental;
+using OpenQA.Selenium.Remote;
 
 namespace RentalInvestmentAid.Core.Announcement
 {
@@ -73,7 +74,7 @@ namespace RentalInvestmentAid.Core.Announcement
             string html = String.Empty;
             ChromeOptions options = SeleniumHelper.DefaultChromeOption();
 
-            using (IWebDriver driver = new ChromeDriver(options))
+            using (IWebDriver driver = new RemoteWebDriver(options))
             {
                 SetSearchInformation(driver, maxPrice);
                 //urls.AddRange(FindUrlForEachAnnoncement(driver.PageSource));

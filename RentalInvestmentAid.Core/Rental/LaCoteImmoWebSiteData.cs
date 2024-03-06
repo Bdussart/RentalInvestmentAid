@@ -13,6 +13,7 @@ using RentalInvestmentAid.Core.Helper;
 using RentalInvestmentAid.Logger;
 using RentalInvestmentAid.Queue;
 using RentalInvestmentAid.Caching;
+using OpenQA.Selenium.Remote;
 
 namespace RentalInvestmentAid.Core.Rental
 {
@@ -161,7 +162,7 @@ namespace RentalInvestmentAid.Core.Rental
                 LogHelper.LogInfo($"Get information for : {baseUrl}");
                 try
                 {
-                    using (IWebDriver driver = new ChromeDriver(options)) // why open a new driver in the loop ? => Because this website is heavy for the memory and the processor, i don't want to shutdown the website server and my computer :) 
+                    using (IWebDriver driver = new RemoteWebDriver(options)) // why open a new driver in the loop ? => Because this website is heavy for the memory and the processor, i don't want to shutdown the website server and my computer :) 
                     {
                         SeleniumHelper.GoAndWaitPageIsReady(driver, baseUrl);
                         LogHelper.LogInfo($"Get information for : {driver.Url}");
