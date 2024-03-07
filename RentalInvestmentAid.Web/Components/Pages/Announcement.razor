@@ -1,6 +1,8 @@
 ﻿@page "/announcement"
 
+@using RentalInvestmentAid.Core
 @using RentalInvestmentAid.Core.Announcement
+@using RentalInvestmentAid.Core.Bank
 @using RentalInvestmentAid.Database
 @using RentalInvestmentAid.Models
 @using RentalInvestmentAid.Models.Announcement
@@ -14,97 +16,96 @@
 @rendermode InteractiveServer
 
 <div class="container">
-    @if (_rentabilityResults?.Count == 0)
-    {
-        <p><em>Loading...</em></p>
-    }
-    else
-    {
-        @foreach (var result in _rentabilityResults.OrderBy(rent => rent.AnnouncementInformation.CityInformations.CityName))
-        {
-            <div id="annoucment_@result.AnnouncementId" class="announcement">
+
+    <div id="annoucment_@AnnouncementInformation.Id" class="announcement">
                 <div class="row text-center">
-                    <a href="@result.AnnouncementInformation.UrlWebSite" target="_blank" class="col-sm-2">
+            <a href="@AnnouncementInformation.UrlWebSite" target="_blank" class="col-sm-2">
                         <div class="card ">
                             <div class="card-header">
-                                @result.AnnouncementInformation.CityInformations.CityName -  @result.AnnouncementInformation.CityInformations.ZipCode
+                                @AnnouncementInformation.CityInformations.CityName -  @AnnouncementInformation.CityInformations.ZipCode
                             </div>
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item"> @result.AnnouncementInformation.Price €</li>
-                                <li class="list-group-item"> @result.AnnouncementInformation.Metrage m2</li>
+                                <li class="list-group-item"> @AnnouncementInformation.Price €</li>
+                                <li class="list-group-item"> @AnnouncementInformation.Metrage m2</li>
                             </ul>
                         </div>
                     </a>
                     <div class="announcement_description col-sm-9 card-text">
-                        @result.AnnouncementInformation.Description
+                        @AnnouncementInformation.Description
                     </div>
                     <div class="announcement_read col-sm-1 ">
-                        <input type="checkbox" checked="@result.AnnouncementInformation.Readed" @oninput="args => CheckboxChanged(result.AnnouncementId, args)">
+                <input type="checkbox" checked="@AnnouncementInformation.Readed" @oninput="args => CheckboxChanged(AnnouncementInformation.Id, args)">
                     </div>
                 </div>
                 <div class="row rents_and_loan">
                 <div class="rents col-sm-4">
-                    <Rents RentsInformation="@result.Rents" />
+                    <Rents RentsInformation="@Rents" />
                 </div>
                     <div class="loans  col-sm-8">
                         <div class="rates-informations">
-                            <Rates RentsInformation="@result.Rents" RateInformation="_rateInformation" LoansInformations="@result.Loans" />
+                    <Rates RentsInformation="@Rents" RateInformation="RateInformation" LoansInformations="@Loans" />
                         </div>
                     </div>
                 </div>
             </div>
-        }
-    }
-
 </div>
 
 @code {
-    private IDatabaseFactory _databaseFactory = new SqlServerDatabase();
-    private ConcurrentBag<RentabilityResult>? _rentabilityResults = null;
-    private ConcurrentBag<AnnouncementInformation> _announcementInformation = null;
-    private ConcurrentBag<RentInformation> _rentInformation = null;
-    private ConcurrentBag<LoanInformation> _loansInformation = null;
-    private ConcurrentBag<RentalInformations> _rentalInformation = null;
     private CachingManager _cachingManager = null;
+    private IDatabaseFactory _databaseFactory = new SqlServerDatabase();
+
+    [Parameter]
+    public AnnouncementInformation AnnouncementInformation { get; set; }
+
+    public List<RentInformation> Rents
+    {
+        get
+        {
+            if (_rentInformation is null ||_rentInformation.Count() == 0)
+            {
+                _rentInformation = _rentalTreament.GetRentsForAnnouncementI(AnnouncementInformation.Id);
+            }
+            return _rentInformation;
+        }
+    }
+    private List<RentInformation> _rentInformation = null;
+
+
+    public List<LoanInformation> Loans
+    {
+        get
+        {
+            if (_loansInformation is null || _loansInformation.Count() == 0)
+            {
+                _loansInformation = _rentalTreament.GetLoansForAnnouncementI(AnnouncementInformation.Id);
+            }
+            return _loansInformation;
+        }
+    }
+    private List<LoanInformation> _loansInformation = null;
+
+    public List<RateInformation> RateInformation
+    {
+        get
+        {
+            if (_rateInformation is null || !_rateInformation.Any())
+            {
+                _rateInformation = _bankTreament.GetRates();
+            }
+            return _rateInformation;
+        }
+    }
     private List<RateInformation> _rateInformation = null;
-    private AnnouncementTreatment _announcementTreatment = null;
+
+    private RentalTreament _rentalTreament = null;
+    private BankTreatment _bankTreament = null;
 
 
     protected override Task OnInitializedAsync()
     {
         _cachingManager = new CachingManager(_databaseFactory);
-        _announcementTreatment = new AnnouncementTreatment(_cachingManager, _databaseFactory);
-        _announcementInformation = new ConcurrentBag<AnnouncementInformation>(_announcementTreatment.GetAnnouncementsInformation());
-        _rentInformation = new ConcurrentBag<RentInformation>(_databaseFactory.GetRentsInformations());
-        _loansInformation = new ConcurrentBag<LoanInformation>(_databaseFactory.GetLoansInformations());
-        _rentalInformation = new ConcurrentBag<RentalInformations>(_cachingManager.GetRentalInformations());
-        _rentabilityResults = new ConcurrentBag<RentabilityResult>();
-        _rateInformation = _cachingManager.GetRatesInformation();
-
-
-        ParallelOptions parallelOptions = new()
-            {
-                MaxDegreeOfParallelism = 3,
-            };
-
-        Task.Factory.StartNew(() =>
-        {
-            Parallel.ForEachAsync(_databaseFactory.GetRentabilitiesResults(), parallelOptions, async (info, token) =>
-        {
-            await Task.Run(() =>
-        {
-                    info.AnnouncementInformation = _announcementInformation.FirstOrDefault(ann => ann.Id == info.AnnouncementId);
-                    info.Loans = _loansInformation.Where(loan => info.LoanIds.Contains(loan.Id)).ToList();
-                    info.Rents = _rentInformation.Where(rent => info.RentsIds.Contains(rent.Id)).ToList();
-                    info.Rents.ForEach(rent =>
-                    {
-                        rent.RentalInformations = _rentalInformation.First(rental => rental.Id == rent.RentalInformations.Id);
-                    });
-                    _rentabilityResults.Add(info);
-                    InvokeAsync(base.StateHasChanged);
-                });
-            });
-        });
+        _rentalTreament = new RentalTreament(_cachingManager, _databaseFactory);
+        _bankTreament = new BankTreatment(_cachingManager, _databaseFactory);
 
         return base.OnInitializedAsync();
 

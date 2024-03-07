@@ -32,6 +32,8 @@ namespace RentalInvestmentAid
         private static AnnouncementTreatment _announcementTreatment = null;
         private static BankTreatment _bankTreatment = null;
 
+        private static RentalTreament _rentalTreament = null;
+
         private static Dictionary<int, string> _dicoDepartements = new Dictionary<int, string>
             {
                 {74, "haute-savoie" },
@@ -60,6 +62,7 @@ namespace RentalInvestmentAid
             _cityTreatment = new CityTreatment(_cachingManager, _databaseFactory);
             _announcementTreatment = new AnnouncementTreatment(_cachingManager, _databaseFactory);
             _bankTreatment = new BankTreatment(_cachingManager, _databaseFactory);
+            _rentalTreament = new RentalTreament(_cachingManager, _databaseFactory);
             Console.OutputEncoding = Encoding.UTF8;
 
             //IAnnouncementWebSiteData announcementWebSite = new EspritImmoWebSite(_cachingManager);
@@ -114,7 +117,6 @@ namespace RentalInvestmentAid
             };
             _cachingManager.ForceCacheUpdateRentalInformations();
         }
-
         private static void DoLoadDataJob()
         {
             IBankWebSiteData bankWebSiteData = new PAPWebSiteData(_bankTreatment);
@@ -209,32 +211,9 @@ namespace RentalInvestmentAid
 
         private static void CheckDataRentabilityForAnnouncement(AnnouncementInformation announcement)
         {
-            RentalTreament rentalTreament = new RentalTreament();
-            List<RentalInformations> currentsRentalInformation = rentalTreament.FindRentalInformationForAnAnnoucement(_cachingManager.GetRentalInformations(), announcement);
 
-            Console.WriteLine("****** Find the right rental information Check if not null *****");
-            if (currentsRentalInformation.Count == 0)
-                Logger.LogHelper.LogInfo($"{announcement.ToString()} - Don't find rental information -----");
-            else
-            {
-                List<LoanInformation> loansInformation = rentalTreament.CalculAllLoan(_cachingManager.GetRatesInformation(), announcement.Price);
-
-                foreach (LoanInformation loan in loansInformation)
-                {
-                    loan.AnnouncementInformation = announcement;
-                    _databaseFactory.InsertLoanInformation(loan);
-                }
-
-                List<RentInformation> realRentalCosts = rentalTreament.CalculAllRentalPrices(currentsRentalInformation, announcement);
-                foreach (RentInformation rent in realRentalCosts)
-                {
-                    rent.AnnouncementInformation = announcement;
-                    _databaseFactory.InsertRentInformation(rent);
-                }
-
+            if (_rentalTreament.CheckDataRentabilityForAnnouncement(announcement))
                 _announcementTreatment.UpdateRentabilityInformation(announcement.Id);
-                //RentalResult result = rentalTreament.CheckIfRentable(announcement.Price, realRentalCosts, loansInformation);
-            }
         }
 
         private static void CheckAllDataRentability()

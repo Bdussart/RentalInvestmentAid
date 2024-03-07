@@ -49,6 +49,24 @@ namespace RentalInvestmentAid.Settings
                 return configuration.GetSection("Cache").GetSection("CityCacheKey").Value.ToString();
             }
         }
+
+        public static String LoanCacheKey
+        {
+            get
+            {
+                IConfiguration configuration = builder.Build();
+                return configuration.GetSection("Cache").GetSection("LoanCacheKey").Value.ToString();
+            }
+        }
+
+        public static String RentCacheKey
+        {
+            get
+            {
+                IConfiguration configuration = builder.Build();
+                return configuration.GetSection("Cache").GetSection("RentCacheKey").Value.ToString();
+            }
+        }
     }
 }
 

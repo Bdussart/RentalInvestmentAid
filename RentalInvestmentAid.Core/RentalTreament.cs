@@ -10,28 +10,39 @@ using System.Threading.Tasks;
 using System.Globalization;
 using RentalInvestmentAid.Models.Loan;
 using RentalInvestmentAid.Models;
+using RentalInvestmentAid.Database;
+using RentalInvestmentAid.Caching;
+using OpenQA.Selenium.DevTools.V119.SystemInfo;
+using RentalInvestmentAid.Core.Announcement;
 
 namespace RentalInvestmentAid.Core
 {
-    public class RentalTreament
+    public class RentalTreament : MustInitializeCache
     {
-        public List<RentalInformations> FindRentalInformationForAnAnnoucement(List<RentalInformations> rentalInformations, AnnouncementInformation announcementInformation)
+        private IDatabaseFactory _databaseFactory;
+
+        public RentalTreament(CachingManager cachingManager, IDatabaseFactory databaseFactory) : base(cachingManager)
         {
-            return rentalInformations.Where(rent => rent.CityInfo.Id == announcementInformation.CityInformations.Id
+            base._cachingManager = cachingManager;
+            _databaseFactory = databaseFactory;
+        }
+        private List<RentalInformations> FindRentalInformationForAnAnnoucement(AnnouncementInformation announcementInformation)
+        {
+            return _cachingManager.GetRentalInformations().Where(rent => rent.CityInfo.Id == announcementInformation.CityInformations.Id
                 && announcementInformation.RentalType == rent.RentalTypeOfTheRent).ToList();
         }
 
-        public List<LoanInformation> CalculAllLoan(List<RateInformation> ratesInformation, string amount, string insurranceRate = "0,30")
+        private List<LoanInformation> CalculAllLoan(string amount, string insurranceRate = "0,30")
         {
             List<LoanInformation> loanInformation = new List<LoanInformation>();
-            ratesInformation.ForEach(rateInformation =>
+            _cachingManager.GetRatesInformation().ForEach(rateInformation =>
             {
                 loanInformation.Add(FinancialCalcul.LoanInformation(rateInformation, Double.Parse(amount), Convert.ToDouble(insurranceRate)));
             });
             return loanInformation;
         }
 
-        public List<RentInformation> CalculAllRentalPrices(List<RentalInformations> rentalInformation, AnnouncementInformation announcementInformation)
+        private List<RentInformation> CalculAllRentalPrices(List<RentalInformations> rentalInformation, AnnouncementInformation announcementInformation)
         {
             string metrage = announcementInformation.Metrage;
             List<RentInformation> realCost = new List<RentInformation>();
@@ -49,5 +60,49 @@ namespace RentalInvestmentAid.Core
 
             return realCost;
         }
+
+        public bool CheckDataRentabilityForAnnouncement(AnnouncementInformation announcement)
+        {
+            bool rentabilityChecked = false;
+            List<RentalInformations> currentsRentalInformation = FindRentalInformationForAnAnnoucement(announcement);
+
+            Console.WriteLine("****** Find the right rental information Check if not null *****");
+            if (currentsRentalInformation.Count == 0)
+                Logger.LogHelper.LogInfo($"{announcement.ToString()} - Don't find rental information -----");
+            else
+            {
+                List<LoanInformation> loansInformation = CalculAllLoan(announcement.Price);
+
+                foreach (LoanInformation loan in loansInformation)
+                {
+                    loan.AnnouncementInformation = announcement;
+                    _databaseFactory.InsertLoanInformation(loan);
+                }
+
+                _cachingManager.ForceCacheUpdateLoans();
+                List<RentInformation> realRentalCosts = CalculAllRentalPrices(currentsRentalInformation, announcement);
+                foreach (RentInformation rent in realRentalCosts)
+                {
+                    rent.AnnouncementInformation = announcement;
+                    _databaseFactory.InsertRentInformation(rent);
+                }
+                _cachingManager.ForceCacheUpdateRents();
+
+                rentabilityChecked = true;
+            }
+
+            return rentabilityChecked;
+        }
+
+        public List<LoanInformation> GetLoansForAnnouncementI(int announcementId)
+        {
+            return _cachingManager.GetLoans().Where(loan => loan.AnnouncementInformation.Id == announcementId).ToList();
+        }
+
+        public List<RentInformation> GetRentsForAnnouncementI(int announcementId)
+        {
+            return _cachingManager.GetRents().Where(rent => rent.AnnouncementInformation.Id == announcementId).ToList();
+        }
+
     }
 }

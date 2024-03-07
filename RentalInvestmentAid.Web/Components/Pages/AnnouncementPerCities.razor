@@ -14,9 +14,9 @@
     }
     else
     {
-        <div class="cities-information row">
+        <div class="cities-informations row">
 
-            @foreach (CityInformations city in _cityTreatment.GetCitiesWithAnnouncement().OrderBy(x => x.CityName))
+            @foreach (CityInformations city in CityInformations)
             {
                 <AnnouncementPerCity City=city />
             }
@@ -31,6 +31,17 @@
     private CachingManager _cachingManager = null;
     private CityTreatment _cityTreatment = null;
 
+    public List<CityInformations> CityInformations {
+        get
+        {
+            if(_cityInformations is null || !_cityInformations.Any()){
+                _cityInformations = _cityTreatment.GetCitiesWithAnnouncement().OrderBy(x => x.CityName).ToList();
+            }
+            return _cityInformations;
+        } 
+    }
+    private List<CityInformations> _cityInformations = null;
+
     protected override Task OnInitializedAsync()
     {
         _cachingManager = new CachingManager(_databaseFactory);
@@ -42,7 +53,6 @@
     public void CityLoaded(int cityId, ProgressEventArgs e)
     {
         Console.WriteLine($"City {cityId} loaded");
-        InvokeAsync(base.StateHasChanged);
     }
 
 

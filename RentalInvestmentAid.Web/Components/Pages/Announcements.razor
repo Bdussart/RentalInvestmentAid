@@ -1,0 +1,59 @@
+﻿@page "/announcements"
+
+@using RentalInvestmentAid.Core.Announcement
+@using RentalInvestmentAid.Database
+@using RentalInvestmentAid.Models
+@using RentalInvestmentAid.Models.Announcement
+@using RentalInvestmentAid.Models.Bank
+@using System.ComponentModel
+@using RentalInvestmentAid.Models.Loan
+@using RentalInvestmentAid.Models.Rental
+@using RentalInvestmentAid.Caching
+@using System.Collections.Concurrent
+
+@rendermode InteractiveServer
+
+<div class="container">
+
+    @if (AnnouncementInformation?.Count == 0)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        @foreach (AnnouncementInformation result in AnnouncementInformation)
+        {
+            <Announcement AnnouncementInformation=result />
+        }
+    }
+
+</div>
+
+@code {
+
+    private IDatabaseFactory _databaseFactory = new SqlServerDatabase();
+
+    public List<AnnouncementInformation> AnnouncementInformation
+    {
+        get
+        {
+            if (_announcementInformation is null || !_announcementInformation.Any())
+                _announcementInformation = _announcementTreatment.GetAnnouncementsInformation().OrderBy(x=> x.CityInformations.CityName).ToList();
+
+            return _announcementInformation;
+        }
+    }
+    private List<AnnouncementInformation> _announcementInformation = null;
+    private CachingManager _cachingManager = null;
+    private AnnouncementTreatment _announcementTreatment = null;
+    protected override Task OnInitializedAsync()
+    {
+        _cachingManager = new CachingManager(_databaseFactory);
+        _announcementTreatment = new AnnouncementTreatment(_cachingManager, _databaseFactory);
+
+
+        return base.OnInitializedAsync();
+
+    }
+
+}

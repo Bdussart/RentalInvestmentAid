@@ -403,7 +403,6 @@ namespace RentalInvestmentAid.Database
             }
             return cities;
         }
-
         public CityInformations InsertCity(CityInformations city)
         {
             using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))

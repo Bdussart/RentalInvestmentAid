@@ -5,22 +5,31 @@
 @using RentalInvestmentAid.Database
 @using RentalInvestmentAid.Models.Announcement
 @using RentalInvestmentAid.Models.City
+@inject IJSRuntime JS
 
 @rendermode InteractiveServer
 
-<div class="col-sm-2">
-    <div class="row text-center">
-            <div class="card ">
-                <div class="card-header">
-                @City.CityName -  @City.ZipCode
+<div class="col-sm-3 cursor-pointer" id="city_@City.Id">
+    <div  @onclick="OnClickCity">
+        <div class="row text-center" >
+                <div class="card ">
+                    <div class="card-header">
+                    @City.CityName -  @City.ZipCode
+                    </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"> @AnnouncementInformation.Count() Annonces</li>
+                    <li class="list-group-item"> @AnnouncementInformation.Where(ann => ann.RentabilityCalculated).Count() Calcul effectué</li>
+                    <li class="list-group-item"> @AnnouncementInformation.Where(ann => !ann.RentabilityCalculated).Count() Calcul NON effectué</li>
+                    </ul>
                 </div>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item"> @AnnouncementInformation.Count() Annonces</li>
-                <li class="list-group-item"> @AnnouncementInformation.Where(ann => ann.RentabilityCalculated).Count() Calcul effectué</li>
-                <li class="list-group-item"> @AnnouncementInformation.Where(ann => !ann.RentabilityCalculated).Count() Calcul NON effectué</li>
-                </ul>
-            </div>
+        </div>
     </div>
+</div>
+<div class="@AnnouncementDisplayToggle" id="announcement_for_city_@City.Id">
+    @foreach (AnnouncementInformation announcement in AnnouncementInformation)
+    {
+        <Announcement AnnouncementInformation="announcement"/>
+    }
 </div>
 
 
@@ -29,6 +38,9 @@
     private IDatabaseFactory _databaseFactory = new SqlServerDatabase();
     private CachingManager _cachingManager = null;
     private AnnouncementTreatment _announcementTreatment = null;
+
+    public string AnnouncementDisplayToggle { get; set; } = "d-none";
+    private string hiddenClass = "d-none";
 
     [Parameter]
     public CityInformations City { get; set; }
@@ -52,4 +64,15 @@
 
         return base.OnInitializedAsync();
     }
+
+
+    async Task OnClickCity()
+    {
+        if (String.IsNullOrEmpty(AnnouncementDisplayToggle))
+            AnnouncementDisplayToggle = hiddenClass;
+        else
+            AnnouncementDisplayToggle = String.Empty;
+        InvokeAsync(base.StateHasChanged);
+    }
+
 }

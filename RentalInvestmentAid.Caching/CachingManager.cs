@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using RentalInvestmentAid.Models.Rental;
 using RentalInvestmentAid.Models.Bank;
 using RentalInvestmentAid.Models.City;
+using RentalInvestmentAid.Models.Loan;
 
 namespace RentalInvestmentAid.Caching
 {
@@ -100,6 +101,35 @@ namespace RentalInvestmentAid.Caching
         public void ForceCacheUpdateCities()
         {
             SetCache(SettingsManager.CityCacheKey, _databaseFactory.GetCities().Cast<Object>().ToList());
+        }
+
+        #endregion
+
+        #region Loan
+        public List<LoanInformation> GetLoans()
+        {
+            return GetFromCache(SettingsManager.LoanCacheKey,
+                    () => _databaseFactory.GetLoansInformations().Cast<Object>().ToList()).Cast<LoanInformation>().ToList();
+        }
+
+        public void ForceCacheUpdateLoans()
+        {
+            SetCache(SettingsManager.LoanCacheKey, _databaseFactory.GetLoansInformations().Cast<Object>().ToList());
+        }
+
+        #endregion
+
+
+        #region Rent
+        public List<RentInformation> GetRents()
+        {
+            return GetFromCache(SettingsManager.RentCacheKey,
+                    () => _databaseFactory.GetRentsInformations().Cast<Object>().ToList()).Cast<RentInformation>().ToList();
+        }
+
+        public void ForceCacheUpdateRents()
+        {
+            SetCache(SettingsManager.RentCacheKey, _databaseFactory.GetRentsInformations().Cast<Object>().ToList());
         }
 
         #endregion
