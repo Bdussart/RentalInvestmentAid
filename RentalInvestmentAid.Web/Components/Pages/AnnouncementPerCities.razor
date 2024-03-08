@@ -7,29 +7,42 @@
 
 @rendermode InteractiveServer
 
-<div class="container">
-    @if(_cityTreatment.GetCities()?.Count  == 0)
-    {
-        <p><em>Loading...</em></p>
-    }
-    else
-    {
-        <div class="cities-informations row">
-
-            @foreach (CityInformations city in CityInformations)
-            {
-                <AnnouncementPerCity City=city />
-            }
-
-        </div>
-    }
-</div>
+@if (_isLoading)
+{
+    <div class="spinner-border text-dark" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+}
+else
+{    
+    <div class="container">
+        @if(_cityTreatment.GetCities()?.Count  == 0)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <div class="cities-informations row">
+    
+                @foreach (CityInformations city in CityInformations)
+                {
+    
+                    <div class="col-sm-3 cursor-pointer" id="city_@city.Id" @onclick="() => OnClickCity(city.Id)">
+                        <AnnouncementPerCity City=city AnnouncementTreatment=_announcementTreatment />
+                    </div>
+                }
+    
+            </div>
+        }
+    </div>
+}
 
 
 @code {
     private IDatabaseFactory _databaseFactory = new SqlServerDatabase();
     private CachingManager _cachingManager = null;
     private CityTreatment _cityTreatment = null;
+    private AnnouncementTreatment _announcementTreatment = null;
 
     public List<CityInformations> CityInformations {
         get
@@ -42,19 +55,39 @@
     }
     private List<CityInformations> _cityInformations = null;
 
+    private bool _isLoading = true;
+
     protected override Task OnInitializedAsync()
     {
         _cachingManager = new CachingManager(_databaseFactory);
         _cityTreatment = new CityTreatment(_cachingManager, _databaseFactory);
+        _announcementTreatment = new AnnouncementTreatment(_cachingManager, _databaseFactory);
 
         return base.OnInitializedAsync();
     }
 
-    public void CityLoaded(int cityId, ProgressEventArgs e)
+    async Task OnClickCity(int cityId)
     {
-        Console.WriteLine($"City {cityId} loaded");
+        Console.WriteLine($"Click click {cityId}");
+
+        // if (String.IsNullOrEmpty(AnnouncementDisplayToggle))
+        //     AnnouncementDisplayToggle = hiddenClass;
+        // else
+        //     AnnouncementDisplayToggle = String.Empty;
+        await InvokeAsync(base.StateHasChanged);
     }
 
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Console.WriteLine($"firstRender");
+            _isLoading = false;
+            InvokeAsync(base.StateHasChanged);
+        }
 
-    
+        Console.WriteLine($"NOT firstRender");
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
 }

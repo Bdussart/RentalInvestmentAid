@@ -43,7 +43,7 @@
                 </div>
                     <div class="loans  col-sm-8">
                         <div class="rates-informations">
-                    <Rates RentsInformation="@Rents" RateInformation="RateInformation" LoansInformations="@Loans" />
+                        <Rates RentsInformation="@Rents" RateInformation="RateInformation" LoansInformations="@Loans" />
                         </div>
                     </div>
                 </div>
@@ -110,7 +110,6 @@
         return base.OnInitializedAsync();
 
     }
-
 
     public string CheckRentability(LoanInformation loan, List<RentInformation> rents)
     {
