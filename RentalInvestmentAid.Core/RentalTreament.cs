@@ -94,12 +94,12 @@ namespace RentalInvestmentAid.Core
             return rentabilityChecked;
         }
 
-        public List<LoanInformation> GetLoansForAnnouncementI(int announcementId)
+        public List<LoanInformation> GetLoansForAnnouncementId(int announcementId)
         {
             return _cachingManager.GetLoans().Where(loan => loan.AnnouncementInformation.Id == announcementId).ToList();
         }
 
-        public List<RentInformation> GetRentsForAnnouncementI(int announcementId)
+        public List<RentInformation> GetRentsForAnnouncementId(int announcementId)
         {
             return _cachingManager.GetRents().Where(rent => rent.AnnouncementInformation.Id == announcementId).ToList();
         }

@@ -13,6 +13,8 @@ using System.Reflection.Metadata;
 using RentalInvestmentAid.Core.Helper;
 using RentalInvestmentAid.Caching;
 using OpenQA.Selenium.Remote;
+using System.Collections.Concurrent;
+using OpenQA.Selenium.Interactions;
 
 namespace RentalInvestmentAid.Core.Announcement
 {
@@ -22,12 +24,54 @@ namespace RentalInvestmentAid.Core.Announcement
         {
             base._cachingManager = cachingManager;
         }
+        private string baseUrl { get; set; } = "https://www.leboncoin.fr";
 
-        public List<string> GetAnnoucementUrl(List<string> department = null, int? maxPrice = null)
+        private IWebDriver UsingGoogleToGoTo()
         {
-            throw new NotImplementedException();
+            ChromeOptions options = SeleniumHelper.DefaultChromeOption();
+            IWebDriver webDriver = new ChromeDriver(options);
+            SeleniumHelper.GoAndWaitPageIsReady(webDriver, "https://www.google.fr/");
+            //handle cookie
+            // 
+
+            Actions actions = new Actions(webDriver);
+            if (webDriver.FindElement(By.Id("W0wltc")).Displayed)
+            {
+                IWebElement element = webDriver.FindElement(By.Id("W0wltc"));
+                actions.ScrollToElement(element);
+                actions.Perform();
+                actions.Click(element);
+                actions.Perform();
+            }
+            InteratiorHelper.ImitateHumanTyping(GetKeyword(), webDriver.FindElement(By.Id("APjFqb")));
+            actions.SendKeys(Keys.Enter);
+            actions.Perform();
+
+            HtmlDocument document = new HtmlDocument();
+
+            document.LoadHtml(webDriver.PageSource);
+
+            //List<HtmlNode> nodes = document.DocumentNode.Descendants("a").ToList();
+
+            HtmlNodeCollection nodes = document.DocumentNode.SelectNodes($"//a[contains(@href, '{baseUrl}')]");
+
+
+            webDriver.FindElements(By.XPath(nodes.First().XPath)).First().Click();
+            ///
+            return webDriver;
         }
 
+        public List<string> GetAnnoucementUrl(List<string> departments = null, int? maxPrice = null)
+        {
+            ConcurrentBag<String> urls = new ConcurrentBag<String>();
+            string html = String.Empty;
+            using (IWebDriver driver = UsingGoogleToGoTo())
+            {
+
+            }
+
+            return urls.ToList();
+        }
         public AnnouncementInformation? GetAnnouncementInformation(string url)
         {
             AnnouncementInformation? announcementInformation = null;

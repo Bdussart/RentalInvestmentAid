@@ -15,74 +15,104 @@ namespace RentalInvestmentAid.Test.Mock
 {
     internal class MockDatabase : IDatabaseFactory
     {
+        private List<AnnouncementInformation> _announcementInformation = new List<AnnouncementInformation>();
+        private List<CityInformations> _cityInformation = new List<CityInformations>();
+        private List<LoanInformation> _loanstInformation = new List<LoanInformation>();
+        private List<RateInformation> _rateInformation = new List<RateInformation>();
+        private List<RentabilityResult> _rentabilityInformation = new List<RentabilityResult>();
+        private List<RentalInformations> _rentalInformation = new List<RentalInformations>();
+        private List<RentInformation> _rentInformation = new List<RentInformation>();
         public List<AnnouncementInformation> GetAnnouncementsInformations()
         {
-            throw new NotImplementedException();
+            return _announcementInformation.OrderBy(x=> x.Id).ToList();
         }
 
         public List<CityInformations> GetCities()
         {
-            throw new NotImplementedException();
+            return _cityInformation.OrderBy(x => x.Id).ToList();
         }
 
         public List<LoanInformation> GetLoansInformations()
         {
-            throw new NotImplementedException();
+            return _loanstInformation.OrderBy(x => x.Id).ToList();
         }
 
         public List<RateInformation> GetRatesInformations()
         {
-            throw new NotImplementedException();
+            return _rateInformation.OrderBy(x => x.Id).ToList();
         }
 
         public List<RentabilityResult> GetRentabilitiesResults()
         {
-            throw new NotImplementedException();
+            return _rentabilityInformation;
         }
 
         public List<RentalInformations> GetRentalsInformations()
         {
-            throw new NotImplementedException();
+            return _rentalInformation.OrderBy(x => x.Id).ToList();
         }
 
         public List<RentInformation> GetRentsInformations()
         {
-            throw new NotImplementedException();
+            return _rentInformation.OrderBy(x => x.Id).ToList();
         }
 
         public AnnouncementInformation InsertAnnouncementInformation(AnnouncementInformation announcementInformation)
         {
-            throw new NotImplementedException();
+            announcementInformation.Id = _announcementInformation.Count + 1;
+            announcementInformation.CreatedDate = DateTime.Now;
+            announcementInformation.UpdatedDate = DateTime.Now;
+            _announcementInformation.Add(announcementInformation);
+            return announcementInformation;
         }
 
         public CityInformations InsertCity(CityInformations city)
         {
-            throw new NotImplementedException();
+            city.Id = _cityInformation.Count + 1;
+            city.CreatedDate = DateTime.Now;
+            _cityInformation.Add(city);
+            return city;
         }
 
         public LoanInformation InsertLoanInformation(LoanInformation loanInformation)
         {
-            throw new NotImplementedException();
+            loanInformation.Id = _loanstInformation.Count + 1;
+            loanInformation.CreatedDate = DateTime.Now;
+            loanInformation.UpdatedDate = DateTime.Now;
+            _loanstInformation.Add(loanInformation);
+            return loanInformation;
         }
 
-        public RateInformation InsertRateInformation(RateInformation announcementInformation)
+        public RateInformation InsertRateInformation(RateInformation rateInformation)
         {
-            throw new NotImplementedException();
+            rateInformation.Id = _rateInformation.Count + 1;
+            rateInformation.CreatedDate = DateTime.Now;
+            rateInformation.UpdatedDate = DateTime.Now;
+            _rateInformation.Add(rateInformation);
+            return rateInformation;
         }
 
         public RentalInformations InsertRentalInformation(RentalInformations rental)
         {
-            throw new NotImplementedException();
+            rental.Id = _rentalInformation.Count + 1;
+            rental.CreatedDate = DateTime.Now;
+            rental.UpdatedDate = DateTime.Now;
+            _rentalInformation.Add(rental);
+            return rental;
         }
 
         public RentInformation InsertRentInformation(RentInformation rentInformation)
         {
-            throw new NotImplementedException();
+            rentInformation.Id = _rentInformation.Count + 1;
+            rentInformation.CreatedDate = DateTime.Now;
+            rentInformation.UpdatedDate = DateTime.Now;
+            _rentInformation.Add(rentInformation);
+            return rentInformation;
         }
 
         public void UpdateRentabilityInformation(int announcementId)
         {
-            throw new NotImplementedException();
+            _announcementInformation.First(ann => ann.Id == announcementId).RentabilityCalculated = true;
         }
     }
 }

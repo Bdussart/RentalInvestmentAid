@@ -115,6 +115,7 @@ namespace RentalInvestmentAid.Core.Announcement
                     bool nextPage = false;
                     do
                     {
+                        SeleniumHelper.WaitPageIsReady(driver);
                         foreach (string url in FindUrlForEachAnnoncement(driver.PageSource))
                             urls.Add(url);
                         nextPage = ThereIsANextPage(driver.PageSource);

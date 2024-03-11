@@ -63,7 +63,7 @@
         {
             if (_rentInformation is null ||_rentInformation.Count() == 0)
             {
-                _rentInformation = _rentalTreament.GetRentsForAnnouncementI(AnnouncementInformation.Id);
+                _rentInformation = _rentalTreament.GetRentsForAnnouncementId(AnnouncementInformation.Id);
             }
             return _rentInformation;
         }
@@ -77,7 +77,7 @@
         {
             if (_loansInformation is null || _loansInformation.Count() == 0)
             {
-                _loansInformation = _rentalTreament.GetLoansForAnnouncementI(AnnouncementInformation.Id);
+                _loansInformation = _rentalTreament.GetLoansForAnnouncementId(AnnouncementInformation.Id);
             }
             return _loansInformation;
         }
