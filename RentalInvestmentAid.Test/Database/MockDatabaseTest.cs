@@ -203,11 +203,11 @@ namespace RentalInvestmentAid.Test.Database
             databaseFactory.InsertRateInformation(CreateRate());
             databaseFactory.InsertRateInformation(CreateRate());
 
-            Assert.AreEqual(databaseFactory.GetAnnouncementsInformations().Count, 4);
-            Assert.AreEqual(databaseFactory.GetAnnouncementsInformations()[0].Id, 1);
-            Assert.AreEqual(databaseFactory.GetAnnouncementsInformations()[1].Id, 2);
-            Assert.AreEqual(databaseFactory.GetAnnouncementsInformations()[2].Id, 3);
-            Assert.AreEqual(databaseFactory.GetAnnouncementsInformations()[3].Id, 4);
+            Assert.AreEqual(databaseFactory.GetRatesInformations().Count, 4);
+            Assert.AreEqual(databaseFactory.GetRatesInformations()[0].Id, 1);
+            Assert.AreEqual(databaseFactory.GetRatesInformations()[1].Id, 2);
+            Assert.AreEqual(databaseFactory.GetRatesInformations()[2].Id, 3);
+            Assert.AreEqual(databaseFactory.GetRatesInformations()[3].Id, 4);
 
 
         }
