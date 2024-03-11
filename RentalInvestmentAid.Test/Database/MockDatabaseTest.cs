@@ -154,7 +154,6 @@ namespace RentalInvestmentAid.Test.Database
             Assert.AreEqual(databaseFactory.GetCities()[2].Id, 3);
         }
 
-
         [TestMethod]
         public void insert_3_announcement_and_check_id()
         {
@@ -191,5 +190,39 @@ namespace RentalInvestmentAid.Test.Database
             databaseFactory.UpdateRentabilityInformation(announcementInformation.Id);
             Assert.AreEqual(databaseFactory.GetAnnouncementsInformations().First(ann => ann.Id == announcementInformation.Id).RentabilityCalculated, true);
         }
+
+
+        [TestMethod]
+        public void insert_4_rates_and_check_id()
+        {
+            IDatabaseFactory databaseFactory = new MockDatabase();
+
+
+            databaseFactory.InsertRateInformation(CreateRate());
+            databaseFactory.InsertRateInformation(CreateRate());
+            databaseFactory.InsertRateInformation(CreateRate());
+            databaseFactory.InsertRateInformation(CreateRate());
+
+            Assert.AreEqual(databaseFactory.GetAnnouncementsInformations().Count, 4);
+            Assert.AreEqual(databaseFactory.GetAnnouncementsInformations()[0].Id, 1);
+            Assert.AreEqual(databaseFactory.GetAnnouncementsInformations()[1].Id, 2);
+            Assert.AreEqual(databaseFactory.GetAnnouncementsInformations()[2].Id, 3);
+            Assert.AreEqual(databaseFactory.GetAnnouncementsInformations()[3].Id, 4);
+
+
+        }
+
+
+        //[TestMethod]
+        //public void insert_2_loans_and_check_id()
+        //{
+        //    IDatabaseFactory databaseFactory = new MockDatabase();
+
+        //    CityInformations city = CreateCity();
+        //    RateInformation rateInformation = CreateRate();
+            
+
+        //    databaseFactory.InsertLoanInformation(CreateLoan()
+        //}
     }
 }
