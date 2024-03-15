@@ -124,5 +124,10 @@ namespace RentalInvestmentAid.Core.Announcement
         {
             return "LeBoncoin";
         }
+
+        public void EnQueueAnnoucementUrl(List<string> departments = null, int? maxPrice = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

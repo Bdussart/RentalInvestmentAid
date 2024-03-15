@@ -20,6 +20,8 @@ using System.Collections.Concurrent;
 using OpenQA.Selenium.Remote;
 using System.Reflection.Emit;
 using OpenQA.Selenium.Support.UI;
+using RentalInvestmentAid.Queue;
+using Microsoft.Extensions.Options;
 
 namespace RentalInvestmentAid.Core.Announcement
 {
@@ -29,15 +31,15 @@ namespace RentalInvestmentAid.Core.Announcement
         private readonly AnnouncementProvider _announcementProvider = AnnouncementProvider.century21;
         private AnnouncementTreatment _announcementTreatment = null;
 
-        public Century21WebSiteData(AnnouncementTreatment announcementTreatment )
+        public Century21WebSiteData(AnnouncementTreatment announcementTreatment)
         {
             _announcementTreatment = announcementTreatment;
         }
 
         private string baseUrl { get; set; } = "https://www.century21.fr";
-        
 
-       private List<String> FindUrlForEachAnnoncement(string html)
+
+        private List<String> FindUrlForEachAnnoncement(string html)
         {
             List<String> urls = new List<String>();
             HtmlWeb htmlWeb = new HtmlWeb();
@@ -45,15 +47,20 @@ namespace RentalInvestmentAid.Core.Announcement
             document.LoadHtml(html);
 
             HtmlNodeCollection allAnnoncementInThePage = document.DocumentNode.SelectNodes("//div[contains(@class, 'js-the-list-of-properties-list-property')]");
+            if (allAnnoncementInThePage is null)
+                allAnnoncementInThePage = document.DocumentNode.SelectNodes("//div[contains(@class, 'js-the-list-of-properties-related-property')]");
 
-            foreach (HtmlNode node in allAnnoncementInThePage)
+            if (allAnnoncementInThePage is not null)
             {
+                foreach (HtmlNode node in allAnnoncementInThePage)
+                {
 
-                HtmlNode divChild = node.ChildNodes.First(child => child.Name.Equals("div", StringComparison.CurrentCultureIgnoreCase));
-                string annonceUid = divChild.Attributes["data-uid"].Value;
+                    HtmlNode divChild = node.ChildNodes.First(child => child.Name.Equals("div", StringComparison.CurrentCultureIgnoreCase));
+                    string annonceUid = divChild.Attributes["data-uid"].Value;
 
-                if(!_announcementTreatment.ExistAnnouncementByProviderAndProviderId(annonceUid, _announcementProvider))
-                    urls.Add($"https://www.century21.fr/trouver_logement/detail/{annonceUid}");
+                    if (!_announcementTreatment.ExistAnnouncementByProviderAndProviderId(annonceUid, _announcementProvider))
+                        urls.Add($"https://www.century21.fr/trouver_logement/detail/{annonceUid}");
+                }
             }
 
             return urls;
@@ -83,14 +90,14 @@ namespace RentalInvestmentAid.Core.Announcement
             }
         }
 
-        private  bool ThereIsANextPage(string html)
+        private bool ThereIsANextPage(string html)
         {
-            bool nextPage =false;
+            bool nextPage = false;
 
             HtmlDocument document = new HtmlDocument();
             document.LoadHtml(html);
             HtmlNodeCollection isOnlyOnePage = document.DocumentNode.SelectNodes("/html/body/main/article/section/section/div[2]/div[4]/section/ul/li");
-            if (isOnlyOnePage.Count < 2) //If lower => only one page
+            if (isOnlyOnePage is null || isOnlyOnePage.Count < 2) //If lower => only one page
                 nextPage = false;
             else
             {
@@ -101,13 +108,13 @@ namespace RentalInvestmentAid.Core.Announcement
 
             return nextPage;
         }
-        public List<string> GetAnnoucementUrl(List<string> departments = null, int? maxPrice = null)
+
+        private List<string> GetAnnouncementForADepartement(string department, int? maxPrice = null)
         {
-            ConcurrentBag<String> urls = new ConcurrentBag<String>();
-            string html = String.Empty;
-            ChromeOptions options = SeleniumHelper.DefaultChromeOption();
-            Parallel.ForEach(departments, department =>
+            List<string> urls = new List<string>();
+            try
             {
+                ChromeOptions options = SeleniumHelper.DefaultChromeOption();
                 using (IWebDriver driver = new RemoteWebDriver(options))
                 {
                     SetSearchInformation(driver, maxPrice, department);
@@ -133,8 +140,24 @@ namespace RentalInvestmentAid.Core.Announcement
                         }
                     }
                     while (nextPage);
-
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogHelper.LogException(ex);
+            }
+            return urls;
+        }
+
+        public List<string> GetAnnoucementUrl(List<string> departments = null, int? maxPrice = null)
+        {
+            ConcurrentBag<String> urls = new ConcurrentBag<String>();
+            string html = String.Empty;
+            Parallel.ForEach(departments,
+                            new ParallelOptions { MaxDegreeOfParallelism = 3 },
+                            department =>
+            {
+                GetAnnouncementForADepartement(department, maxPrice).ForEach(url => urls.Add(url));
             });
             return urls.ToList();
         }
@@ -170,7 +193,7 @@ namespace RentalInvestmentAid.Core.Announcement
                     CityInformations = new Models.City.CityInformations
                     {
                         CityName = HtmlWordsHelper.CleanHtml(locationInformations[0].Replace("-", " ").Trim()),
-                        ZipCode =  zipCode,
+                        ZipCode = zipCode,
                         Departement = zipCode.Substring(0, 2),
                     },
                     RentalType = rentalType,
@@ -193,6 +216,18 @@ namespace RentalInvestmentAid.Core.Announcement
         public string GetKeyword()
         {
             return "Century21";
+        }
+
+        public void EnQueueAnnoucementUrl(List<string> departments = null, int? maxPrice = null)
+        {
+            ConcurrentBag<String> urls = new ConcurrentBag<String>();
+            string html = String.Empty;
+            Parallel.ForEach(departments,
+                            new ParallelOptions { MaxDegreeOfParallelism = 3 },
+                            department =>
+                            {
+                                GetAnnouncementForADepartement(department, maxPrice).ForEach(url => AnnouncementQueue.SendMessage(url));
+                            });
         }
     }
 }

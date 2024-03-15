@@ -285,7 +285,6 @@ namespace RentalInvestmentAid.Database
             catch (Exception ex)
             {
                 Logger.LogHelper.LogException(ex, objectInfo: announcementInformation);
-                throw;
             }
 
             return announcementInformation;

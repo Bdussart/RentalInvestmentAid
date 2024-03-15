@@ -33,7 +33,7 @@
     public string AnnouncementDisplayToggle { get; set; } = "d-none";
     private string hiddenClass = "d-none";
 
-    [Parameter]
+    [CascadingParameter]
     public AnnouncementTreatment AnnouncementTreatment { get; set; }
     [Parameter]
     public CityInformations City { get; set; }

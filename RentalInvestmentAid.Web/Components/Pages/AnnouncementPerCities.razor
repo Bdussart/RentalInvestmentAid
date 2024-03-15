@@ -23,15 +23,16 @@ else
         else
         {
             <div class="cities-informations row">
-    
+
+                <CascadingValue Value=@_announcementTreatment>
                 @foreach (CityInformations city in CityInformations)
                 {
     
                     <div class="col-sm-3 cursor-pointer" id="city_@city.Id" @onclick="() => OnClickCity(city.Id)">
-                        <AnnouncementPerCity City=city AnnouncementTreatment=_announcementTreatment />
+                        <AnnouncementPerCity City=city  />
                     </div>
                 }
-    
+                </CascadingValue>
             </div>
         }
     </div>
@@ -42,7 +43,8 @@ else
     private IDatabaseFactory _databaseFactory = new SqlServerDatabase();
     private CachingManager _cachingManager = null;
     private CityTreatment _cityTreatment = null;
-    private AnnouncementTreatment _announcementTreatment = null;
+
+     AnnouncementTreatment _announcementTreatment = null;
 
     public List<CityInformations> CityInformations {
         get

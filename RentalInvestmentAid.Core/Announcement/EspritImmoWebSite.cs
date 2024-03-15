@@ -143,5 +143,10 @@ namespace RentalInvestmentAid.Core.Announcement
         {
             return "esprit-immo";
         }
+
+        public void EnQueueAnnoucementUrl(List<string> departments = null, int? maxPrice = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

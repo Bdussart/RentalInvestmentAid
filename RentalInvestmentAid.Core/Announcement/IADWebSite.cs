@@ -18,6 +18,7 @@ using OpenQA.Selenium.DevTools.V119.WebAudio;
 using System.Text.RegularExpressions;
 using OpenQA.Selenium.DevTools.V119.Fetch;
 using OpenQA.Selenium.Remote;
+using RentalInvestmentAid.Queue;
 
 namespace RentalInvestmentAid.Core.Announcement
 {
@@ -54,15 +55,14 @@ namespace RentalInvestmentAid.Core.Announcement
             return urls;
         }
 
-        public List<string> GetAnnoucementUrl(List<string> departments = null, int? maxPrice = null)
+        private List<string> GetAnnouncementForADepartement(string department, int? maxPrice = null)
         {
-            ConcurrentBag<String> urls = new ConcurrentBag<String>();
-            string html = String.Empty;
-            ChromeOptions options = SeleniumHelper.DefaultChromeOption();
-            Parallel.ForEach(departments, new ParallelOptions { MaxDegreeOfParallelism = 3 }, department =>
+            List<string> urls = new List<string>();
+            try
             {
                 int page = 1;
                 bool next = false;
+                ChromeOptions options = SeleniumHelper.DefaultChromeOption();
 
                 using (IWebDriver driver = new RemoteWebDriver(options))
                 {
@@ -92,6 +92,20 @@ namespace RentalInvestmentAid.Core.Announcement
                     } while (next);
 
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogHelper.LogException(ex);
+            }
+            return urls;
+        }
+
+        public List<string> GetAnnoucementUrl(List<string> departments = null, int? maxPrice = null)
+        {
+            ConcurrentBag<String> urls = new ConcurrentBag<String>();
+            Parallel.ForEach(departments, new ParallelOptions { MaxDegreeOfParallelism = 3 }, department =>
+            {
+                GetAnnouncementForADepartement(department, maxPrice).ForEach(url => urls.Add(url));
             });
             return urls.ToList();
         }
@@ -176,6 +190,14 @@ namespace RentalInvestmentAid.Core.Announcement
         public string GetKeyword()
         {
             return "IAD";
+        }
+
+        public void EnQueueAnnoucementUrl(List<string> departments = null, int? maxPrice = null)
+        {
+            Parallel.ForEach(departments, new ParallelOptions { MaxDegreeOfParallelism = 3 }, department =>
+            {
+                GetAnnouncementForADepartement(department.ToLower(), maxPrice).ForEach(url => AnnouncementQueue.SendMessage(url));
+            });
         }
     }
 }

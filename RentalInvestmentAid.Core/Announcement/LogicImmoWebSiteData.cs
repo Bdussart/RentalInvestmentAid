@@ -19,6 +19,11 @@ namespace RentalInvestmentAid.Core.Announcement
             base._cachingManager = cachingManager;
         }
 
+        public void EnQueueAnnoucementUrl(List<string> departments = null, int? maxPrice = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public List<string> GetAnnoucementUrl(List<string> department = null, int? maxPrice = null)
         {
             throw new NotImplementedException();

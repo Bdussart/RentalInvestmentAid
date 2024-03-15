@@ -17,6 +17,7 @@ using RabbitMQ.Client.Events;
 using RentalInvestmentAid.Core.Announcement.Helper;
 using RentalInvestmentAid.Models.City;
 using System.Runtime;
+using System;
 
 namespace RentalInvestmentAid
 {
@@ -36,12 +37,18 @@ namespace RentalInvestmentAid
 
         private static Dictionary<int, string> _dicoDepartements = new Dictionary<int, string>
             {
-                {74, "haute-savoie" },
-                {01, "ain" },
-                {73, "savoie" }
+                   {01, "Ain"},
+    {22, "Côtes-d'Armor"},
+    {29, "Finistère"},
+    {34, "Hérault"},
+    {35, "Ille-et-Vilaine"},
+    {73, "Savoie"},
+    {74, "Haute-Savoie"},
             };
 
         private static int? _maxPrice = 200000;
+
+        private static List<IAnnouncementWebSiteData> _workers = null;
 
         private static List<RentalInformations> GetRentalInformations(string url)
         {
@@ -64,6 +71,18 @@ namespace RentalInvestmentAid
             _bankTreatment = new BankTreatment(_cachingManager, _databaseFactory);
             _rentalTreament = new RentalTreament(_cachingManager, _databaseFactory);
             Console.OutputEncoding = Encoding.UTF8;
+
+            IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData(_announcementTreatment);
+            //IAnnouncementWebSiteData announcementWebSite = new EspritImmoWebSite(_cachingManager);
+            IAnnouncementWebSiteData IADWebSite = new IADWebSite(_announcementTreatment);
+            _workers = new List<IAnnouncementWebSiteData>
+                {
+                    {announcementWebSiteData },
+                    {IADWebSite },
+                    
+                    //{announcementWebSite },
+
+                };
 
             //IAnnouncementWebSiteData announcementWebSite = new EspritImmoWebSite(_cachingManager);
             //IAnnouncementWebSiteData IADWebSite = new IADWebSite(_cachingManager); 
@@ -97,7 +116,6 @@ namespace RentalInvestmentAid
 
         private static void LoopGetRentalData()
         {
-            IDatabaseFactory databaseFactory = new SqlServerDatabase();
             EventingBasicConsumer consumer = RentalQueue.Consumer;
 
             consumer.Received += ReceivedRentalInformation;
@@ -117,6 +135,39 @@ namespace RentalInvestmentAid
             };
             _cachingManager.ForceCacheUpdateRentalInformations();
         }
+
+        private static void LoopGetAnnouncementData()
+        {
+            EventingBasicConsumer consumer = AnnouncementQueue.Consumer;
+
+            consumer.Received += ReceivedAnnouncementInformation;
+            AnnouncementQueue.SetConsumer(consumer);
+        }
+
+        private static void ReceivedAnnouncementInformation(object? model, BasicDeliverEventArgs ea)
+        {
+            var body = ea.Body.ToArray();
+            var message = Encoding.UTF8.GetString(body);
+            Logger.LogHelper.LogInfo($"Received {message}");
+            IAnnouncementWebSiteData worker = HeirsHelper.FindTheRightHeir(message, _workers);
+
+            if (worker != null)
+            {
+                Console.WriteLine($"****** [{Task.CurrentId}] [{worker.GetKeyword()}]  Url to get data : {message}*****");
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+                AnnouncementInformation? announcementInformation = worker.GetAnnouncementInformation(message);
+                if (announcementInformation != null)
+                {
+                    CityInformations city = _cityTreatment.GetAndInsertIfNotExisiting(announcementInformation.CityInformations.CityName, announcementInformation.CityInformations.Departement, announcementInformation.CityInformations.ZipCode);
+                    announcementInformation.CityInformations.Id = city.Id;
+                    _announcementTreatment.InsertAnnouncementInformation(announcementInformation);
+                    Console.WriteLine($"******[{Task.CurrentId}] [{worker.GetKeyword()} - {message}]  Announcement : {announcementInformation?.ToString()} - Check rentability *****");
+                    CheckDataRentabilityForAnnouncement(announcementInformation);
+                    Console.WriteLine($"****** [{Task.CurrentId}] [{worker.GetKeyword()} - {message}]  Announcement : {announcementInformation?.ToString()} - DONE Check rentability *****");
+                }
+            }
+        }
+
         private static void DoLoadDataJob()
         {
             IBankWebSiteData bankWebSiteData = new PAPWebSiteData(_bankTreatment);
@@ -124,11 +175,13 @@ namespace RentalInvestmentAid
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             LoopGetRentalData();
+            LoopGetAnnouncementData();
 
             IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData(_cachingManager);
-            Task.Factory.StartNew(() => {
+            Task.Factory.StartNew(() =>
+            {
                 Parallel.ForEach(_dicoDepartements,
-                            new ParallelOptions { MaxDegreeOfParallelism = 3 },
+                            new ParallelOptions { MaxDegreeOfParallelism = 2 },
                             departement =>
                             {
                                 Console.WriteLine($"******{Task.CurrentId} Start work for getting price per departement* ****");
@@ -144,6 +197,7 @@ namespace RentalInvestmentAid
                 LoopForCheckRentability();
             });
 
+
             List<RateInformation> bankInformations = bankWebSiteData.GetRatesInformations("https://www.pap.fr/acheteur/barometre-taux-emprunt");
 
             foreach (RateInformation rate in bankInformations)
@@ -151,42 +205,12 @@ namespace RentalInvestmentAid
                 _bankTreatment.InsertRate(rate);
             }
 
-            IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData(_announcementTreatment);
-            //IAnnouncementWebSiteData announcementWebSite = new EspritImmoWebSite(_cachingManager);
-            IAnnouncementWebSiteData IADWebSite = new IADWebSite(_announcementTreatment);
-            List<IAnnouncementWebSiteData> workers = new List<IAnnouncementWebSiteData>
-                {
-                    {announcementWebSiteData },
-                    { IADWebSite },
-                    
-                    //{announcementWebSite },
-
-                };
-
-            workers.ForEach(worker =>
+            Parallel.ForEach(_workers, worker =>
             {
                 try
                 {
                     Console.WriteLine($"******{Task.CurrentId} Start work for worker {worker.GetKeyword()}* ****");
-                    List<String> urls = worker.GetAnnoucementUrl(_dicoDepartements.Values.ToList(), _maxPrice);
-                    Console.WriteLine($"******{Task.CurrentId} Urls count : {urls.Count} * ****");
-                    Parallel.ForEach(urls,
-                            new ParallelOptions { MaxDegreeOfParallelism = 3 },
-                            url =>
-                            {
-                                Console.WriteLine($"****** [{Task.CurrentId}] [{worker.GetKeyword()}]  Url to get data : {url}*****");
-                                Thread.Sleep(TimeSpan.FromSeconds(1));
-                                AnnouncementInformation? announcementInformation = worker.GetAnnouncementInformation(url);
-                                if (announcementInformation != null)                                {
-                                    CityInformations city = _cityTreatment.GetAndInsertIfNotExisiting(announcementInformation.CityInformations.CityName, announcementInformation.CityInformations.Departement, announcementInformation.CityInformations.ZipCode);
-                                    announcementInformation.CityInformations.Id = city.Id;
-                                    _announcementTreatment.InsertAnnouncementInformation(announcementInformation);
-                                    Console.WriteLine($"******[{Task.CurrentId}] [{worker.GetKeyword()} - {url}]  Announcement : {announcementInformation?.ToString()} - Check rentability *****");
-                                    CheckDataRentabilityForAnnouncement(announcementInformation);
-                                    Console.WriteLine($"****** [{Task.CurrentId}] [{worker.GetKeyword()} - {url}]  Announcement : {announcementInformation?.ToString()} - DONE Check rentability *****");
-                                }
-                            });
-                    Console.WriteLine($"{Task.CurrentId}****** END work for worker {worker.GetKeyword()}* ****");
+                    worker.EnQueueAnnoucementUrl(_dicoDepartements.Values.ToList(), _maxPrice);
                 }
                 catch (Exception ex)
                 {
@@ -194,11 +218,9 @@ namespace RentalInvestmentAid
                 }
             });
 
-
             Console.ReadKey();
             _loop = false;
         }
-
 
         private static void LoopForCheckRentability()
         {

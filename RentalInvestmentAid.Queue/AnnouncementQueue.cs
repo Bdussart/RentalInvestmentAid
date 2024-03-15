@@ -6,14 +6,14 @@ using System.Threading.Channels;
 
 namespace RentalInvestmentAid.Queue
 {
-    public static class RentalQueue
+    public static class AnnouncementQueue
     {
 
         private static ConnectionFactory factory = new ConnectionFactory { HostName = "localhost" };
         private static IConnection _connection ;
         private static IModel _channel;
-        private static string _queueName = "RentalQueue";
-        static RentalQueue()
+        private static string _queueName = "AnnouncementQueue";
+        static AnnouncementQueue()
         {
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
@@ -27,7 +27,8 @@ namespace RentalInvestmentAid.Queue
         public static EventingBasicConsumer Consumer
         {
             get
-            {                
+            {
+                
                 return new EventingBasicConsumer(_channel);
             }
         }
