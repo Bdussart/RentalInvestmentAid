@@ -95,18 +95,22 @@ namespace RentalInvestmentAid.Core.Announcement
             }
             catch (Exception ex)
             {
-                Logger.LogHelper.LogException(ex);
+                Logger.LogHelper.LogException(ex, objectInfo : $"department : {department} maxPrice : {maxPrice}");
             }
             return urls;
         }
 
         public List<string> GetAnnoucementUrl(List<string> departments = null, int? maxPrice = null)
         {
+            Logger.LogHelper.LogInfo($"departements to fetch data {departments.Count}");
             ConcurrentBag<String> urls = new ConcurrentBag<String>();
-            Parallel.ForEach(departments, new ParallelOptions { MaxDegreeOfParallelism = 3 }, department =>
+
+            foreach (string department in departments)
             {
+                Logger.LogHelper.LogInfo($"Start fetching information for {department}");
                 GetAnnouncementForADepartement(department, maxPrice).ForEach(url => urls.Add(url));
-            });
+                Logger.LogHelper.LogInfo($"Done fetching information for {department}");
+            }
             return urls.ToList();
         }
 
@@ -182,7 +186,7 @@ namespace RentalInvestmentAid.Core.Announcement
             }
             catch (Exception ex)
             {
-                Logger.LogHelper.LogException(ex);
+                Logger.LogHelper.LogException(ex, objectInfo : url);
             }
             return announcementInformation;
         }
@@ -194,10 +198,13 @@ namespace RentalInvestmentAid.Core.Announcement
 
         public void EnQueueAnnoucementUrl(List<string> departments = null, int? maxPrice = null)
         {
-            Parallel.ForEach(departments, new ParallelOptions { MaxDegreeOfParallelism = 3 }, department =>
+            Logger.LogHelper.LogInfo($"departements to fetch data {departments.Count}");
+            foreach (string department in departments)
             {
+                Logger.LogHelper.LogInfo($"Start fetching information for {department}");
                 GetAnnouncementForADepartement(department.ToLower(), maxPrice).ForEach(url => AnnouncementQueue.SendMessage(url));
-            });
+                Logger.LogHelper.LogInfo($"Done fetching information for {department}");
+            }
         }
     }
 }

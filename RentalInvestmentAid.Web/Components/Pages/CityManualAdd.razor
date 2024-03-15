@@ -1,0 +1,24 @@
+﻿@page "/cityManualAdd"
+@using RentalInvestmentAid.Queue
+@rendermode InteractiveServer
+<h3>Entrée l'url pour récupérer les informations d'une ville</h3>
+
+<div id="manual-parsing">
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="url" aria-label="url" aria-describedby="basic-addon2" id="announcement-url" @bind=_url />
+        <div class="input-group-append">
+            <button class="btn btn-primary" @onclick="SendUrlToQueue">Rechercher les informations</button>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private void SendUrlToQueue()
+    {
+        RentalQueue.SendMessage(_url);
+    }
+
+    private string _url { get; set; }
+
+}

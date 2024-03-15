@@ -14,6 +14,7 @@ using RentalInvestmentAid.Database;
 using RentalInvestmentAid.Caching;
 using OpenQA.Selenium.DevTools.V119.SystemInfo;
 using RentalInvestmentAid.Core.Announcement;
+using RentalInvestmentAid.Logger;
 
 namespace RentalInvestmentAid.Core
 {
@@ -66,9 +67,9 @@ namespace RentalInvestmentAid.Core
             bool rentabilityChecked = false;
             List<RentalInformations> currentsRentalInformation = FindRentalInformationForAnAnnoucement(announcement);
 
-            Console.WriteLine("****** Find the right rental information Check if not null *****");
+            LogHelper.LogInfo("****** Find the right rental information Check if not null *****");
             if (currentsRentalInformation.Count == 0)
-                Logger.LogHelper.LogInfo($"{announcement.ToString()} - Don't find rental information -----");
+                LogHelper.LogInfo($"{announcement.ToString()} - Don't find rental information -----");
             else
             {
                 List<LoanInformation> loansInformation = CalculAllLoan(announcement.Price);

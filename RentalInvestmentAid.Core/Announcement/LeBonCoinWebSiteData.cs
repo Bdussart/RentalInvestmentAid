@@ -15,14 +15,19 @@ using RentalInvestmentAid.Caching;
 using OpenQA.Selenium.Remote;
 using System.Collections.Concurrent;
 using OpenQA.Selenium.Interactions;
+using System.Reflection.Emit;
 
 namespace RentalInvestmentAid.Core.Announcement
 {
-    public class LeBonCoinWebSiteData : MustInitializeCache, IAnnouncementWebSiteData
+    public class LeBonCoinWebSiteData :  IAnnouncementWebSiteData
     {
-        public LeBonCoinWebSiteData(CachingManager cachingManager) : base(cachingManager)
+        private readonly AnnouncementProvider _announcementProvider = AnnouncementProvider.LeBonCoin;
+        private AnnouncementTreatment _announcementTreatment = null;
+
+
+        public LeBonCoinWebSiteData(AnnouncementTreatment announcementTreatment)
         {
-            base._cachingManager = cachingManager;
+            _announcementTreatment = announcementTreatment;
         }
         private string baseUrl { get; set; } = "https://www.leboncoin.fr";
 
@@ -92,26 +97,34 @@ namespace RentalInvestmentAid.Core.Announcement
                 HtmlDocument document = new HtmlDocument();
                 document.LoadHtml(html);
 
-                HtmlNodeCollection htmlNodesMetrageAndCity = document.DocumentNode.SelectNodes("//*[@id=\"grid\"]/article/div[1]/div/div[1]/p/span");
-                HtmlNodeCollection htmlNodesPrice = document.DocumentNode.SelectNodes("//*[@id=\"grid\"]/article/div[1]/div/div[1]/div[2]/div/p");
-                HtmlNodeCollection htmlNodesRentalType = document.DocumentNode.SelectNodes("//*[@id=\"grid\"]/article/div[1]/div/h1");
-                HtmlNodeCollection htmlNodesDescription = document.DocumentNode.SelectNodes("//*[@id=\"grid\"]/article/div[3]/div[2]/div[1]/p");
-
-                announcementInformation = new AnnouncementInformation()
+                HtmlNode nodeMetrageAndCity = document.DocumentNode.SelectSingleNode("//*[@id=\"grid\"]/article/div[1]/div/div[1]/p");
+                if (nodeMetrageAndCity != null)
                 {
-                    CityInformations = new Models.City.CityInformations
+                    HtmlNodeCollection htmlNodesMetrageAndCity = nodeMetrageAndCity.ChildNodes;
+                    HtmlNodeCollection htmlNodesPrice = document.DocumentNode.SelectNodes("//*[@id=\"grid\"]/article/div[1]/div/div[1]/div[2]/div/p");
+                    HtmlNodeCollection htmlNodesRentalType = document.DocumentNode.SelectNodes("//*[@id=\"grid\"]/article/div[1]/div/h1");
+                    HtmlNodeCollection htmlNodesDescription = document.DocumentNode.SelectNodes("//*[@id=\"grid\"]/article/div[3]/div[2]/div[1]/p");
+
+                    string zipCode = HtmlWordsHelper.CleanHtml(htmlNodesMetrageAndCity[2].InnerText.Trim().Split(" ")[1]);
+
+                    string announcementIdFromProvider = url.Split("/").Last();
+                    announcementInformation = new AnnouncementInformation()
                     {
-
-                        CityName = HtmlWordsHelper.CleanHtml(htmlNodesMetrageAndCity[2].InnerText.Trim().Split(" ")[0]),
-                        ZipCode = HtmlWordsHelper.CleanHtml(htmlNodesMetrageAndCity[2].InnerText.Trim().Split(" ")[1]),
-                    },
-                    RentalType = KeyWordsHelper.GetRentalType(htmlNodesRentalType[0].InnerText.Trim()),
-                    Metrage = HtmlWordsHelper.CleanHtml(htmlNodesMetrageAndCity[1].InnerText.Trim().Split("m")[0].Trim()),
-                    Price = new string(HtmlWordsHelper.CleanHtml(htmlNodesPrice[0].InnerText).Where(char.IsDigit).ToArray()),
-                    Description = HtmlWordsHelper.CleanHtml(htmlNodesDescription[0].InnerText.Trim()),
-                    UrlWebSite = url
-                };
-
+                        CityInformations = new Models.City.CityInformations
+                        {
+                            CityName = HtmlWordsHelper.CleanHtml(htmlNodesMetrageAndCity[2].InnerText.Trim().Split(" ")[0]),
+                            ZipCode = zipCode,
+                            Departement = zipCode.Substring(0, 2),
+                        },
+                        RentalType = KeyWordsHelper.GetRentalType(htmlNodesRentalType[0].InnerText.Trim()),
+                        Metrage = HtmlWordsHelper.CleanHtml(htmlNodesMetrageAndCity[1].InnerText.Trim().Split("m")[0].Trim()),
+                        Price = new string(HtmlWordsHelper.CleanHtml(htmlNodesPrice[0].InnerText).Where(char.IsDigit).ToArray()),
+                        Description = HtmlWordsHelper.CleanHtml(htmlNodesDescription[0].InnerText.Trim()),
+                        UrlWebSite = url,
+                        AnnouncementProvider = _announcementProvider,
+                        IdFromProvider = announcementIdFromProvider
+                    };
+                }
             }
             catch (Exception ex)
             {

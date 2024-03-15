@@ -364,7 +364,10 @@ GO
   INSERT INTO [rentalInvestmentAid].[dbo].[announcementProvider]
   ([name])
   values ('iad')
-
+  
+  INSERT INTO [rentalInvestmentAid].[dbo].[announcementProvider]
+  ([name])
+  values ('LeBonCoin')
 
 CREATE TABLE [dbo].[rateInformation](
 	[id] [int] IDENTITY(1,1) NOT NULL,

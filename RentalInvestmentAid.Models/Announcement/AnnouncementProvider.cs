@@ -14,7 +14,9 @@ namespace RentalInvestmentAid.Models.Announcement
         [Description("Esprit-immo")]
         espritIimmo = 2,
         [Description("IAD")]
-        IAD = 3
+        IAD = 3,
+        [Description("LeBonCoin")]
+        LeBonCoin = 4
 
     }
 }

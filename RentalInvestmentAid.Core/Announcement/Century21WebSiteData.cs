@@ -4,24 +4,11 @@ using OpenQA.Selenium;
 using RentalInvestmentAid.Core.Announcement.Helper;
 using RentalInvestmentAid.Models.Announcement;
 using RentalInvestmentAid.Models.Rental;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MathNet.Numerics.Distributions;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Net.WebRequestMethods;
-using static System.Collections.Specialized.BitVector32;
 using OpenQA.Selenium.Interactions;
 using RentalInvestmentAid.Core.Helper;
-using RentalInvestmentAid.Caching;
 using System.Collections.Concurrent;
 using OpenQA.Selenium.Remote;
-using System.Reflection.Emit;
-using OpenQA.Selenium.Support.UI;
 using RentalInvestmentAid.Queue;
-using Microsoft.Extensions.Options;
 
 namespace RentalInvestmentAid.Core.Announcement
 {
@@ -72,7 +59,7 @@ namespace RentalInvestmentAid.Core.Announcement
             {
                 SeleniumHelper.GoAndWaitPageIsReady(driver, baseUrl);
                 InteratiorHelper.ImitateHumanTyping(department, driver.FindElement(By.Id("q")));
-                driver.FindElement(By.XPath("/html/body/main/article/header/div/div[2]/div/div/div[2]/div/form/div[2]/div")).Click();
+               driver.FindElement(By.XPath("/html/body/main/article/header/div/div[2]/div/div/div[2]/div/form/div[2]/div")).Click();
                 SeleniumHelper.WaitPageIsReady(driver);
                 if (maxPrice.HasValue)
                 {
@@ -85,8 +72,7 @@ namespace RentalInvestmentAid.Core.Announcement
             }
             catch (Exception ex)
             {
-                Logger.LogHelper.LogException(ex);
-                throw;
+                Logger.LogHelper.LogException(ex, objectInfo: $"department : {department} maxPrice : {maxPrice}");
             }
         }
 
@@ -144,21 +130,22 @@ namespace RentalInvestmentAid.Core.Announcement
             }
             catch (Exception ex)
             {
-                Logger.LogHelper.LogException(ex);
+                Logger.LogHelper.LogException(ex, objectInfo: $"department : {department} maxPrice : {maxPrice}");
             }
             return urls;
         }
 
         public List<string> GetAnnoucementUrl(List<string> departments = null, int? maxPrice = null)
         {
+            Logger.LogHelper.LogInfo($"departements to fetch data {departments.Count}");
             ConcurrentBag<String> urls = new ConcurrentBag<String>();
-            string html = String.Empty;
-            Parallel.ForEach(departments,
-                            new ParallelOptions { MaxDegreeOfParallelism = 3 },
-                            department =>
+
+            foreach (string department in departments)
             {
+                Logger.LogHelper.LogInfo($"Start fetching information for {department}");
                 GetAnnouncementForADepartement(department, maxPrice).ForEach(url => urls.Add(url));
-            });
+                Logger.LogHelper.LogInfo($"Done fetching information for {department}");
+            }
             return urls.ToList();
         }
 
@@ -207,7 +194,7 @@ namespace RentalInvestmentAid.Core.Announcement
             }
             catch (Exception ex)
             {
-                Logger.LogHelper.LogException(ex);
+                Logger.LogHelper.LogException(ex, objectInfo: url);
             }
 
             return announcementInformation;
@@ -220,14 +207,13 @@ namespace RentalInvestmentAid.Core.Announcement
 
         public void EnQueueAnnoucementUrl(List<string> departments = null, int? maxPrice = null)
         {
-            ConcurrentBag<String> urls = new ConcurrentBag<String>();
-            string html = String.Empty;
-            Parallel.ForEach(departments,
-                            new ParallelOptions { MaxDegreeOfParallelism = 3 },
-                            department =>
-                            {
-                                GetAnnouncementForADepartement(department, maxPrice).ForEach(url => AnnouncementQueue.SendMessage(url));
-                            });
+            Logger.LogHelper.LogInfo($"departements to fetch data {departments.Count}");
+            foreach (string department in departments)
+            {
+                Logger.LogHelper.LogInfo($"Start fetching information for {department}");
+                GetAnnouncementForADepartement(department, maxPrice).ForEach(url => AnnouncementQueue.SendMessage(url));
+                Logger.LogHelper.LogInfo($"Done fetching information for {department}");
+            }
         }
     }
 }

@@ -18,6 +18,7 @@ using RentalInvestmentAid.Core.Announcement.Helper;
 using RentalInvestmentAid.Models.City;
 using System.Runtime;
 using System;
+using RentalInvestmentAid.Logger;
 
 namespace RentalInvestmentAid
 {
@@ -73,13 +74,14 @@ namespace RentalInvestmentAid
             Console.OutputEncoding = Encoding.UTF8;
 
             IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData(_announcementTreatment);
+            IAnnouncementWebSiteData lebonCoinWebSiteData = new LeBonCoinWebSiteData(_announcementTreatment);
             //IAnnouncementWebSiteData announcementWebSite = new EspritImmoWebSite(_cachingManager);
             IAnnouncementWebSiteData IADWebSite = new IADWebSite(_announcementTreatment);
             _workers = new List<IAnnouncementWebSiteData>
                 {
                     {announcementWebSiteData },
                     {IADWebSite },
-                    
+                {lebonCoinWebSiteData }
                     //{announcementWebSite },
 
                 };
@@ -117,7 +119,6 @@ namespace RentalInvestmentAid
         private static void LoopGetRentalData()
         {
             EventingBasicConsumer consumer = RentalQueue.Consumer;
-
             consumer.Received += ReceivedRentalInformation;
             RentalQueue.SetConsumer(consumer);
         }
@@ -148,12 +149,11 @@ namespace RentalInvestmentAid
         {
             var body = ea.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);
-            Logger.LogHelper.LogInfo($"Received {message}");
+            LogHelper.LogInfo($"Received {message}");
             IAnnouncementWebSiteData worker = HeirsHelper.FindTheRightHeir(message, _workers);
-
             if (worker != null)
             {
-                Console.WriteLine($"****** [{Task.CurrentId}] [{worker.GetKeyword()}]  Url to get data : {message}*****");
+                LogHelper.LogInfo($"****** [{Task.CurrentId}] [{worker.GetKeyword()}]  Url to get data : {message}*****");
                 Thread.Sleep(TimeSpan.FromSeconds(1));
                 AnnouncementInformation? announcementInformation = worker.GetAnnouncementInformation(message);
                 if (announcementInformation != null)
@@ -161,9 +161,9 @@ namespace RentalInvestmentAid
                     CityInformations city = _cityTreatment.GetAndInsertIfNotExisiting(announcementInformation.CityInformations.CityName, announcementInformation.CityInformations.Departement, announcementInformation.CityInformations.ZipCode);
                     announcementInformation.CityInformations.Id = city.Id;
                     _announcementTreatment.InsertAnnouncementInformation(announcementInformation);
-                    Console.WriteLine($"******[{Task.CurrentId}] [{worker.GetKeyword()} - {message}]  Announcement : {announcementInformation?.ToString()} - Check rentability *****");
+                    LogHelper.LogInfo($"******[{Task.CurrentId}] [{worker.GetKeyword()} - {message}]  Announcement : {announcementInformation?.ToString()} - Check rentability *****");
                     CheckDataRentabilityForAnnouncement(announcementInformation);
-                    Console.WriteLine($"****** [{Task.CurrentId}] [{worker.GetKeyword()} - {message}]  Announcement : {announcementInformation?.ToString()} - DONE Check rentability *****");
+                    LogHelper.LogInfo($"****** [{Task.CurrentId}] [{worker.GetKeyword()} - {message}]  Announcement : {announcementInformation?.ToString()} - DONE Check rentability *****");
                 }
             }
         }
@@ -177,18 +177,16 @@ namespace RentalInvestmentAid
             LoopGetRentalData();
             LoopGetAnnouncementData();
 
-            IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData(_cachingManager);
-            Task.Factory.StartNew(() =>
-            {
-                Parallel.ForEach(_dicoDepartements,
-                            new ParallelOptions { MaxDegreeOfParallelism = 2 },
-                            departement =>
-                            {
-                                Console.WriteLine($"******{Task.CurrentId} Start work for getting price per departement* ****");
-                                webSiteData.EnQueueUrls("rhone-alpes", departement.Value, departement.Key);
-                                Console.WriteLine($"******{Task.CurrentId} End work for getting price per departement* ****");
-                            });
-            });
+            //IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData(_cachingManager);
+            //Task.Factory.StartNew(() =>
+            //{
+            //    foreach(var departement in _dicoDepartements)
+            //    {
+            //        LogHelper.LogInfo($"******{Task.CurrentId} Start work for getting price per departement* ****");
+            //        webSiteData.EnQueueUrls("rhone-alpes", departement.Value, departement.Key);
+            //        LogHelper.LogInfo($"******{Task.CurrentId} End work for getting price per departement* ****");
+            //    }
+            //});
 
             List<String> departements = _dicoDepartements.Values.ToList();
 
@@ -205,18 +203,18 @@ namespace RentalInvestmentAid
                 _bankTreatment.InsertRate(rate);
             }
 
-            Parallel.ForEach(_workers, worker =>
-            {
-                try
-                {
-                    Console.WriteLine($"******{Task.CurrentId} Start work for worker {worker.GetKeyword()}* ****");
-                    worker.EnQueueAnnoucementUrl(_dicoDepartements.Values.ToList(), _maxPrice);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"{Task.CurrentId}Damn an Exception ! {ex}");
-                }
-            });
+            //Parallel.ForEach(_workers, worker =>
+            //{
+            //    try
+            //    {
+            //        LogHelper.LogInfo($"******{Task.CurrentId} Start work for worker {worker.GetKeyword()}* ****");
+            //        worker.EnQueueAnnoucementUrl(_dicoDepartements.Values.ToList(), _maxPrice);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        LogHelper.LogInfo($"{Task.CurrentId}Damn an Exception ! {ex}");
+            //    }
+            //});
 
             Console.ReadKey();
             _loop = false;
