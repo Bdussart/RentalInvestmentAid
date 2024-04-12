@@ -10,7 +10,7 @@ services:
 
         
   sqlserver:
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=${Sa_Password}
@@ -18,13 +18,13 @@ services:
     ports:
       - 1433:1433
   sqlserver.configurator:
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    image: mcr.microsoft.com/mssql/server:2022-latest
     volumes:
       - ./init:/docker-entrypoint-initdb.d
     command: >
       bash -c '
         if [ "$Init" = true ]; then
-            sleep 40 &&
+            sleep 90 &&
       /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P ${Sa_Password:-password123} -d master -i docker-entrypoint-initdb.d/init.sql;
         fi
         echo "$Init";

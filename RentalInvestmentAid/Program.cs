@@ -39,10 +39,10 @@ namespace RentalInvestmentAid
         private static Dictionary<int, string> _dicoDepartements = new Dictionary<int, string>
             {
                    {01, "Ain"},
-    {22, "Côtes-d'Armor"},
-    {29, "Finistère"},
-    {34, "Hérault"},
-    {35, "Ille-et-Vilaine"},
+    // {22, "Côtes-d'Armor"},
+    // {29, "Finistère"},
+    // {34, "Hérault"},
+    // {35, "Ille-et-Vilaine"},
     {73, "Savoie"},
     {74, "Haute-Savoie"},
             };
@@ -177,16 +177,16 @@ namespace RentalInvestmentAid
             LoopGetRentalData();
             LoopGetAnnouncementData();
 
-            //IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData(_cachingManager);
-            //Task.Factory.StartNew(() =>
-            //{
-            //    foreach(var departement in _dicoDepartements)
-            //    {
-            //        LogHelper.LogInfo($"******{Task.CurrentId} Start work for getting price per departement* ****");
-            //        webSiteData.EnQueueUrls("rhone-alpes", departement.Value, departement.Key);
-            //        LogHelper.LogInfo($"******{Task.CurrentId} End work for getting price per departement* ****");
-            //    }
-            //});
+            IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData(_cachingManager);
+            Task.Factory.StartNew(() =>
+            {
+               foreach(var departement in _dicoDepartements)
+               {
+                   LogHelper.LogInfo($"******{Task.CurrentId} Start work for getting price per departement* ****");
+                   webSiteData.EnQueueUrls("rhone-alpes", departement.Value, departement.Key);
+                   LogHelper.LogInfo($"******{Task.CurrentId} End work for getting price per departement* ****");
+               }
+            });
 
             List<String> departements = _dicoDepartements.Values.ToList();
 
@@ -203,18 +203,18 @@ namespace RentalInvestmentAid
                 _bankTreatment.InsertRate(rate);
             }
 
-            //Parallel.ForEach(_workers, worker =>
-            //{
-            //    try
-            //    {
-            //        LogHelper.LogInfo($"******{Task.CurrentId} Start work for worker {worker.GetKeyword()}* ****");
-            //        worker.EnQueueAnnoucementUrl(_dicoDepartements.Values.ToList(), _maxPrice);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        LogHelper.LogInfo($"{Task.CurrentId}Damn an Exception ! {ex}");
-            //    }
-            //});
+            Parallel.ForEach(_workers, worker =>
+            {
+               try
+               {
+                   LogHelper.LogInfo($"******{Task.CurrentId} Start work for worker {worker.GetKeyword()}* ****");
+                   worker.EnQueueAnnoucementUrl(_dicoDepartements.Values.ToList(), _maxPrice);
+               }
+               catch (Exception ex)
+               {
+                   LogHelper.LogInfo($"{Task.CurrentId}Damn an Exception ! {ex}");
+               }
+            });
 
             Console.ReadKey();
             _loop = false;

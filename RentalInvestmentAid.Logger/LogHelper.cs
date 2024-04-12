@@ -14,7 +14,7 @@ namespace RentalInvestmentAid.Logger
         {
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile(path: "appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile(path: "appSettings.json", optional: false, reloadOnChange: true)
                 .Build();
 
             _logger = new LoggerConfiguration()
