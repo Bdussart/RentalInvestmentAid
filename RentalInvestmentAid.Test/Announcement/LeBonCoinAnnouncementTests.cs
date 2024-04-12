@@ -17,11 +17,13 @@ namespace RentalInvestmentAid.Test.Announcement
         private LeBonCoinWebSiteData _webSiteData;
         private CachingManager _cacheManager;
         private MockDatabase _mockDatabase;
+        private AnnouncementTreatment AnnouncementTreatment;
         public LeBonCoinAnnouncementTests()
         {
             _mockDatabase = new MockDatabase();
             _cacheManager = new CachingManager(_mockDatabase);
-            _webSiteData = new LeBonCoinWebSiteData(_cacheManager);
+            AnnouncementTreatment = new AnnouncementTreatment(_cacheManager, _mockDatabase);
+            _webSiteData = new LeBonCoinWebSiteData(AnnouncementTreatment);
         }
 
         [TestMethod]

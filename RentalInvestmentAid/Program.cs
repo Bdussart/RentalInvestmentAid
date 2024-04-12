@@ -53,7 +53,7 @@ namespace RentalInvestmentAid
 
         private static List<RentalInformations> GetRentalInformations(string url)
         {
-            IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData(_cachingManager);
+            IRentalWebSiteData webSiteData = new leFigaroWebSiteData(_cachingManager);
             List<RentalInformations> rentalInformations = new List<RentalInformations>();
 
             Thread.Sleep(TimeSpan.FromSeconds(2)); //Take easy for the external server :)
@@ -177,7 +177,7 @@ namespace RentalInvestmentAid
             LoopGetRentalData();
             LoopGetAnnouncementData();
 
-            IRentalWebSiteData webSiteData = new LaCoteImmoWebSiteData(_cachingManager);
+            IRentalWebSiteData webSiteData = new leFigaroWebSiteData(_cachingManager);
             Task.Factory.StartNew(() =>
             {
                foreach(var departement in _dicoDepartements)

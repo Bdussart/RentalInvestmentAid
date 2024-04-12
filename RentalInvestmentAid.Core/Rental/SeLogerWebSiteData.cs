@@ -30,5 +30,10 @@ namespace RentalInvestmentAid.Core.Rental
         {
             throw new NotImplementedException();
         }
+
+        public void SearchByCityNameAndDepartementAndEnqueueUrl(string cityName, int departement)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

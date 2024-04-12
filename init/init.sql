@@ -1,6 +1,6 @@
  use master 
  go
- 
+
 -- Drop the database if it exists
 IF EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = N'RentalInvestmentAid')
 	alter database RentalInvestmentAid set single_user with rollback immediate
@@ -671,3 +671,43 @@ BEGIN
   INNER JOIN [RentalInvestmentAid].[dbo].rentInformation ren ON ren.idAnnoncementInformation = ann.id
   order by ann.id
 END
+GO
+
+
+ 
+ 
+EXEC sp_configure 'CONTAINED DATABASE AUTHENTICATION', 1
+GO
+RECONFIGURE
+GO
+
+USE [master]
+GO
+ALTER DATABASE RentalInvestmentAid SET CONTAINMENT = PARTIAL
+GO
+
+CREATE LOGIN  RentalUser WITH PASSWORD = 'AbC12345678!';
+CREATE USER RentalUser FOR LOGIN RentalUser
+
+USE RentalInvestmentAid
+go
+
+CREATE USER RentalUser FOR LOGIN RentalUser
+-- Accorder des droits sur la base de données RentalInvestmentAid
+
+ALTER ROLE [db_owner] ADD MEMBER RentalUser
+
+-- Accorder tous les droits sur tous les objets (tables, vues, procédures, etc.)
+GRANT SELECT, INSERT, UPDATE, DELETE ON RentalInvestmentAid.dbo.annoncementInformation TO RentalUser;
+GRANT SELECT, INSERT, UPDATE, DELETE ON RentalInvestmentAid.dbo.announcementProvider TO RentalUser;
+GRANT SELECT, INSERT, UPDATE, DELETE ON RentalInvestmentAid.dbo.city TO RentalUser;
+GRANT SELECT, INSERT, UPDATE, DELETE ON RentalInvestmentAid.dbo.priceType TO RentalUser;
+GRANT SELECT, INSERT, UPDATE, DELETE ON RentalInvestmentAid.dbo.rateInformation TO RentalUser;
+GRANT SELECT, INSERT, UPDATE, DELETE ON RentalInvestmentAid.dbo.rateType TO RentalUser;
+GRANT SELECT, INSERT, UPDATE, DELETE ON RentalInvestmentAid.dbo.rentalInformation TO RentalUser;
+GRANT SELECT, INSERT, UPDATE, DELETE ON RentalInvestmentAid.dbo.rentInformation TO RentalUser;
+GRANT SELECT, INSERT, UPDATE, DELETE ON RentalInvestmentAid.dbo.typeProperty TO RentalUser;
+GO
+
+
+

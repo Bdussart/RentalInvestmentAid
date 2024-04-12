@@ -16,9 +16,16 @@ using RentalInvestmentAid.Caching;
 using OpenQA.Selenium.Remote;
 using RentalInvestmentAid.Models.City;
 using System.Runtime;
+using OpenQA.Selenium.Interactions;
+using RentalInvestmentAid.Core.Announcement.Helper;
 
 namespace RentalInvestmentAid.Core.Rental
 {
+
+    /// <summary>
+    /// DOWN .... est passé sur Seloger.com => protegé contre le WebScrapping
+    /// </summary>
+
     public class LaCoteImmoWebSiteData : MustInitializeCache, IRentalWebSiteData
     {
         public LaCoteImmoWebSiteData(CachingManager cachingManager) : base(cachingManager)
@@ -170,6 +177,7 @@ namespace RentalInvestmentAid.Core.Rental
             return rentalInformations;
         }
 
+
         public void EnQueueUrls(string area, string department, int departmentNumber)
         {
             LogHelper.LogInfo($" Area : {area}, departement : {department}, departmentNumber : {departmentNumber}");
@@ -178,7 +186,7 @@ namespace RentalInvestmentAid.Core.Rental
             string previousUrl = string.Empty;
 
             ChromeOptions options = SeleniumHelper.DefaultChromeOption();
-            options.AddArguments("--headless");
+            //options.AddArguments("--headless");
 
             bool next = true;
             int tentative = 0;
@@ -217,6 +225,11 @@ namespace RentalInvestmentAid.Core.Rental
                 }
             } while (next);
 
+        }
+
+        public void SearchByCityNameAndDepartementAndEnqueueUrl(string cityName, int departement)
+        {
+            throw new NotImplementedException();
         }
     }
 }
