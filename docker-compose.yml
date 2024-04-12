@@ -16,7 +16,9 @@ services:
       - SA_PASSWORD=${Sa_Password}
       - MSSQL_PID=Developer
     ports:
-      - 1433:1433
+      - 1455:1433
+    hostname:
+        sql-dev
   sqlserver.configurator:
     image: mcr.microsoft.com/mssql/server:2022-latest
     volumes:
