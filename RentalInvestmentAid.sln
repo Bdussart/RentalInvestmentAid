@@ -33,6 +33,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Queries", "Queries", "{95A1
 		Queries\Dump database.sql = Queries\Dump database.sql
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FetchAnnoucementWorkerService", "FetchAnnoucementWorkerService\FetchAnnoucementWorkerService.csproj", "{68C9BF09-0F07-4042-A974-C74EEA51A36D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{544C921E-53C0-40C2-B047-0C88879CE675}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{544C921E-53C0-40C2-B047-0C88879CE675}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{544C921E-53C0-40C2-B047-0C88879CE675}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68C9BF09-0F07-4042-A974-C74EEA51A36D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68C9BF09-0F07-4042-A974-C74EEA51A36D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68C9BF09-0F07-4042-A974-C74EEA51A36D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68C9BF09-0F07-4042-A974-C74EEA51A36D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,5 +1,6 @@
 ﻿using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using RentalInvestmentAid.Settings;
 using System.Text;
 using System.Threading.Channels;
 
@@ -12,7 +13,7 @@ namespace RentalInvestmentAid.Queue
         private static ConnectionFactory factory = new ConnectionFactory { HostName = "localhost" };
         private static IConnection _connection ;
         private static IModel _channel;
-        private static string _queueName = "AnnouncementQueue";
+        private static string _queueName = SettingsManager.AnnouncementQueueName;
         static AnnouncementQueue()
         {
             _connection = factory.CreateConnection();
@@ -27,8 +28,7 @@ namespace RentalInvestmentAid.Queue
         public static EventingBasicConsumer Consumer
         {
             get
-            {
-                
+            {                
                 return new EventingBasicConsumer(_channel);
             }
         }

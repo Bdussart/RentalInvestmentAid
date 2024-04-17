@@ -7,11 +7,12 @@ namespace RentalInvestmentAid.Settings
     public static class SettingsManager
     {
 
-        private static IConfigurationBuilder builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appSettings.json", optional: true, reloadOnChange: true);
+        private static IConfigurationBuilder builder = new ConfigurationBuilder().SetBasePath(System.AppDomain.CurrentDomain.BaseDirectory).AddJsonFile("appSettings.json", optional: true, reloadOnChange: true);
+        
         public static String ConnectionString
         {
             get
-            {          
+            {
                 IConfiguration configuration= builder.Build(); 
                 return configuration.GetConnectionString("RentalInvestmentAidDatabase");
             }
@@ -65,6 +66,22 @@ namespace RentalInvestmentAid.Settings
             {
                 IConfiguration configuration = builder.Build();
                 return configuration.GetSection("Cache").GetSection("RentCacheKey").Value.ToString();
+            }
+        }
+        public static String RentalQueueName
+        {
+            get
+            {
+                IConfiguration configuration = builder.Build();
+                return configuration.GetSection("Queue").GetSection("RentalQueueName").Value.ToString();
+            }
+        }
+        public static String AnnouncementQueueName
+        {
+            get
+            {
+                IConfiguration configuration = builder.Build();
+                return configuration.GetSection("Queue").GetSection("AnnouncementQueueName").Value.ToString();
             }
         }
     }
