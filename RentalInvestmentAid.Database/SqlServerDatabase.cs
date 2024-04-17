@@ -40,8 +40,9 @@ namespace RentalInvestmentAid.Database
                                 Price = reader.GetDecimal(3).ToString(),
                                 RentalPriceType = (RentalPriceType)reader.GetInt32(4),
                                 RentalTypeOfTheRent = (RentalTypeOfTheRent)reader.GetInt32(5),
-                                CreatedDate = reader.GetDateTime(6),
-                                UpdatedDate = reader.GetDateTime(7)
+                                Url = reader.GetString(6),
+                                CreatedDate = reader.GetDateTime(7),
+                                UpdatedDate = reader.GetDateTime(8)
                             });
                         }
                     }
@@ -234,24 +235,31 @@ namespace RentalInvestmentAid.Database
         }
         public RentalInformations InsertRentalInformation(RentalInformations rental)
         {
-            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            try
             {
-                using (SqlCommand sqlCommand = new SqlCommand("uspInsertRentalInformation", connection))
+                using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
                 {
-                    sqlCommand.CommandType = CommandType.StoredProcedure;
-                    sqlCommand.Parameters.AddWithValue("@idFromProvider", rental.IdFromProvider);
-                    sqlCommand.Parameters.AddWithValue("@idCity", rental.CityInfo.Id);
-                    sqlCommand.Parameters.AddWithValue("@price", rental.Price);
-                    sqlCommand.Parameters.AddWithValue("@idPriceType", rental.RentalPriceType);
-                    sqlCommand.Parameters.AddWithValue("@idPropertyType", rental.RentalTypeOfTheRent);
-                    sqlCommand.Parameters.AddWithValue("@url", rental.Url);
-                    SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
-                    retval.Direction = ParameterDirection.ReturnValue;
+                    using (SqlCommand sqlCommand = new SqlCommand("uspInsertRentalInformation", connection))
+                    {
+                        sqlCommand.CommandType = CommandType.StoredProcedure;
+                        sqlCommand.Parameters.AddWithValue("@idFromProvider", rental.IdFromProvider);
+                        sqlCommand.Parameters.AddWithValue("@idCity", rental.CityInfo.Id);
+                        sqlCommand.Parameters.AddWithValue("@price", rental.Price);
+                        sqlCommand.Parameters.AddWithValue("@idPriceType", rental.RentalPriceType);
+                        sqlCommand.Parameters.AddWithValue("@idPropertyType", rental.RentalTypeOfTheRent);
+                        sqlCommand.Parameters.AddWithValue("@url", rental.Url);
+                        SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
+                        retval.Direction = ParameterDirection.ReturnValue;
 
-                    connection.Open();
-                    sqlCommand.ExecuteNonQuery();
-                    rental.Id =(int) sqlCommand.Parameters["@RETURN_VALUE"].Value;
+                        connection.Open();
+                        sqlCommand.ExecuteNonQuery();
+                        rental.Id = (int)sqlCommand.Parameters["@RETURN_VALUE"].Value;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogHelper.LogException(ex, objectInfo: rental);
             }
             return rental;
         }
@@ -291,73 +299,93 @@ namespace RentalInvestmentAid.Database
         }
         public RateInformation InsertRateInformation(RateInformation rateInformation)
         {
-            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            try
             {
-                using (SqlCommand sqlCommand = new SqlCommand("uspInsertRateInformation", connection))
+                using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
                 {
-                    sqlCommand.CommandType = CommandType.StoredProcedure;
-                    sqlCommand.Parameters.AddWithValue("@durationInYear", rateInformation.DurationInYear);
-                    sqlCommand.Parameters.AddWithValue("@rate", Convert.ToDecimal(rateInformation.Rate));
-                    sqlCommand.Parameters.AddWithValue("@rateType", Convert.ToDecimal(rateInformation.RateType));
-                    sqlCommand.Parameters.AddWithValue("@title", rateInformation.Title);
+                    using (SqlCommand sqlCommand = new SqlCommand("uspInsertRateInformation", connection))
+                    {
+                        sqlCommand.CommandType = CommandType.StoredProcedure;
+                        sqlCommand.Parameters.AddWithValue("@durationInYear", rateInformation.DurationInYear);
+                        sqlCommand.Parameters.AddWithValue("@rate", Convert.ToDecimal(rateInformation.Rate));
+                        sqlCommand.Parameters.AddWithValue("@rateType", Convert.ToDecimal(rateInformation.RateType));
+                        sqlCommand.Parameters.AddWithValue("@title", rateInformation.Title);
 
-                    SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
-                    retval.Direction = ParameterDirection.ReturnValue;
+                        SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
+                        retval.Direction = ParameterDirection.ReturnValue;
 
-                    connection.Open();
-                    sqlCommand.ExecuteNonQuery();
+                        connection.Open();
+                        sqlCommand.ExecuteNonQuery();
 
-                    rateInformation.Id = (int)sqlCommand.Parameters["@RETURN_VALUE"].Value;
+                        rateInformation.Id = (int)sqlCommand.Parameters["@RETURN_VALUE"].Value;
+                    }
                 }
             }
-
+            catch (Exception ex)
+            {
+                Logger.LogHelper.LogException(ex, objectInfo: rateInformation);
+            }
             return rateInformation;
         }
         public LoanInformation InsertLoanInformation(LoanInformation loanInformation)
         {
-            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            try
             {
-                using (SqlCommand sqlCommand = new SqlCommand("uspInsertLoanInformation", connection))
+                using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
                 {
-                    sqlCommand.CommandType = CommandType.StoredProcedure;
-                    sqlCommand.Parameters.AddWithValue("@idAnnoncementInformation", loanInformation.AnnouncementInformation.Id);
-                    sqlCommand.Parameters.AddWithValue("@idRateInformation", loanInformation.RateInformation.Id);
-                    sqlCommand.Parameters.AddWithValue("@totalCost", loanInformation.TotalCost);
-                    sqlCommand.Parameters.AddWithValue("@monthlyCost", loanInformation.MonthlyCost);
-                    sqlCommand.Parameters.AddWithValue("@insuranceRate", loanInformation.InsurranceRate);
-                    sqlCommand.Parameters.AddWithValue("@totalCostWithInssurance", loanInformation.TotalCostWithInsurrance);
-                    sqlCommand.Parameters.AddWithValue("@monthlyCostWithInssurance", loanInformation.MonthlyCostWithInsurrance);
+                    using (SqlCommand sqlCommand = new SqlCommand("uspInsertLoanInformation", connection))
+                    {
+                        sqlCommand.CommandType = CommandType.StoredProcedure;
+                        sqlCommand.Parameters.AddWithValue("@idAnnoncementInformation", loanInformation.AnnouncementInformation.Id);
+                        sqlCommand.Parameters.AddWithValue("@idRateInformation", loanInformation.RateInformation.Id);
+                        sqlCommand.Parameters.AddWithValue("@totalCost", loanInformation.TotalCost);
+                        sqlCommand.Parameters.AddWithValue("@monthlyCost", loanInformation.MonthlyCost);
+                        sqlCommand.Parameters.AddWithValue("@insuranceRate", loanInformation.InsurranceRate);
+                        sqlCommand.Parameters.AddWithValue("@totalCostWithInssurance", loanInformation.TotalCostWithInsurrance);
+                        sqlCommand.Parameters.AddWithValue("@monthlyCostWithInssurance", loanInformation.MonthlyCostWithInsurrance);
 
-                    SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
-                    retval.Direction = ParameterDirection.ReturnValue;
+                        SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
+                        retval.Direction = ParameterDirection.ReturnValue;
 
-                    connection.Open();
-                    sqlCommand.ExecuteNonQuery();
-                    loanInformation.Id = (int)sqlCommand.Parameters["@RETURN_VALUE"].Value;
+                        connection.Open();
+                        sqlCommand.ExecuteNonQuery();
+                        loanInformation.Id = (int)sqlCommand.Parameters["@RETURN_VALUE"].Value;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogHelper.LogException(ex, objectInfo: loanInformation);
             }
 
             return loanInformation;
         }
         public RentInformation InsertRentInformation(RentInformation rentInformation)
         {
-            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            try
             {
-                using (SqlCommand sqlCommand = new SqlCommand("uspInsertRentInformation", connection))
+                using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
                 {
-                    sqlCommand.CommandType = CommandType.StoredProcedure;
-                    sqlCommand.Parameters.AddWithValue("@idAnnoncementInformation", rentInformation.AnnouncementInformation.Id);
-                    sqlCommand.Parameters.AddWithValue("@idRentalInformation", rentInformation.RentalInformations.Id);
-                    sqlCommand.Parameters.AddWithValue("@rentPrice", rentInformation.RentPrice);
-                    sqlCommand.Parameters.AddWithValue("@rent70Price", rentInformation.Rental70Pourcent);
+                    using (SqlCommand sqlCommand = new SqlCommand("uspInsertRentInformation", connection))
+                    {
+                        sqlCommand.CommandType = CommandType.StoredProcedure;
+                        sqlCommand.Parameters.AddWithValue("@idAnnoncementInformation", rentInformation.AnnouncementInformation.Id);
+                        sqlCommand.Parameters.AddWithValue("@idRentalInformation", rentInformation.RentalInformations.Id);
+                        sqlCommand.Parameters.AddWithValue("@rentPrice", rentInformation.RentPrice);
+                        sqlCommand.Parameters.AddWithValue("@rent70Price", rentInformation.Rental70Pourcent);
 
-                    SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
-                    retval.Direction = ParameterDirection.ReturnValue;
+                        SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
+                        retval.Direction = ParameterDirection.ReturnValue;
 
-                    connection.Open();
-                    sqlCommand.ExecuteNonQuery();
-                    rentInformation.Id = (int)sqlCommand.Parameters["@RETURN_VALUE"].Value;
+                        connection.Open();
+                        sqlCommand.ExecuteNonQuery();
+                        rentInformation.Id = (int)sqlCommand.Parameters["@RETURN_VALUE"].Value;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogHelper.LogException(ex, objectInfo: rentInformation);
             }
 
             return rentInformation;
@@ -404,22 +432,29 @@ namespace RentalInvestmentAid.Database
         }
         public CityInformations InsertCity(CityInformations city)
         {
-            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            try
             {
-                using (SqlCommand sqlCommand = new SqlCommand("uspInsertCity", connection))
+                using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
                 {
-                    sqlCommand.CommandType = CommandType.StoredProcedure;
-                    sqlCommand.Parameters.AddWithValue("@cityName", city.CityName);
-                    sqlCommand.Parameters.AddWithValue("@zipcode", city.ZipCode);
-                    sqlCommand.Parameters.AddWithValue("@departement", city.Departement);
+                    using (SqlCommand sqlCommand = new SqlCommand("uspInsertCity", connection))
+                    {
+                        sqlCommand.CommandType = CommandType.StoredProcedure;
+                        sqlCommand.Parameters.AddWithValue("@cityName", city.CityName);
+                        sqlCommand.Parameters.AddWithValue("@zipcode", city.ZipCode);
+                        sqlCommand.Parameters.AddWithValue("@departement", city.Departement);
 
-                    SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
-                    retval.Direction = ParameterDirection.ReturnValue;
+                        SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
+                        retval.Direction = ParameterDirection.ReturnValue;
 
-                    connection.Open();
-                    sqlCommand.ExecuteNonQuery();
-                    city.Id = (int)sqlCommand.Parameters["@RETURN_VALUE"].Value;
+                        connection.Open();
+                        sqlCommand.ExecuteNonQuery();
+                        city.Id = (int)sqlCommand.Parameters["@RETURN_VALUE"].Value;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogHelper.LogException(ex, objectInfo: city);
             }
             return city;
         }

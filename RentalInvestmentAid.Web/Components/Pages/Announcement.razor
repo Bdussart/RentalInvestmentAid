@@ -3,6 +3,7 @@
 @using RentalInvestmentAid.Core
 @using RentalInvestmentAid.Core.Announcement
 @using RentalInvestmentAid.Core.Bank
+@using RentalInvestmentAid.Core.Rental
 @using RentalInvestmentAid.Database
 @using RentalInvestmentAid.Models
 @using RentalInvestmentAid.Models.Announcement
@@ -104,7 +105,7 @@
     protected override Task OnInitializedAsync()
     {
         _cachingManager = new CachingManager(_databaseFactory);
-        _rentalTreament = new RentalTreament(_cachingManager, _databaseFactory);
+        _rentalTreament = new RentalTreament(_cachingManager, _databaseFactory, new LeFigaroWebSiteData(_cachingManager));
         _bankTreament = new BankTreatment(_cachingManager, _databaseFactory);
 
         return base.OnInitializedAsync();

@@ -53,7 +53,7 @@ namespace RentalInvestmentAid
 
         private static List<RentalInformations> GetRentalInformations(string url)
         {
-            IRentalWebSiteData webSiteData = new leFigaroWebSiteData(_cachingManager);
+            IRentalWebSiteData webSiteData = new LeFigaroWebSiteData(_cachingManager);
             List<RentalInformations> rentalInformations = new List<RentalInformations>();
 
             Thread.Sleep(TimeSpan.FromSeconds(2)); //Take easy for the external server :)
@@ -70,7 +70,7 @@ namespace RentalInvestmentAid
             _cityTreatment = new CityTreatment(_cachingManager, _databaseFactory);
             _announcementTreatment = new AnnouncementTreatment(_cachingManager, _databaseFactory);
             _bankTreatment = new BankTreatment(_cachingManager, _databaseFactory);
-            _rentalTreament = new RentalTreament(_cachingManager, _databaseFactory);
+            _rentalTreament = new RentalTreament(_cachingManager, _databaseFactory, new LeFigaroWebSiteData(_cachingManager));
             Console.OutputEncoding = Encoding.UTF8;
 
             IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData(_announcementTreatment);
@@ -85,36 +85,8 @@ namespace RentalInvestmentAid
                     //{announcementWebSite },
 
                 };
-
-            //IAnnouncementWebSiteData announcementWebSite = new EspritImmoWebSite(_cachingManager);
-            //IAnnouncementWebSiteData IADWebSite = new IADWebSite(_cachingManager); 
-            //List<IAnnouncementWebSiteData> workers = new List<IAnnouncementWebSiteData>
-            //    {
-            //        { IADWebSite },
-            //        {announcementWebSite }
-            //    };
-
-
-            //List<string> urls = IADWebSite.GetAnnoucementUrl(_dicoDepartements.Values.ToList(), _maxPrice);
-            //urls.AddRange(announcementWebSite.GetAnnoucementUrl(maxPrice : _maxPrice));
-
-
-
-            //urls.ForEach(url =>
-            //{
-            //    Thread.Sleep(TimeSpan.FromSeconds(2));
-            //    AnnouncementInformation? announcementInformation = HeirsHelper.FindTheRightHeir(url, workers).GetAnnouncementInformation(url);
-
-            //    if (announcementInformation != null)
-            //    {
-            //        _databaseFactory.InsertAnnouncementInformation(announcementInformation);
-            //        _cachingManager.ForceCacheUpdateAnnouncementInformation();
-            //        CheckDataRentabilityForAnnouncement(announcementInformation);
-            //    }
-            //});
             DoLoadDataJob();
         }
-
 
         private static void LoopGetRentalData()
         {
@@ -175,18 +147,19 @@ namespace RentalInvestmentAid
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             LoopGetRentalData();
-            LoopGetAnnouncementData();
 
-            IRentalWebSiteData webSiteData = new leFigaroWebSiteData(_cachingManager);
-            Task.Factory.StartNew(() =>
-            {
-               foreach(var departement in _dicoDepartements)
-               {
-                   LogHelper.LogInfo($"******{Task.CurrentId} Start work for getting price per departement* ****");
-                   webSiteData.EnQueueUrls("rhone-alpes", departement.Value, departement.Key);
-                   LogHelper.LogInfo($"******{Task.CurrentId} End work for getting price per departement* ****");
-               }
-            });
+            //OLD WAY
+
+            //IRentalWebSiteData webSiteData = new leFigaroWebSiteData(_cachingManager);
+            //Task.Factory.StartNew(() =>
+            //{
+            //   foreach(var departement in _dicoDepartements)
+            //   {
+            //       LogHelper.LogInfo($"******{Task.CurrentId} Start work for getting price per departement* ****");
+            //       webSiteData.EnQueueUrls("rhone-alpes", departement.Value, departement.Key);
+            //       LogHelper.LogInfo($"******{Task.CurrentId} End work for getting price per departement* ****");
+            //   }
+            //});
 
             List<String> departements = _dicoDepartements.Values.ToList();
 
@@ -203,19 +176,6 @@ namespace RentalInvestmentAid
                 _bankTreatment.InsertRate(rate);
             }
 
-            Parallel.ForEach(_workers, worker =>
-            {
-               try
-               {
-                   LogHelper.LogInfo($"******{Task.CurrentId} Start work for worker {worker.GetKeyword()}* ****");
-                   worker.EnQueueAnnoucementUrl(_dicoDepartements.Values.ToList(), _maxPrice);
-               }
-               catch (Exception ex)
-               {
-                   LogHelper.LogInfo($"{Task.CurrentId}Damn an Exception ! {ex}");
-               }
-            });
-
             Console.ReadKey();
             _loop = false;
         }
@@ -225,7 +185,7 @@ namespace RentalInvestmentAid
             while (_loop)
             {
                 CheckAllDataRentability();
-                Thread.Sleep(TimeSpan.FromMinutes(5));
+                Thread.Sleep(TimeSpan.FromMinutes(2));
             }
         }
 

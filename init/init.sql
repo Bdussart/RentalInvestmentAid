@@ -164,6 +164,7 @@ SELECT  [id]
 		,[price]
 		,[idPriceType]
 		,[idPropertyType]
+		,[url]
 		,[createdDate]
 		,[updatedDate]
   FROM [RentalInvestmentAid].[dbo].[RentalInformation]
@@ -232,6 +233,7 @@ CREATE TABLE [dbo].[annoncementInformation](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
+
 ALTER TABLE [dbo].[annoncementInformation]  WITH CHECK ADD  CONSTRAINT [FK_annoncementInformation_typeProperty] FOREIGN KEY([idPropertyType])
 REFERENCES [dbo].[typeProperty] ([id])
 GO
@@ -239,6 +241,8 @@ GO
 ALTER TABLE [dbo].[annoncementInformation] CHECK CONSTRAINT [FK_annoncementInformation_typeProperty]
 GO
 
+ALTER TABLE [dbo].[annoncementInformation]  ADD CONSTRAINT uniqueAnnoucnementPerProvider UNIQUE ([idAnnouncementProvider],[idFromProvider] )
+GO
 
 CREATE PROCEDURE [dbo].[uspInsertAnnoncementInformation]
 (

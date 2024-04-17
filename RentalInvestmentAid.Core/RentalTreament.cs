@@ -15,17 +15,19 @@ using RentalInvestmentAid.Caching;
 using OpenQA.Selenium.DevTools.V119.SystemInfo;
 using RentalInvestmentAid.Core.Announcement;
 using RentalInvestmentAid.Logger;
+using RentalInvestmentAid.Core.Rental;
 
 namespace RentalInvestmentAid.Core
 {
     public class RentalTreament : MustInitializeCache
     {
         private IDatabaseFactory _databaseFactory;
-
-        public RentalTreament(CachingManager cachingManager, IDatabaseFactory databaseFactory) : base(cachingManager)
+        private IRentalWebSiteData _rentalWebSiteData;
+        public RentalTreament(CachingManager cachingManager, IDatabaseFactory databaseFactory, IRentalWebSiteData rentalWebSiteData) : base(cachingManager)
         {
             base._cachingManager = cachingManager;
             _databaseFactory = databaseFactory;
+            _rentalWebSiteData = rentalWebSiteData;
         }
         private List<RentalInformations> FindRentalInformationForAnAnnoucement(AnnouncementInformation announcementInformation)
         {
@@ -68,8 +70,12 @@ namespace RentalInvestmentAid.Core
             List<RentalInformations> currentsRentalInformation = FindRentalInformationForAnAnnoucement(announcement);
 
             LogHelper.LogInfo("****** Find the right rental information Check if not null *****");
-            if (currentsRentalInformation.Count == 0)
-                LogHelper.LogInfo($"{announcement.ToString()} - Don't find rental information -----");
+            if (currentsRentalInformation.Count == 0) { 
+                LogHelper.LogInfo($"{announcement} - Don't find rental information -----");
+                LogHelper.LogInfo($"{announcement} - Go find it ! -----");
+                _rentalWebSiteData.SearchByCityNameAndDepartementAndEnqueueUrl(announcement.CityInformations.CityName, int.Parse(announcement.CityInformations.Departement));
+
+            }
             else
             {
                 List<LoanInformation> loansInformation = CalculAllLoan(announcement.Price);

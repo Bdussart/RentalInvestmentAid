@@ -19,6 +19,10 @@ namespace FetchAnnoucementWorkerService
         private static Dictionary<int, string> _dicoDepartements = new Dictionary<int, string>
             {
                 {01, "Ain"},
+                {22, "Côtes-d'Armor"},
+                {29, "Finistère"},
+                {34, "Hérault"},
+                {35, "Ille-et-Vilaine"},
                 {73, "Savoie"},
                 {74, "Haute-Savoie"},
             };
