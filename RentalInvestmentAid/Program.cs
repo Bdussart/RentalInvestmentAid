@@ -19,6 +19,8 @@ using RentalInvestmentAid.Models.City;
 using System.Runtime;
 using System;
 using RentalInvestmentAid.Logger;
+using RentalInvestmentAid.Settings;
+using Newtonsoft.Json;
 
 namespace RentalInvestmentAid
 {
@@ -38,22 +40,19 @@ namespace RentalInvestmentAid
 
         private static Dictionary<int, string> _dicoDepartements = new Dictionary<int, string>
             {
-                   {01, "Ain"},
-    // {22, "Côtes-d'Armor"},
-    // {29, "Finistère"},
-    // {34, "Hérault"},
-    // {35, "Ille-et-Vilaine"},
-    {73, "Savoie"},
-    {74, "Haute-Savoie"},
+                {74, "Haute-Savoie"},
             };
 
         private static int? _maxPrice = 200000;
 
-        private static List<IAnnouncementWebSiteData> _workers = null;
+        private static List<IAnnouncementWebSiteData> _announcementWebSites = null;
+        private static IBroker _announcementRabbitMQBroker = null;
+        private static IBroker _rentalRabbitMQBroker = null;
+
 
         private static List<RentalInformations> GetRentalInformations(string url)
         {
-            IRentalWebSiteData webSiteData = new LeFigaroWebSiteData(_cachingManager);
+            IRentalWebSiteData webSiteData = new LeFigaroWebSiteData(_cachingManager, _rentalRabbitMQBroker);
             List<RentalInformations> rentalInformations = new List<RentalInformations>();
 
             Thread.Sleep(TimeSpan.FromSeconds(2)); //Take easy for the external server :)
@@ -66,18 +65,21 @@ namespace RentalInvestmentAid
 
         public static void Main(string[] args)
         {
+            _announcementRabbitMQBroker = new RabbitMQBroker(SettingsManager.AnnouncementQueueName);
+            _rentalRabbitMQBroker = new RabbitMQBroker(SettingsManager.RentalQueueName);
             _cachingManager = new CachingManager(_databaseFactory);
             _cityTreatment = new CityTreatment(_cachingManager, _databaseFactory);
             _announcementTreatment = new AnnouncementTreatment(_cachingManager, _databaseFactory);
             _bankTreatment = new BankTreatment(_cachingManager, _databaseFactory);
-            _rentalTreament = new RentalTreament(_cachingManager, _databaseFactory, new LeFigaroWebSiteData(_cachingManager));
+            _rentalTreament = new RentalTreament(_cachingManager, _databaseFactory, new LeFigaroWebSiteData(_cachingManager, _rentalRabbitMQBroker));
+
             Console.OutputEncoding = Encoding.UTF8;
 
-            IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData(_announcementTreatment);
+            IAnnouncementWebSiteData announcementWebSiteData = new Century21WebSiteData(_announcementTreatment, _announcementRabbitMQBroker);
             IAnnouncementWebSiteData lebonCoinWebSiteData = new LeBonCoinWebSiteData(_announcementTreatment);
             //IAnnouncementWebSiteData announcementWebSite = new EspritImmoWebSite(_cachingManager);
-            IAnnouncementWebSiteData IADWebSite = new IADWebSite(_announcementTreatment);
-            _workers = new List<IAnnouncementWebSiteData>
+            IAnnouncementWebSiteData IADWebSite = new IADWebSite(_announcementTreatment, _announcementRabbitMQBroker);
+            _announcementWebSites = new List<IAnnouncementWebSiteData>
                 {
                     {announcementWebSiteData },
                     {IADWebSite },
@@ -90,15 +92,17 @@ namespace RentalInvestmentAid
 
         private static void LoopGetRentalData()
         {
-            EventingBasicConsumer consumer = RentalQueue.Consumer;
+            EventingBasicConsumer consumer = _rentalRabbitMQBroker.GetConsumer();
             consumer.Received += ReceivedRentalInformation;
-            RentalQueue.SetConsumer(consumer);
+            _rentalRabbitMQBroker.SetConsumer(consumer);
         }
 
         private static void ReceivedRentalInformation(object? model, BasicDeliverEventArgs ea)
-        {
+        { 
             var body = ea.Body.ToArray();
-            var message = Encoding.UTF8.GetString(body);
+            var data = Encoding.UTF8.GetString(body);
+
+            string message = JsonConvert.DeserializeObject<string>(data);
             Logger.LogHelper.LogInfo($"Received {message}");
             foreach (RentalInformations info in GetRentalInformations(message))
             {
@@ -111,18 +115,21 @@ namespace RentalInvestmentAid
 
         private static void LoopGetAnnouncementData()
         {
-            EventingBasicConsumer consumer = AnnouncementQueue.Consumer;
+            EventingBasicConsumer consumer = _announcementRabbitMQBroker.GetConsumer();
 
             consumer.Received += ReceivedAnnouncementInformation;
-            AnnouncementQueue.SetConsumer(consumer);
+            _announcementRabbitMQBroker.SetConsumer(consumer);
         }
 
         private static void ReceivedAnnouncementInformation(object? model, BasicDeliverEventArgs ea)
         {
             var body = ea.Body.ToArray();
-            var message = Encoding.UTF8.GetString(body);
+            var data = Encoding.UTF8.GetString(body);
+
+            string message = JsonConvert.DeserializeObject<string>(data);
+
             LogHelper.LogInfo($"Received {message}");
-            IAnnouncementWebSiteData worker = HeirsHelper.FindTheRightHeir(message, _workers);
+            IAnnouncementWebSiteData worker = HeirsHelper.FindTheRightHeir(message, _announcementWebSites);
             if (worker != null)
             {
                 LogHelper.LogInfo($"****** [{Task.CurrentId}] [{worker.GetKeyword()}]  Url to get data : {message}*****");
@@ -147,20 +154,7 @@ namespace RentalInvestmentAid
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             LoopGetRentalData();
-
-            //OLD WAY
-
-            //IRentalWebSiteData webSiteData = new leFigaroWebSiteData(_cachingManager);
-            //Task.Factory.StartNew(() =>
-            //{
-            //   foreach(var departement in _dicoDepartements)
-            //   {
-            //       LogHelper.LogInfo($"******{Task.CurrentId} Start work for getting price per departement* ****");
-            //       webSiteData.EnQueueUrls("rhone-alpes", departement.Value, departement.Key);
-            //       LogHelper.LogInfo($"******{Task.CurrentId} End work for getting price per departement* ****");
-            //   }
-            //});
-
+            LoopGetAnnouncementData();
             List<String> departements = _dicoDepartements.Values.ToList();
 
             Task.Factory.StartNew(() =>
@@ -175,6 +169,20 @@ namespace RentalInvestmentAid
             {
                 _bankTreatment.InsertRate(rate);
             }
+
+            foreach (IAnnouncementWebSiteData announcementWebSite in _announcementWebSites)
+            {
+                try
+                {
+                    LogHelper.LogInfo($"******{Task.CurrentId} Start work for worker {announcementWebSite.GetKeyword()}* ****");
+                    announcementWebSite.EnQueueAnnoucementUrl(_dicoDepartements.Values.ToList(), _maxPrice);
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.LogInfo($"{Task.CurrentId}Damn an Exception ! {ex}");
+                }
+            }
+
 
             Console.ReadKey();
             _loop = false;

@@ -16,10 +16,12 @@ namespace RentalInvestmentAid.Test.Rental
         private LeFigaroWebSiteData _LeFigaroWebSiteData;
         private CachingManager _cacheManager;
         private MockDatabase _mockDatabase;
+        private MockBroker _mockBroker;
         public LeFigaroImmobilierRentalTest() {
             _mockDatabase = new MockDatabase();
             _cacheManager = new CachingManager(_mockDatabase);
-            _LeFigaroWebSiteData = new LeFigaroWebSiteData(_cacheManager);
+            _mockBroker = new MockBroker();
+            _LeFigaroWebSiteData = new LeFigaroWebSiteData(_cacheManager, _mockBroker);
         }
 
         [TestMethod]

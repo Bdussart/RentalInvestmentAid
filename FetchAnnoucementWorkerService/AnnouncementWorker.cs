@@ -8,6 +8,7 @@ using RentalInvestmentAid.Logger;
 using RentalInvestmentAid.Models.Announcement;
 using RentalInvestmentAid.Models.City;
 using RentalInvestmentAid.Queue;
+using RentalInvestmentAid.Settings;
 using System.Diagnostics;
 using System.Text;
 
@@ -16,7 +17,7 @@ namespace FetchAnnoucementWorkerService
     public class AnnouncementWorker : BackgroundService
     {
         private readonly ILogger<AnnouncementWorker> _logger;
-        private static Dictionary<int, string> _dicoDepartements = new Dictionary<int, string>
+        private  Dictionary<int, string> _dicoDepartements = new Dictionary<int, string>
             {
                 {01, "Ain"},
                 {22, "Côtes-d'Armor"},
@@ -27,43 +28,41 @@ namespace FetchAnnoucementWorkerService
                 {74, "Haute-Savoie"},
             };
 
-        private static int? _maxPrice = 200000;
-        private static List<IAnnouncementWebSiteData> _announcementWebSites = null;
-        private static CityTreatment _cityTreatment = null;
-        private static CachingManager _cachingManager = null;
-        private static IDatabaseFactory _databaseFactory = new SqlServerDatabase();
-        private static AnnouncementTreatment _announcementTreatment = null;
-        
+        private  int? _maxPrice = 200000;
+        private  List<IAnnouncementWebSiteData> _announcementWebSites = null;
+        private  CityTreatment _cityTreatment = null;
+        private  CachingManager _cachingManager = null;
+        private  IDatabaseFactory _databaseFactory = new SqlServerDatabase();
+        private  AnnouncementTreatment _announcementTreatment = null;
+        private IBroker _announcementRabbitMQBroker = null;
+
         public AnnouncementWorker(ILogger<AnnouncementWorker> logger)
         {
             _logger = logger;
-
-            _logger.LogError($"ça marche ?? : {Directory.GetCurrentDirectory()}");
-            _logger.LogError($"ça marche ?? : {System.AppDomain.CurrentDomain.BaseDirectory}");
-
+            _announcementRabbitMQBroker = new RabbitMQBroker(SettingsManager.AnnouncementQueueName);
             _cachingManager = new CachingManager(_databaseFactory);
             _cityTreatment = new CityTreatment(_cachingManager, _databaseFactory);
             _announcementTreatment = new AnnouncementTreatment(_cachingManager, _databaseFactory);
 
             _announcementWebSites = new List<IAnnouncementWebSiteData>
                 {
-                    {new Century21WebSiteData(_announcementTreatment) },
+                    {new Century21WebSiteData(_announcementTreatment, _announcementRabbitMQBroker) },
                     //{new LeBonCoinWebSiteData(_announcementTreatment) },
-                    {new IADWebSite(_announcementTreatment) }
+                    {new IADWebSite(_announcementTreatment, _announcementRabbitMQBroker) }
                 };
+            
 
             HandleNewAnnouncementQueue();
         }
 
-        private static void HandleNewAnnouncementQueue()
+        private  void HandleNewAnnouncementQueue()
         {
-            EventingBasicConsumer consumer = AnnouncementQueue.Consumer;
-
+            EventingBasicConsumer consumer = _announcementRabbitMQBroker.GetConsumer();
             consumer.Received += ReceivedAnnouncementInformation;
-            AnnouncementQueue.SetConsumer(consumer);
+            _announcementRabbitMQBroker.SetConsumer(consumer);
         }
 
-        private static void ReceivedAnnouncementInformation(object? model, BasicDeliverEventArgs ea)
+        private  void ReceivedAnnouncementInformation(object? model, BasicDeliverEventArgs ea)
         {
             var body = ea.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);

@@ -13,10 +13,20 @@
 </div>
 
 @code {
+    private IBroker _rentalBroker = null;
+
+    protected override Task OnInitializedAsync()
+    {
+        _rentalBroker = new RabbitMQBroker(Settings.SettingsManager.RentalQueueName);
+
+
+        return base.OnInitializedAsync();
+
+    }
 
     private void SendUrlToQueue()
     {
-        RentalQueue.SendMessage(_url);
+        _rentalBroker.SendMessage(_url);
     }
 
     private string _url { get; set; }

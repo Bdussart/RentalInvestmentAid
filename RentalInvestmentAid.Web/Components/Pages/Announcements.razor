@@ -38,7 +38,7 @@
         get
         {
             if (_announcementInformation is null || !_announcementInformation.Any())
-                _announcementInformation = _announcementTreatment.GetAnnouncementsInformation().OrderBy(x=> x.CityInformations.CityName).ToList();
+                _announcementInformation = _announcementTreatment.GetAnnouncementInformationWithRentabilityCalculated().OrderBy(x => x.CityInformations.CityName).ToList();
 
             return _announcementInformation;
         }

@@ -26,9 +26,11 @@ namespace RentalInvestmentAid.Core.Rental
 {
     public class LeFigaroWebSiteData : MustInitializeCache, IRentalWebSiteData
     {
-        public LeFigaroWebSiteData(CachingManager cachingManager) : base(cachingManager)
+        private IBroker _rentalRabbitMQBroker = null;
+        public LeFigaroWebSiteData(CachingManager cachingManager, IBroker rentalBroker) : base(cachingManager)
         {
             base._cachingManager = cachingManager;
+            _rentalRabbitMQBroker = rentalBroker;
         }
         public void EnQueueUrls(string area, string department, int departmentNumber)
         {
@@ -222,7 +224,7 @@ namespace RentalInvestmentAid.Core.Rental
                 actions.Perform();
 
                 if (!base._cachingManager.GetRentalInformations().Any(rental => rental.Url.Equals(driver.Url, StringComparison.InvariantCultureIgnoreCase)))
-                    RentalQueue.SendMessage(driver.Url);
+                    _rentalRabbitMQBroker.SendMessage<string>(driver.Url);
             }
         }
     }

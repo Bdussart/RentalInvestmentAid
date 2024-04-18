@@ -26,10 +26,12 @@ namespace RentalInvestmentAid.Core.Announcement
     {
         private readonly AnnouncementProvider _announcementProvider = AnnouncementProvider.IAD;
         private AnnouncementTreatment _announcementTreatment = null;
+        private IBroker _announcementBroker = null;
         private string baseUrl { get; set; } = "https://www.iadfrance.fr/";
-        public IADWebSite(AnnouncementTreatment announcementTreatment)
+        public IADWebSite(AnnouncementTreatment announcementTreatment, IBroker annoucementBroker)
         {
             _announcementTreatment = announcementTreatment;
+            _announcementBroker = annoucementBroker;
         }
 
         private List<String> FindUrlForEachAnnoncement(string html)
@@ -202,7 +204,7 @@ namespace RentalInvestmentAid.Core.Announcement
             foreach (string department in departments)
             {
                 Logger.LogHelper.LogInfo($"Start fetching information for {department}");
-                GetAnnouncementForADepartement(department.ToLower(), maxPrice).ForEach(url => AnnouncementQueue.SendMessage(url));
+                GetAnnouncementForADepartement(department.ToLower(), maxPrice).ForEach(url => _announcementBroker.SendMessage(url));
                 Logger.LogHelper.LogInfo($"Done fetching information for {department}");
             }
         }

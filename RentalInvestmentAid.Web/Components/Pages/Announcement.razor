@@ -13,6 +13,7 @@
 @using RentalInvestmentAid.Models.Rental
 @using RentalInvestmentAid.Caching
 @using System.Collections.Concurrent
+@using RentalInvestmentAid.Queue
 
 @rendermode InteractiveServer
 
@@ -100,12 +101,14 @@
 
     private RentalTreament _rentalTreament = null;
     private BankTreatment _bankTreament = null;
+    private IBroker _announcementBroker = null;
 
 
     protected override Task OnInitializedAsync()
     {
+        _announcementBroker = new RabbitMQBroker(Settings.SettingsManager.AnnouncementQueueName);
         _cachingManager = new CachingManager(_databaseFactory);
-        _rentalTreament = new RentalTreament(_cachingManager, _databaseFactory, new LeFigaroWebSiteData(_cachingManager));
+        _rentalTreament = new RentalTreament(_cachingManager, _databaseFactory, new LeFigaroWebSiteData(_cachingManager, _announcementBroker));
         _bankTreament = new BankTreatment(_cachingManager, _databaseFactory);
 
         return base.OnInitializedAsync();

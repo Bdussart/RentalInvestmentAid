@@ -17,10 +17,12 @@ namespace RentalInvestmentAid.Core.Announcement
     {
         private readonly AnnouncementProvider _announcementProvider = AnnouncementProvider.century21;
         private AnnouncementTreatment _announcementTreatment = null;
+        private IBroker _announcementBroker = null;
 
-        public Century21WebSiteData(AnnouncementTreatment announcementTreatment)
+        public Century21WebSiteData(AnnouncementTreatment announcementTreatment, IBroker annoucementBroker)
         {
             _announcementTreatment = announcementTreatment;
+            _announcementBroker = annoucementBroker;
         }
 
         private string baseUrl { get; set; } = "https://www.century21.fr";
@@ -211,7 +213,7 @@ namespace RentalInvestmentAid.Core.Announcement
             foreach (string department in departments)
             {
                 Logger.LogHelper.LogInfo($"Start fetching information for {department}");
-                GetAnnouncementForADepartement(department, maxPrice).ForEach(url => AnnouncementQueue.SendMessage(url));
+                GetAnnouncementForADepartement(department, maxPrice).ForEach(url => _announcementBroker.SendMessage(url));
                 Logger.LogHelper.LogInfo($"Done fetching information for {department}");
             }
         }

@@ -13,10 +13,20 @@
 </div>
 
 @code {
+    private IBroker _announcementBroker = null;
+
+    protected override Task OnInitializedAsync()
+    {
+        _announcementBroker = new RabbitMQBroker(Settings.SettingsManager.AnnouncementQueueName);
+
+
+        return base.OnInitializedAsync();
+
+    }
 
     private void SendUrlToQueue()
     {
-        AnnouncementQueue.SendMessage(_url);
+        _announcementBroker.SendMessage(_url);
     }
 
     private string _url { get; set; }
