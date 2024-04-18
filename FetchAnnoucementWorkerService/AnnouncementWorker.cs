@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using RabbitMQ.Client.Events;
 using RentalInvestmentAid.Caching;
 using RentalInvestmentAid.Core;
@@ -65,7 +66,9 @@ namespace FetchAnnoucementWorkerService
         private  void ReceivedAnnouncementInformation(object? model, BasicDeliverEventArgs ea)
         {
             var body = ea.Body.ToArray();
-            var message = Encoding.UTF8.GetString(body);
+            var data = Encoding.UTF8.GetString(body);
+
+            string message = JsonConvert.DeserializeObject<string>(data);
             LogHelper.LogInfo($"Received {message}");
             IAnnouncementWebSiteData worker = HeirsHelper.FindTheRightHeir(message, _announcementWebSites);
             if (worker != null)
