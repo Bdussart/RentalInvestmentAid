@@ -8,6 +8,9 @@
 @inject IJSRuntime JS
 
 @rendermode InteractiveServer
+
+
+
 <div class="col-lg-4 cursor-pointer" id="city_@City.Id" @onclick="() => OnClickCity(City.Id)">
     <div class="row text-center" >
         <div class="card ">
@@ -21,17 +24,19 @@
             </ul>
         </div>
     </div>
-    <div class="@AnnouncementDisplayToggle" id="announcement_for_city_@City.Id">
+@*     <div class="@AnnouncementDisplayToggle" id="announcement_for_city_@City.Id">
         @foreach (AnnouncementInformation announcement in AnnouncementInformation)
         {
             <Announcement AnnouncementInformation="announcement"/>
         }
-    </div>
+    </div> *@
 </div>
 
+<Modal @ref="modal" Fullscreen="ModalFullscreen.Always" />
 
 
 @code {
+    private Modal modal = default!;
     public string AnnouncementDisplayToggle { get; set; } = "d-none";
     private string hiddenClass = "d-none";
 
@@ -68,7 +73,11 @@
             AnnouncementDisplayToggle = hiddenClass;
         else
             AnnouncementDisplayToggle = String.Empty;
-        await InvokeAsync(base.StateHasChanged);
+
+        var parameters = new Dictionary<string, object>();
+        parameters.Add("AnnouncementInformation", AnnouncementInformation.First());
+        await modal.ShowAsync<Announcement>(title: City.CityName, parameters: parameters);
+
     }
 
 

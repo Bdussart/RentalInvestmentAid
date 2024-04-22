@@ -33,7 +33,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Queries", "Queries", "{95A1
 		Queries\Dump database.sql = Queries\Dump database.sql
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FetchAnnoucementWorkerService", "FetchAnnoucementWorkerService\FetchAnnoucementWorkerService.csproj", "{68C9BF09-0F07-4042-A974-C74EEA51A36D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FetchAnnoucementWorkerService", "FetchAnnoucementWorkerService\FetchAnnoucementWorkerService.csproj", "{68C9BF09-0F07-4042-A974-C74EEA51A36D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
