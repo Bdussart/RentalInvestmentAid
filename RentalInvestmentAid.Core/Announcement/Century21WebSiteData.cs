@@ -181,7 +181,7 @@ namespace RentalInvestmentAid.Core.Announcement
                 {
                     CityInformations = new Models.City.CityInformations
                     {
-                        CityName = HtmlWordsHelper.CleanHtml(locationInformations[0].Replace("-", " ").Trim()),
+                        CityName = CityHelper.CleanCityName(HtmlWordsHelper.CleanHtml(locationInformations[0].Replace("-", " ").Trim())),
                         ZipCode = zipCode,
                         Departement = zipCode.Substring(0, 2),
                     },

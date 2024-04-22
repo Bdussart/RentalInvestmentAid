@@ -430,6 +430,34 @@ namespace RentalInvestmentAid.Database
             }
             return cities;
         }
+
+        public List<CityInformations> GetCitiesWithNoRent()
+        {
+            List<CityInformations> cities = new List<CityInformations>();
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspGetCityWithNoRent", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    connection.Open();
+                    using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            cities.Add(new CityInformations
+                            {
+                                Id = reader.GetInt32(0),
+                                CityName = reader.GetString(1),
+                                ZipCode = reader.GetString(2),
+                                Departement = reader.GetString(3),
+                                CreatedDate = reader.GetDateTime(4),
+                            });
+                        }
+                    }
+                }
+            }
+            return cities;
+        }
         public CityInformations InsertCity(CityInformations city)
         {
             try

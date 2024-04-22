@@ -1,4 +1,5 @@
 ﻿using RentalInvestmentAid.Caching;
+using RentalInvestmentAid.Core.Helper;
 using RentalInvestmentAid.Database;
 using RentalInvestmentAid.Models.City;
 using System;
@@ -59,7 +60,7 @@ namespace RentalInvestmentAid.Core
             {
                 city = InsertCity(new CityInformations
                 {
-                    CityName = cityName,
+                    CityName = CityHelper.CleanCityName(cityName),
                     Departement = departement,
                     ZipCode = zipCode,
                 });

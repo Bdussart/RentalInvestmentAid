@@ -22,6 +22,7 @@ namespace RentalInvestmentAid.Database
         public List<RentInformation> GetRentsInformations();
 
         public List<CityInformations> GetCities();
+        public List<CityInformations> GetCitiesWithNoRent();
         public RentalInformations InsertRentalInformation(RentalInformations rental);
         public AnnouncementInformation InsertAnnouncementInformation(AnnouncementInformation announcementInformation);
         public RateInformation InsertRateInformation(RateInformation announcementInformation);

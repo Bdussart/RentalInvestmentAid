@@ -1,6 +1,7 @@
 ﻿using RentalInvestmentAid.Models.Bank;
 using RentalInvestmentAid.Models.Announcement;
 using RentalInvestmentAid.Models.Rental;
+using RentalInvestmentAid.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,7 @@ using OpenQA.Selenium.DevTools.V119.SystemInfo;
 using RentalInvestmentAid.Core.Announcement;
 using RentalInvestmentAid.Logger;
 using RentalInvestmentAid.Core.Rental;
+using RentalInvestmentAid.Models.City;
 
 namespace RentalInvestmentAid.Core
 {
@@ -64,6 +66,15 @@ namespace RentalInvestmentAid.Core
             return realCost;
         }
 
+        public void GetCitiesRentInformations()
+        {
+            foreach (CityInformations city in _databaseFactory.GetCitiesWithNoRent())
+            {
+                LogHelper.LogInfo($"****** Search City {city.CityName} rental information *****");
+                _rentalWebSiteData.SearchByCityNameAndDepartementAndEnqueueUrl(city.CityName, int.Parse(city.Departement));
+            }
+        }
+
         public bool CheckDataRentabilityForAnnouncement(AnnouncementInformation announcement)
         {
             bool rentabilityChecked = false;
@@ -72,9 +83,6 @@ namespace RentalInvestmentAid.Core
             LogHelper.LogInfo("****** Find the right rental information Check if not null *****");
             if (currentsRentalInformation.Count == 0) { 
                 LogHelper.LogInfo($"{announcement} - Don't find rental information -----");
-                LogHelper.LogInfo($"{announcement} - Go find it ! -----");
-                _rentalWebSiteData.SearchByCityNameAndDepartementAndEnqueueUrl(announcement.CityInformations.CityName, int.Parse(announcement.CityInformations.Departement));
-
             }
             else
             {

@@ -58,7 +58,7 @@ namespace RentalInvestmentAid.Core.Rental
                 JContainer cityBrutInfo = data.about.Last;
 
                 string zipCode = cityBrutInfo["address"]["postalCode"].ToString();
-                string city = cityBrutInfo["address"]["addressLocality"].ToString();
+                string city = CityHelper.CleanCityName(cityBrutInfo["address"]["addressLocality"].ToString());
                 string idFromProvider = url.Split("/").Last().Split("-").Last();
                 if (!String.IsNullOrWhiteSpace(city) && !String.IsNullOrWhiteSpace(zipCode))
                 {
@@ -137,7 +137,7 @@ namespace RentalInvestmentAid.Core.Rental
                 JContainer cityBrutInfo = data.about.Last;
                 
                 string zipCode = cityBrutInfo["address"]["postalCode"].ToString();
-                string city = cityBrutInfo["address"]["addressLocality"].ToString();
+                string city = CityHelper.CleanCityName(cityBrutInfo["address"]["addressLocality"].ToString());
                 string idFromProvider = url.Split("/").Last().Split("-").Last();
                 if (!String.IsNullOrWhiteSpace(city) && !String.IsNullOrWhiteSpace(zipCode))
                 {

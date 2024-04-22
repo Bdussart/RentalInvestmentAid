@@ -172,7 +172,7 @@ namespace RentalInvestmentAid.Core.Announcement
                     {
                         CityInformations = new Models.City.CityInformations
                         {
-                            CityName = city,
+                            CityName = CityHelper.CleanCityName(city),
                             ZipCode = zipCode,
                             Departement = zipCode.Substring(0, 2),
                         },

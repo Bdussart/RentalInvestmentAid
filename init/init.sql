@@ -49,6 +49,24 @@ SELECT  id
 END
 GO
 
+
+CREATE PROCEDURE uspGetCityWithNoRent
+AS
+BEGIN
+Select 
+	cit.id,
+	cit.cityName,
+	cit.zipCode,
+	cit.departement,
+	cit.createdDate
+from dbo.city cit
+left join dbo.rentalInformation rent ON rent.idCity = cit.id
+WHERE rent.url is null
+
+END
+GO
+
+
 CREATE PROCEDURE uspInsertCity
 (
 				@cityName			varchar(30),
