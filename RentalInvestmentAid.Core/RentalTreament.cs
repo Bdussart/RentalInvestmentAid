@@ -66,7 +66,7 @@ namespace RentalInvestmentAid.Core
             return realCost;
         }
 
-        public void GetCitiesRentInformations()
+        public void UpdateCitiesRentInformations()
         {
             foreach (CityInformations city in _databaseFactory.GetCitiesWithNoRent())
             {

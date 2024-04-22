@@ -8,25 +8,27 @@
 @inject IJSRuntime JS
 
 @rendermode InteractiveServer
-
-<div class="row text-center" >
-    <div class="card ">
-        <div class="card-header">
-            @City.CityName -  @City.ZipCode
+<div class="col-lg-4 cursor-pointer" id="city_@City.Id" @onclick="() => OnClickCity(City.Id)">
+    <div class="row text-center" >
+        <div class="card ">
+            <div class="card-header">
+                @City.CityName -  @City.ZipCode
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"> @AnnouncementInformation.Count() Annonces</li>
+                <li class="list-group-item"> @AnnouncementInformation.Where(ann => ann.RentabilityCalculated).Count() Calcul effectué</li>
+                <li class="list-group-item"> @AnnouncementInformation.Where(ann => !ann.RentabilityCalculated).Count() Calcul NON effectué</li>
+            </ul>
         </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item"> @AnnouncementInformation.Count() Annonces</li>
-            <li class="list-group-item"> @AnnouncementInformation.Where(ann => ann.RentabilityCalculated).Count() Calcul effectué</li>
-            <li class="list-group-item"> @AnnouncementInformation.Where(ann => !ann.RentabilityCalculated).Count() Calcul NON effectué</li>
-        </ul>
+    </div>
+    <div class="@AnnouncementDisplayToggle" id="announcement_for_city_@City.Id">
+        @foreach (AnnouncementInformation announcement in AnnouncementInformation)
+        {
+            <Announcement AnnouncementInformation="announcement"/>
+        }
     </div>
 </div>
-<div class="@AnnouncementDisplayToggle" id="announcement_for_city_@City.Id">
-    @foreach (AnnouncementInformation announcement in AnnouncementInformation)
-    {
-        <Announcement AnnouncementInformation="announcement"/>
-    }
-</div>
+
 
 
 @code {
@@ -58,6 +60,16 @@
     }
 
 
+    async Task OnClickCity(int cityId)
+    {
+        Console.WriteLine($"Click click {cityId}");
+
+        if (String.IsNullOrEmpty(AnnouncementDisplayToggle))
+            AnnouncementDisplayToggle = hiddenClass;
+        else
+            AnnouncementDisplayToggle = String.Empty;
+        await InvokeAsync(base.StateHasChanged);
+    }
 
 
 }

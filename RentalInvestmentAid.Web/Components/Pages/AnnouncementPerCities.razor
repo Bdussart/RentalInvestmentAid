@@ -25,12 +25,10 @@ else
             <div class="cities-informations row">
 
                 <CascadingValue Value=@_announcementTreatment>
-                @foreach (CityInformations city in CityInformations)
-                {    
-                    <div class="col-sm-3 cursor-pointer" id="city_@city.Id" @onclick="() => OnClickCity(city.Id)">
-                        <AnnouncementPerCity City=city  />
-                    </div>
-                }
+                    @foreach (CityInformations city in CityInformations)
+                    {    
+                            <AnnouncementPerCity City=city  />
+                    }
                 </CascadingValue>
             </div>
         }
@@ -67,16 +65,6 @@ else
         return base.OnInitializedAsync();
     }
 
-    async Task OnClickCity(int cityId)
-    {
-        Console.WriteLine($"Click click {cityId}");
-
-        // if (String.IsNullOrEmpty(AnnouncementDisplayToggle))
-        //     AnnouncementDisplayToggle = hiddenClass;
-        // else
-        //     AnnouncementDisplayToggle = String.Empty;
-        await InvokeAsync(base.StateHasChanged);
-    }
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {

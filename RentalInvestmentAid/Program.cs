@@ -162,6 +162,10 @@ namespace RentalInvestmentAid
                 LoopForCheckRentability();
             });
 
+            Task.Factory.StartNew(() =>
+            {
+                LoopGetCitiesRentInformation();
+            });
 
             List<RateInformation> bankInformations = bankWebSiteData.GetRatesInformations("https://www.pap.fr/acheteur/barometre-taux-emprunt");
 
@@ -186,6 +190,17 @@ namespace RentalInvestmentAid
 
             Console.ReadKey();
             _loop = false;
+        }
+
+
+        private static void LoopGetCitiesRentInformation()
+        {
+
+            while (_loop)
+            {
+                _rentalTreament.UpdateCitiesRentInformations();
+                Thread.Sleep(TimeSpan.FromMinutes(2));
+            }
         }
 
         private static void LoopForCheckRentability()
