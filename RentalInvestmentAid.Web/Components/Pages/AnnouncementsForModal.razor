@@ -1,0 +1,35 @@
+﻿@page "/AnnouncementPerCity"
+@using RentalInvestmentAid.Caching
+@using RentalInvestmentAid.Core
+@using RentalInvestmentAid.Core.Announcement
+@using RentalInvestmentAid.Database
+@using RentalInvestmentAid.Models.Announcement
+@using RentalInvestmentAid.Models.City
+@inject IJSRuntime JS
+
+@rendermode InteractiveServer
+
+<div >
+    @foreach (AnnouncementInformation announcement in Announcements)
+        {
+            <div class="p-3 border bg-light">
+                <Announcement AnnouncementInformation="announcement"/>
+            </div>
+        }
+</div> 
+
+
+@code {
+
+    [Parameter]
+    public List<AnnouncementInformation> Announcements { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+
+        return base.OnInitializedAsync();
+    }
+
+
+
+}

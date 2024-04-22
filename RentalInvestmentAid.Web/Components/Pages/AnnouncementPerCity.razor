@@ -75,8 +75,8 @@
             AnnouncementDisplayToggle = String.Empty;
 
         var parameters = new Dictionary<string, object>();
-        parameters.Add("AnnouncementInformation", AnnouncementInformation.First());
-        await modal.ShowAsync<Announcement>(title: City.CityName, parameters: parameters);
+        parameters.Add("Announcements", AnnouncementInformation);
+        await modal.ShowAsync<AnnouncementsForModal>(title: City.CityName, parameters: parameters);
 
     }
 
