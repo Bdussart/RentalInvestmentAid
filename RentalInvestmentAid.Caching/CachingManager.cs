@@ -19,6 +19,8 @@ namespace RentalInvestmentAid.Caching
     {
         private readonly IMemoryCache _memoryCache;
         private IDatabaseFactory _databaseFactory;
+        private Dictionary<string, DateTime> _cacheSettedInformation = new Dictionary<string, DateTime>();
+        private TimeSpan _durationCache = TimeSpan.FromMinutes(2);
 
         public CachingManager(IDatabaseFactory databaseFactory)
         {
@@ -35,10 +37,15 @@ namespace RentalInvestmentAid.Caching
         private List<object> GetFromCache(string key, Func<List<object>> func)
         {
             List<object> list = new List<object>();
-            if (!_memoryCache.TryGetValue(key, out list))
+            DateTime dt = DateTime.Now;
+            if (!_memoryCache.TryGetValue(key, out list) ||(_cacheSettedInformation.ContainsKey(key) && _cacheSettedInformation[key] < DateTime.Now))
             {
+                if (_cacheSettedInformation.TryGetValue(key, out dt)){
+                    _cacheSettedInformation.Remove(key);
+                }
                 list = func();
                 SetCache(key, func());
+                _cacheSettedInformation.Add(key, DateTime.Now.Add(_durationCache));
             }
             return list;
         }

@@ -223,7 +223,7 @@ namespace RentalInvestmentAid.Core.Rental
                 actions.SendKeys(Keys.Enter);
                 actions.Perform();
 
-                if (!base._cachingManager.GetRentalInformations().Any(rental => rental.Url.Equals(driver.Url, StringComparison.InvariantCultureIgnoreCase)))
+                if (!driver.Url.Contains("recherche=q?", StringComparison.CurrentCultureIgnoreCase) && !base._cachingManager.GetRentalInformations().Any(rental => rental.Url.Equals(driver.Url, StringComparison.InvariantCultureIgnoreCase)))
                     _rentalRabbitMQBroker.SendMessage<string>(driver.Url);
             }
         }
