@@ -486,5 +486,61 @@ namespace RentalInvestmentAid.Database
             }
             return city;
         }
+
+        public List<DepartmentToSearchData> GetDepartmentToSearchDatas()
+        {
+
+            List<DepartmentToSearchData> departments = new List<DepartmentToSearchData>();
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspGetDepartmentToSearchData", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    connection.Open();
+                    using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            departments.Add(new DepartmentToSearchData
+                            {
+                                Id = reader.GetInt32(0),
+                                DepartmentName = reader.GetString(1),
+                                DepartmentNumber = reader.GetString(2),
+                                CreatedDate = reader.GetDateTime(3),
+                            });
+                        }
+                    }
+                }
+            }
+            return departments;
+        }
+
+        public DepartmentToSearchData InsertDepartment(DepartmentToSearchData departmentToSearchData)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+                {
+                    using (SqlCommand sqlCommand = new SqlCommand("uspInsertDepartmentToSearchData", connection))
+                    {
+                        sqlCommand.CommandType = CommandType.StoredProcedure;
+                        sqlCommand.Parameters.AddWithValue("@departmentName", departmentToSearchData.DepartmentName);
+                        sqlCommand.Parameters.AddWithValue("@departmentNumber", departmentToSearchData.DepartmentNumber);
+
+                        SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
+                        retval.Direction = ParameterDirection.ReturnValue;
+
+                        connection.Open();
+                        sqlCommand.ExecuteNonQuery();
+                        departmentToSearchData.Id = (int)sqlCommand.Parameters["@RETURN_VALUE"].Value;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogHelper.LogException(ex, objectInfo: departmentToSearchData);
+            }
+            return departmentToSearchData;
+        }
     }
 }

@@ -21,6 +21,7 @@ using System;
 using RentalInvestmentAid.Logger;
 using RentalInvestmentAid.Settings;
 using Newtonsoft.Json;
+using RentalInvestmentAid.Models;
 
 namespace RentalInvestmentAid
 {
@@ -38,16 +39,13 @@ namespace RentalInvestmentAid
 
         private static RentalTreament _rentalTreament = null;
 
-        private static Dictionary<int, string> _dicoDepartements = new Dictionary<int, string>
-            {
-                {74, "Haute-Savoie"},
-            };
 
         private static int? _maxPrice = 200000;
 
         private static List<IAnnouncementWebSiteData> _announcementWebSites = null;
         private static IBroker _announcementRabbitMQBroker = null;
         private static IBroker _rentalRabbitMQBroker = null;
+        private static List<DepartmentToSearchData> _departmentToSearchDatas = null;
 
 
         private static List<RentalInformations> GetRentalInformations(string url)
@@ -72,6 +70,8 @@ namespace RentalInvestmentAid
             _announcementTreatment = new AnnouncementTreatment(_cachingManager, _databaseFactory);
             _bankTreatment = new BankTreatment(_cachingManager, _databaseFactory);
             _rentalTreament = new RentalTreament(_cachingManager, _databaseFactory, new LeFigaroWebSiteData(_cachingManager, _rentalRabbitMQBroker));
+
+            _departmentToSearchDatas = _databaseFactory.GetDepartmentToSearchDatas();
 
             Console.OutputEncoding = Encoding.UTF8;
 
@@ -155,7 +155,6 @@ namespace RentalInvestmentAid
             stopwatch.Start();
             LoopGetRentalData();
             LoopGetAnnouncementData();
-            List<String> departements = _dicoDepartements.Values.ToList();
 
             Task.Factory.StartNew(() =>
             {

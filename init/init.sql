@@ -95,6 +95,55 @@ INSERT INTO [dbo].city
 END
 GO
 
+CREATE TABLE [dbo].[departmentToSearchData](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[departmentName] [varchar](50) NOT NULL,
+	[departmentNumber] [varchar](2)NOT NULL,
+	[createdDate] [datetime] NOT NULL)
+GO
+
+CREATE PROCEDURE uspInsertDepartmentToSearchData
+(
+				@departmentName			varchar(50),
+				@departmentNumber			varchar(2)
+)
+AS
+BEGIN
+
+DECLARE @Now datetime
+SET @Now = GETDATE()
+
+INSERT INTO [dbo].[departmentToSearchData]
+           ( departmentName
+			,departmentNumber
+			,createdDate)
+     VALUES
+           (
+		   @departmentName
+		   ,@departmentNumber
+		   ,@Now
+		   )
+		  return SCOPE_IDENTITY()
+END
+GO
+
+CREATE PROCEDURE uspGetDepartmentToSearchData
+AS
+BEGIN
+SELECT  id
+		,departmentName
+		,departmentNumber
+		,createdDate
+  FROM [RentalInvestmentAid].[dbo].[departmentToSearchData]
+
+END
+GO
+
+
+EXEC [dbo].uspInsertDepartmentToSearchData  'Haute-Savoie', '74'
+EXEC [dbo].uspInsertDepartmentToSearchData  'Savoie', '73'
+EXEC [dbo].uspInsertDepartmentToSearchData  'Ain', '01'
+
 
 CREATE TABLE [dbo].[rentalInformation](
 	[id] [int] IDENTITY(1,1) NOT NULL,

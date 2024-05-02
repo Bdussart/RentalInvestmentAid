@@ -6,6 +6,7 @@ using RentalInvestmentAid.Core.Announcement;
 using RentalInvestmentAid.Core.Announcement.Helper;
 using RentalInvestmentAid.Database;
 using RentalInvestmentAid.Logger;
+using RentalInvestmentAid.Models;
 using RentalInvestmentAid.Models.Announcement;
 using RentalInvestmentAid.Models.City;
 using RentalInvestmentAid.Queue;
@@ -18,14 +19,7 @@ namespace FetchAnnoucementWorkerService
     public class AnnouncementWorker : BackgroundService
     {
         private readonly ILogger<AnnouncementWorker> _logger;
-        private  Dictionary<int, string> _dicoDepartements = new Dictionary<int, string>
-            {
-                {01, "Ain"},
-                {38, "Isère"},
-                {39, "Jura"},
-                {73, "Savoie"},
-                {74, "Haute-Savoie"},
-            };
+
 
         private  int? _maxPrice = 200000;
         private  List<IAnnouncementWebSiteData> _announcementWebSites = null;
@@ -34,6 +28,8 @@ namespace FetchAnnoucementWorkerService
         private  IDatabaseFactory _databaseFactory = new SqlServerDatabase();
         private  AnnouncementTreatment _announcementTreatment = null;
         private IBroker _announcementRabbitMQBroker = null;
+
+        private List<DepartmentToSearchData> _departments = null;
 
         public AnnouncementWorker(ILogger<AnnouncementWorker> logger)
         {
@@ -86,12 +82,13 @@ namespace FetchAnnoucementWorkerService
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+                _departments = _databaseFactory.GetDepartmentToSearchDatas();
                 foreach (IAnnouncementWebSiteData announcementWebSite in _announcementWebSites)
                 {
                     try
                     {
                         LogHelper.LogInfo($"******{Task.CurrentId} Start work for worker {announcementWebSite.GetKeyword()}* ****");
-                        announcementWebSite.EnQueueAnnoucementUrl(_dicoDepartements.Values.ToList(), _maxPrice);
+                        announcementWebSite.EnQueueAnnoucementUrl(_departments.Select(department => department.DepartmentName).ToList(), _maxPrice);
                     }
                     catch (Exception ex)
                     {
