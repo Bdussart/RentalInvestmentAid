@@ -9,8 +9,6 @@
 
 @rendermode InteractiveServer
 
-
-
 <div class="col-lg-4 cursor-pointer" id="city_@City.Id" @onclick="() => OnClickCity(City.Id)">
     <div class="row text-center" >
         <div class="card ">
@@ -24,12 +22,6 @@
             </ul>
         </div>
     </div>
-@*     <div class="@AnnouncementDisplayToggle" id="announcement_for_city_@City.Id">
-        @foreach (AnnouncementInformation announcement in AnnouncementInformation)
-        {
-            <Announcement AnnouncementInformation="announcement"/>
-        }
-    </div> *@
 </div>
 
 <Modal @ref="modal" Fullscreen="ModalFullscreen.Always" />

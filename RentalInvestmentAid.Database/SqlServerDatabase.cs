@@ -390,7 +390,7 @@ namespace RentalInvestmentAid.Database
 
             return rentInformation;
         }
-        public void UpdateRentabilityInformation(int announcementId)
+        public void UpdateRentabilityInformation(int announcementId, bool isRentable)
         {
             using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
             {
@@ -398,6 +398,7 @@ namespace RentalInvestmentAid.Database
                 {
                     sqlCommand.CommandType = CommandType.StoredProcedure;
                     sqlCommand.Parameters.AddWithValue("@announcementId", announcementId);
+                    sqlCommand.Parameters.AddWithValue("@isRentable", isRentable);
                     connection.Open();
                     sqlCommand.ExecuteNonQuery();
                 }

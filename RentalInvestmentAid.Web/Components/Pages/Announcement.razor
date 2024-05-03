@@ -21,18 +21,21 @@
 
     <div id="annoucment_@AnnouncementInformation.Id" class="announcement">
                 <div class="row text-center">
-            <a href="@AnnouncementInformation.UrlWebSite" target="_blank" class="col-sm-2">
+            <a href="@AnnouncementInformation.UrlWebSite" target="_blank" class="col-sm-3">
                         <div class="card ">
                             <div class="card-header">
                                 @AnnouncementInformation.CityInformations.CityName -  @AnnouncementInformation.CityInformations.ZipCode
                             </div>
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item"> @AnnouncementInformation.Price €</li>
+                        <li class="list-group-item"> Prix : @AnnouncementInformation.Price €</li>
+                        <li class="list-group-item"> Frais de Notaire : @notaryFee €</li>
+
+                        <li class="list-group-item"> Prix réel : @realPrice €</li>
                                 <li class="list-group-item"> @AnnouncementInformation.Metrage m2</li>
                             </ul>
                         </div>
                     </a>
-                    <div class="announcement_description col-sm-9 card-text">
+                    <div class="announcement_description col-sm-8 card-text">
                         @AnnouncementInformation.Description
                     </div>
                     <div class="announcement_read col-sm-1 ">
@@ -56,6 +59,8 @@
     private CachingManager _cachingManager = null;
     private IDatabaseFactory _databaseFactory = new SqlServerDatabase();
 
+    private double notaryFee = 0;
+    private double realPrice = 0;
     [Parameter]
     public AnnouncementInformation AnnouncementInformation { get; set; }
 
@@ -110,6 +115,11 @@
         _cachingManager = new CachingManager(_databaseFactory);
         _rentalTreament = new RentalTreament(_cachingManager, _databaseFactory, new LeFigaroWebSiteData(_cachingManager, _announcementBroker));
         _bankTreament = new BankTreatment(_cachingManager, _databaseFactory);
+
+
+        double price = float.Parse(AnnouncementInformation.Price);
+        notaryFee = price * 0.10;
+        realPrice = notaryFee + price;
 
         return base.OnInitializedAsync();
 

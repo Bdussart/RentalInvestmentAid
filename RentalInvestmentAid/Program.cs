@@ -213,9 +213,10 @@ namespace RentalInvestmentAid
 
         private static void CheckDataRentabilityForAnnouncement(AnnouncementInformation announcement)
         {
-
             if (_rentalTreament.CheckDataRentabilityForAnnouncement(announcement))
-                _announcementTreatment.UpdateRentabilityInformation(announcement.Id);
+            {
+                _announcementTreatment.UpdateRentabilityInformation(announcement.Id, _rentalTreament.isRentable(announcement));
+            }
         }
 
         private static void CheckAllDataRentability()

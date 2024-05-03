@@ -32,6 +32,16 @@ namespace RentalInvestmentAid.Test.Mock
             return _cityInformation.OrderBy(x => x.Id).ToList();
         }
 
+        public List<CityInformations> GetCitiesWithNoRent()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<DepartmentToSearchData> GetDepartmentToSearchDatas()
+        {
+            throw new NotImplementedException();
+        }
+
         public List<LoanInformation> GetLoansInformations()
         {
             return _loanstInformation.OrderBy(x => x.Id).ToList();
@@ -74,6 +84,11 @@ namespace RentalInvestmentAid.Test.Mock
             return city;
         }
 
+        public DepartmentToSearchData InsertDepartment(DepartmentToSearchData departmentToSearchData)
+        {
+            throw new NotImplementedException();
+        }
+
         public LoanInformation InsertLoanInformation(LoanInformation loanInformation)
         {
             loanInformation.Id = _loanstInformation.Count + 1;
@@ -113,6 +128,11 @@ namespace RentalInvestmentAid.Test.Mock
         public void UpdateRentabilityInformation(int announcementId)
         {
             _announcementInformation.First(ann => ann.Id == announcementId).RentabilityCalculated = true;
+        }
+
+        public void UpdateRentabilityInformation(int announcementId, bool isRentable)
+        {
+            throw new NotImplementedException();
         }
     }
 }

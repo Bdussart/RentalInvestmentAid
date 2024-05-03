@@ -70,9 +70,9 @@ namespace RentalInvestmentAid.Core.Announcement
             return result;
         }
 
-        public void UpdateRentabilityInformation(int announcementId)
+        public void UpdateRentabilityInformation(int announcementId, bool isRentable)
         {
-            _databaseFactory.UpdateRentabilityInformation(announcementId);
+            _databaseFactory.UpdateRentabilityInformation(announcementId, isRentable);
             _cachingManager.ForceCacheUpdateAnnouncementInformation();
         }
     }

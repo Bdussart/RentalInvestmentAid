@@ -290,6 +290,7 @@ CREATE TABLE [dbo].[annoncementInformation](
 	[url] [varchar](max) NOT NULL,
 	[idPropertyType] [int] NOT NULL,
 	[rentabilityCalculated] [bit] NOT NULL,
+	[isRentable] [bit] NULL,
 	[readed] [bit] NOT NULL,
 	[createdDate] [datetime] NOT NULL,
 	[updatedDate] [datetime] NOT NULL
@@ -339,6 +340,7 @@ INSERT INTO [dbo].[annoncementInformation]
            ,[url]
 		   ,[rentabilityCalculated]
 		   ,[readed]
+		   ,[isRentable]
 		   ,[createdDate]
 		   ,[updatedDate])
      VALUES
@@ -353,6 +355,7 @@ INSERT INTO [dbo].[annoncementInformation]
 		   ,@url
 		   ,0
 		   ,0
+		   ,0
 		   ,@Now
 		   ,@Now
 		   )
@@ -365,8 +368,8 @@ GO
 
 CREATE PROCEDURE [dbo].[uspUpdateRentabilityInformation]
 (
-				@announcementId int
-)
+				@announcementId int,
+				@isRentable bit)
 AS
 BEGIN
 
@@ -375,6 +378,7 @@ SET @Now = GETDATE()
 
 UPDATE [dbo].[annoncementInformation]
      SET [rentabilityCalculated] = 1,
+		[isRentable] = @isRentable,
 		[updatedDate] = @Now
 	WHERE id = @announcementId
 

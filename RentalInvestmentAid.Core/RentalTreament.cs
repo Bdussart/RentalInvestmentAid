@@ -18,6 +18,7 @@ using RentalInvestmentAid.Core.Announcement;
 using RentalInvestmentAid.Logger;
 using RentalInvestmentAid.Core.Rental;
 using RentalInvestmentAid.Models.City;
+using OpenQA.Selenium.DevTools.V119.Fetch;
 
 namespace RentalInvestmentAid.Core
 {
@@ -107,6 +108,23 @@ namespace RentalInvestmentAid.Core
             }
 
             return rentabilityChecked;
+        }
+
+        public bool isRentable(AnnouncementInformation announcement)
+        {
+            bool isRentable = false;
+
+            List<LoanInformation> loansInformation = _cachingManager.GetLoansByAnnoncementId(announcement.Id);
+            List<RentInformation> realRentalCosts = _cachingManager.GetRentsByAnnouncementId(announcement.Id);
+            if(loansInformation.Any() && realRentalCosts.Any())
+            {
+                for (int i = 0; i < realRentalCosts.Count && !isRentable; ++i)
+                { 
+                    isRentable = loansInformation.Exists(loan => realRentalCosts[i].Rental70Pourcent > loan.MonthlyCostWithInsurrance);
+                }
+            }
+
+            return isRentable;
         }
 
         public List<LoanInformation> GetLoansForAnnouncementId(int announcementId)

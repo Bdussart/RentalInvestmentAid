@@ -118,6 +118,10 @@ namespace RentalInvestmentAid.Caching
             return GetFromCache(SettingsManager.LoanCacheKey,
                     () => _databaseFactory.GetLoansInformations().Cast<Object>().ToList()).Cast<LoanInformation>().ToList();
         }
+        public List<LoanInformation> GetLoansByAnnoncementId(int announcementId)
+        {
+            return GetLoans().Where(loan => loan.AnnouncementInformation.Id.Equals(announcementId)).ToList();
+        }
 
         public void ForceCacheUpdateLoans()
         {
@@ -132,6 +136,11 @@ namespace RentalInvestmentAid.Caching
         {
             return GetFromCache(SettingsManager.RentCacheKey,
                     () => _databaseFactory.GetRentsInformations().Cast<Object>().ToList()).Cast<RentInformation>().ToList();
+        }
+
+        public List<RentInformation> GetRentsByAnnouncementId(int announcementId)
+        {
+            return GetRents().Where(rent => rent.AnnouncementInformation.Id.Equals(announcementId)).ToList();
         }
 
         public void ForceCacheUpdateRents()
