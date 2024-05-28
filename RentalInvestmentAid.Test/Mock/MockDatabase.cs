@@ -22,6 +22,12 @@ namespace RentalInvestmentAid.Test.Mock
         private List<RentabilityResult> _rentabilityInformation = new List<RentabilityResult>();
         private List<RentalInformations> _rentalInformation = new List<RentalInformations>();
         private List<RentInformation> _rentInformation = new List<RentInformation>();
+
+        public Task DeleteAnnouncementInformation(int announcementId)
+        {
+            throw new NotImplementedException();
+        }
+
         public List<AnnouncementInformation> GetAnnouncementsInformations()
         {
             return _announcementInformation.OrderBy(x=> x.Id).ToList();

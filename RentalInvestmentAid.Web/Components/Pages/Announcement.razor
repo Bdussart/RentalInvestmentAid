@@ -150,6 +150,5 @@
         Console.WriteLine($"DeleteAnnouncement {announcementid}");
         await JS.InvokeVoidAsync("removeElementById", $"container_annoucment_{announcementid}");
         await  _announcementTreatment.DeleteAnnoucementInformation(announcementid);
-
     }
 }

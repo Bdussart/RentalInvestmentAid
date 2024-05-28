@@ -64,6 +64,15 @@ namespace RentalInvestmentAid.Core.Announcement
                 await Task.Delay(TimeSpan.FromMilliseconds(2)); //Get things slowly
             }
         }
+
+        public async IAsyncEnumerable<AnnouncementInformation> GetAnnouncementInformationWithNoRentCalculatedAsync()
+        {
+            foreach (AnnouncementInformation annoucement in _cachingManager.GetAnnouncementInformationWithCityInformation().Where(ann => !ann.RentabilityCalculated))
+            {
+                yield return annoucement;
+                await Task.Delay(TimeSpan.FromMilliseconds(2)); //Get things slowly
+            }
+        }
         public List<AnnouncementInformation> GetAnnouncementInformationWithRentabilityNotCalculated()
         {
             List<AnnouncementInformation> announcementsInformation = _cachingManager.GetAnnouncementInformation().Where(ann => !ann.RentabilityCalculated).ToList();

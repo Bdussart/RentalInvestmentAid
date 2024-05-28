@@ -1,0 +1,67 @@
+﻿@page "/announcementsWithNoData"
+
+@using RentalInvestmentAid.Core.Announcement
+@using RentalInvestmentAid.Database
+@using RentalInvestmentAid.Models
+@using RentalInvestmentAid.Models.Announcement
+@using RentalInvestmentAid.Models.Bank
+@using System.ComponentModel
+@using RentalInvestmentAid.Models.Loan
+@using RentalInvestmentAid.Models.Rental
+@using RentalInvestmentAid.Caching
+@using System.Collections.Concurrent
+
+@rendermode InteractiveServer
+
+<div class="container">
+
+    @if (AnnouncementInformation?.Count == 0)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        @foreach (AnnouncementInformation result in AnnouncementInformation)
+        {
+            <Announcement AnnouncementInformation=result />
+        }
+    }
+
+</div>
+
+@code {
+
+    private IDatabaseFactory _databaseFactory = new SqlServerDatabase();
+
+    public List<AnnouncementInformation> AnnouncementInformation = null;
+    private CachingManager _cachingManager = null;
+    private AnnouncementTreatment _announcementTreatment = null;
+    private CancellationTokenSource _cancellationTokenSource;
+
+    public AnnouncementsWithNoData()
+    {
+        AnnouncementInformation = new List<AnnouncementInformation>();
+        _cachingManager = new CachingManager(_databaseFactory);
+        _announcementTreatment = new AnnouncementTreatment(_cachingManager, _databaseFactory);
+    }
+
+    private async Task GetAnnouncementAsync(CancellationToken cancellationToken)
+    {
+        await foreach (AnnouncementInformation announcementInformation in _announcementTreatment.GetAnnouncementInformationWithNoRentCalculatedAsync())
+        {
+            AnnouncementInformation.Add(announcementInformation);
+            AnnouncementInformation.OrderBy(ann => ann.CityInformations.CityName);
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(1); // Yield control to update the UI
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _cancellationTokenSource = new CancellationTokenSource();
+           await  GetAnnouncementAsync(_cancellationTokenSource.Token);
+        }
+    }
+}

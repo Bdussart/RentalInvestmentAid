@@ -18,6 +18,7 @@
             <ul class="list-group list-group-flush">
                 <li class="list-group-item"> @AnnouncementInformation.Count() Annonces</li>
                 <li class="list-group-item"> @AnnouncementInformation.Where(ann => ann.RentabilityCalculated).Count() Calcul effectué</li>
+                <li class="list-group-item"> @AnnouncementInformation.Where(ann => ann.IsRentable.HasValue && ann.IsRentable.Value).Count() Bien(s) rentable(s)</li>
                 <li class="list-group-item"> @AnnouncementInformation.Where(ann => !ann.RentabilityCalculated).Count() Calcul NON effectué</li>
             </ul>
         </div>
