@@ -1,4 +1,4 @@
-﻿@page "/announcements"
+﻿@page "/announcementsRentable"
 
 @using RentalInvestmentAid.Core.Announcement
 @using RentalInvestmentAid.Database
@@ -38,7 +38,7 @@
     private AnnouncementTreatment _announcementTreatment = null;
     private CancellationTokenSource _cancellationTokenSource;
 
-    public Announcements()
+    public AnnouncementsRentable()
     {
         AnnouncementInformation = new List<AnnouncementInformation>();
         _cachingManager = new CachingManager(_databaseFactory);
@@ -47,7 +47,7 @@
 
     private async Task GetAnnouncementAsync(CancellationToken cancellationToken)
     {
-        await foreach (AnnouncementInformation announcementInformation in _announcementTreatment.GetAnnouncementInformationWithRentabilityCalculatedAsync())
+        await foreach (AnnouncementInformation announcementInformation in _announcementTreatment.GetAnnouncementInformationWithRentabilityCalculatedAndRentableAsync())
         {
             AnnouncementInformation.Add(announcementInformation);
             AnnouncementInformation.OrderBy(ann => ann.CityInformations.CityName);

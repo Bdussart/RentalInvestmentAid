@@ -1,6 +1,7 @@
 ﻿using RentalInvestmentAid.Caching;
 using RentalInvestmentAid.Database;
 using RentalInvestmentAid.Models.Announcement;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RentalInvestmentAid.Core.Announcement
 {
@@ -44,6 +45,26 @@ namespace RentalInvestmentAid.Core.Announcement
 
             UpdateCityInformation(announcementsInformation);
             return announcementsInformation;
+        }
+
+
+        public async IAsyncEnumerable<AnnouncementInformation> GetAnnouncementInformationWithRentabilityCalculatedAsync()
+        {
+            foreach (AnnouncementInformation annoucement in _cachingManager.GetAnnouncementInformationWithCityInformation().Where(ann => ann.RentabilityCalculated))
+            {
+                yield return annoucement;
+                await Task.Delay(TimeSpan.FromMilliseconds(2)); //Get things slowly
+            }
+        }
+
+
+        public async IAsyncEnumerable<AnnouncementInformation> GetAnnouncementInformationWithRentabilityCalculatedAndRentableAsync()
+        {
+            foreach (AnnouncementInformation annoucement in _cachingManager.GetAnnouncementInformationWithCityInformation().Where(ann => ann.RentabilityCalculated && (ann.IsRentable.HasValue && ann.IsRentable.Value)))
+            {
+                yield return annoucement;
+                await Task.Delay(TimeSpan.FromMilliseconds(2)); //Get things slowly
+            }
         }
         public List<AnnouncementInformation> GetAnnouncementInformationWithRentabilityNotCalculated()
         {

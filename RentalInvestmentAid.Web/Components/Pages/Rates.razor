@@ -18,10 +18,13 @@
             <th>
                 Coût par mois
             </th>
+            <th>
+                Description
+            </th>
         </tr>
     </thead>
     <tbody>
-        @foreach (RateInformation rate in RateInformation)
+        @foreach (RateInformation rate in RateInformation.OrderBy(r => r.DurationInYear).ThenBy(r=>r.Id))
         {
             var currentLoan = LoansInformations.FirstOrDefault(loan => loan.RateInformation.Id == rate.Id);
             if (currentLoan != null)
@@ -38,6 +41,9 @@
                     </td>
                     <td>
                         @currentLoan.MonthlyCostWithInsurrance €
+                    </td>
+                    <td>
+                        @rate.Title
                     </td>
                 </tr>
             }

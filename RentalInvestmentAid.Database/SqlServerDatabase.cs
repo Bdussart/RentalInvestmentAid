@@ -78,9 +78,10 @@ namespace RentalInvestmentAid.Database
                                 RentalType = (RentalTypeOfTheRent)reader.GetInt32(7),
                                 UrlWebSite = reader.GetString(8).ToString(),
                                 RentabilityCalculated = reader.GetBoolean(9),
-                                Readed = reader.GetBoolean(10),
-                                CreatedDate = reader.GetDateTime(11),
-                                UpdatedDate = reader.GetDateTime(12)
+                                IsRentable = reader.IsDBNull(10) ? null : reader.GetBoolean(10),
+                                Readed = reader.GetBoolean(11),
+                                CreatedDate = reader.GetDateTime(12),
+                                UpdatedDate = reader.GetDateTime(13)
                             });
                         }
                     }

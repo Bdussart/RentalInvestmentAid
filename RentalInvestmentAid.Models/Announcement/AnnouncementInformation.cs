@@ -26,6 +26,8 @@ namespace RentalInvestmentAid.Models.Announcement
         public DateTime? UpdatedDate { get; set; }
         public List<RentInformation> RentalCost { get; private set; } = new List<RentInformation>();
 
+        public bool? IsRentable { get; set; }
+
         public void SetRealRentalCost(List<RentInformation> realRentalCosts)
         {
             RentalCost = realRentalCosts;

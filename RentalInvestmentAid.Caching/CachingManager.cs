@@ -12,6 +12,7 @@ using RentalInvestmentAid.Models.Rental;
 using RentalInvestmentAid.Models.Bank;
 using RentalInvestmentAid.Models.City;
 using RentalInvestmentAid.Models.Loan;
+using System.Reflection.Metadata.Ecma335;
 
 namespace RentalInvestmentAid.Caching
 {
@@ -76,6 +77,19 @@ namespace RentalInvestmentAid.Caching
                     () => _databaseFactory.GetAnnouncementsInformations().Cast<Object>().ToList()).Cast<AnnouncementInformation>().ToList();
         }
 
+
+        public List<AnnouncementInformation> GetAnnouncementInformationWithCityInformation()
+        {
+            List<AnnouncementInformation> announcements =  GetFromCache(SettingsManager.AnnouncementCacheKey,
+                    () => _databaseFactory.GetAnnouncementsInformations().Cast<Object>().ToList()).Cast<AnnouncementInformation>().ToList();
+
+            announcements.ForEach(ann =>
+                {
+                    ann.CityInformations = GetCities().FirstOrDefault(city => ann.CityInformations.Id == city.Id);
+                });
+
+            return announcements;
+        }      
 
         public void ForceCacheUpdateAnnouncementInformation()
         {

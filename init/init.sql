@@ -398,6 +398,7 @@ SELECT  [id]
 	  ,idPropertyType
       ,[url]
 	  ,[rentabilityCalculated]
+	  ,[isRentable]
 	  ,[readed]
       ,[createdDate]
       ,[updatedDate]
