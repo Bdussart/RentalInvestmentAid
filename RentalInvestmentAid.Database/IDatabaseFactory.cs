@@ -36,5 +36,7 @@ namespace RentalInvestmentAid.Database
         public DepartmentToSearchData InsertDepartment(DepartmentToSearchData departmentToSearchData);
 
         public void UpdateRentabilityInformation(int announcementId, bool isRentable);
+
+        public Task DeleteAnnouncementInformation(int announcementId);
     }
 }

@@ -14,45 +14,49 @@
 @using RentalInvestmentAid.Caching
 @using System.Collections.Concurrent
 @using RentalInvestmentAid.Queue
+@inject IJSRuntime JS
+
 
 @rendermode InteractiveServer
 
-<div class="container">
+<div class="container" id="container_annoucment_@AnnouncementInformation.Id">
 
     <div id="annoucment_@AnnouncementInformation.Id" class="announcement">
-                <div class="row text-center">
+        <div class="row text-center">
             <a href="@AnnouncementInformation.UrlWebSite" target="_blank" class="col-sm-3">
-                        <div class="card ">
-                            <div class="card-header">
-                                @AnnouncementInformation.CityInformations.CityName -  @AnnouncementInformation.CityInformations.ZipCode
-                            </div>
-                            <ul class="list-group list-group-flush">
+                <div class="card ">
+                    <div class="card-header">
+                        @AnnouncementInformation.CityInformations.CityName -  @AnnouncementInformation.CityInformations.ZipCode
+                    </div>
+                    <ul class="list-group list-group-flush">
                         <li class="list-group-item"> Prix : @AnnouncementInformation.Price €</li>
                         <li class="list-group-item"> Frais de Notaire : @notaryFee €</li>
-
                         <li class="list-group-item"> Prix réel : @realPrice €</li>
-                                <li class="list-group-item"> @AnnouncementInformation.Metrage m2</li>
-                            </ul>
-                        </div>
-                    </a>
-                    <div class="announcement_description col-sm-8 card-text">
-                        @AnnouncementInformation.Description
-                    </div>
-                    <div class="announcement_read col-sm-1 ">
+                        <li class="list-group-item"> @AnnouncementInformation.Metrage m2</li>
+                        <li class="list-group-item"> Date d'insertion : @AnnouncementInformation.CreatedDate.ToShortDateString()</li>
+                        <li class="list-group-item"> Date de mise à jour @(AnnouncementInformation.UpdatedDate.HasValue?  @AnnouncementInformation.CreatedDate.ToShortDateString() : @AnnouncementInformation.UpdatedDate.Value.ToShortDateString())</li>
+                    </ul>
+                </div>
+            </a>
+            <div class="announcement_description col-sm-8 card-text">
+                @AnnouncementInformation.Description
+            </div>
+            <div class="announcement_read col-sm-1 ">
                 <input type="checkbox" checked="@AnnouncementInformation.Readed" @oninput="args => CheckboxChanged(AnnouncementInformation.Id, args)">
-                    </div>
-                </div>
-                <div class="row rents_and_loan">
-                <div class="rents col-sm-4">
-                    <Rents RentsInformation="@Rents" />
-                </div>
-                    <div class="loans  col-sm-8">
-                        <div class="rates-informations">
-                        <Rates RentsInformation="@Rents" RateInformation="RateInformation" LoansInformations="@Loans" />
-                        </div>
-                    </div>
+                <button type="button" class="btn btn-danger" @onclick="args => DeleteAnnouncement(AnnouncementInformation.Id, args)">Supprimer l'annonce</button>
+            </div>
+        </div>
+        <div class="row rents_and_loan">
+            <div class="rents col-sm-4">
+                <Rents RentsInformation="@Rents" />
+            </div>
+            <div class="loans  col-sm-8">
+                <div class="rates-informations">
+                    <Rates RentsInformation="@Rents" RateInformation="RateInformation" LoansInformations="@Loans" />
                 </div>
             </div>
+        </div>
+    </div>
 </div>
 
 @code {
@@ -68,7 +72,7 @@
     {
         get
         {
-            if (_rentInformation is null ||_rentInformation.Count() == 0)
+            if (_rentInformation is null || _rentInformation.Count() == 0)
             {
                 _rentInformation = _rentalTreament.GetRentsForAnnouncementId(AnnouncementInformation.Id);
             }
@@ -76,7 +80,6 @@
         }
     }
     private List<RentInformation> _rentInformation = null;
-
 
     public List<LoanInformation> Loans
     {
@@ -108,6 +111,7 @@
     private BankTreatment _bankTreament = null;
     private IBroker _announcementBroker = null;
 
+    private AnnouncementTreatment _announcementTreatment = null;
 
     protected override Task OnInitializedAsync()
     {
@@ -115,7 +119,7 @@
         _cachingManager = new CachingManager(_databaseFactory);
         _rentalTreament = new RentalTreament(_cachingManager, _databaseFactory, new LeFigaroWebSiteData(_cachingManager, _announcementBroker));
         _bankTreament = new BankTreatment(_cachingManager, _databaseFactory);
-
+        _announcementTreatment = new AnnouncementTreatment(_cachingManager, _databaseFactory);
 
         double price = float.Parse(AnnouncementInformation.Price);
         notaryFee = price * 0.10;
@@ -139,5 +143,13 @@
         // get the checkbox state
         var value = e.Value;
         Console.WriteLine($"Checkbox changed");
+    }
+
+    private async void DeleteAnnouncement(int announcementid, MouseEventArgs e)
+    {
+        Console.WriteLine($"DeleteAnnouncement {announcementid}");
+        await JS.InvokeVoidAsync("removeElementById", $"container_annoucment_{announcementid}");
+        await  _announcementTreatment.DeleteAnnoucementInformation(announcementid);
+
     }
 }

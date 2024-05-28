@@ -750,6 +750,26 @@ END
 GO
 
 
+CREATE PROCEDURE uspDeleteAnnouncementInformation
+(
+				@announcementId			int
+)
+AS
+BEGIN
+
+DELETE FROM [RentalInvestmentAid].[dbo].[rentInformation]
+where idAnnoncementInformation = @announcementId
+
+DELETE FROM [RentalInvestmentAid].[dbo].loanInformation
+where idAnnoncementInformation = @announcementId
+
+DELETE FROM [RentalInvestmentAid].[dbo].annoncementInformation
+where id = @announcementId
+
+END
+GO
+
+
  
  
 EXEC sp_configure 'CONTAINED DATABASE AUTHENTICATION', 1

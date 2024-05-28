@@ -56,8 +56,6 @@ namespace RentalInvestmentAid.Core.Announcement
                 await Task.Delay(TimeSpan.FromMilliseconds(2)); //Get things slowly
             }
         }
-
-
         public async IAsyncEnumerable<AnnouncementInformation> GetAnnouncementInformationWithRentabilityCalculatedAndRentableAsync()
         {
             foreach (AnnouncementInformation annoucement in _cachingManager.GetAnnouncementInformationWithCityInformation().Where(ann => ann.RentabilityCalculated && (ann.IsRentable.HasValue && ann.IsRentable.Value)))
@@ -94,6 +92,12 @@ namespace RentalInvestmentAid.Core.Announcement
         public void UpdateRentabilityInformation(int announcementId, bool isRentable)
         {
             _databaseFactory.UpdateRentabilityInformation(announcementId, isRentable);
+            _cachingManager.ForceCacheUpdateAnnouncementInformation();
+        }
+
+        public async Task DeleteAnnoucementInformation(int announcementId)
+        {
+            await _databaseFactory.DeleteAnnouncementInformation(announcementId);
             _cachingManager.ForceCacheUpdateAnnouncementInformation();
         }
     }

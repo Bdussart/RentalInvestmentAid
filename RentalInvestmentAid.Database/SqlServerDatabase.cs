@@ -544,5 +544,19 @@ namespace RentalInvestmentAid.Database
             }
             return departmentToSearchData;
         }
+
+        public async Task DeleteAnnouncementInformation(int announcementId)
+        {
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspDeleteAnnouncementInformation", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.AddWithValue("@announcementId", announcementId);
+                    connection.Open();
+                    await sqlCommand.ExecuteNonQueryAsync();
+                }
+            }
+        }
     }
 }
