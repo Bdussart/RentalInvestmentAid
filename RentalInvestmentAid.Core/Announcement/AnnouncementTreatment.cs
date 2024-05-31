@@ -58,7 +58,7 @@ namespace RentalInvestmentAid.Core.Announcement
         }
         public async IAsyncEnumerable<AnnouncementInformation> GetAnnouncementInformationWithRentabilityCalculatedAndRentableAsync()
         {
-            foreach (AnnouncementInformation annoucement in _cachingManager.GetAnnouncementInformationWithCityInformation().Where(ann => ann.RentabilityCalculated && (ann.IsRentable.HasValue && ann.IsRentable.Value)))
+            foreach (AnnouncementInformation annoucement in _cachingManager.GetAnnouncementInformationWithCityInformation().Where(ann => ann.RentabilityCalculated && (ann.IsRentable.HasValue && ann.IsRentable.Value)).OrderByDescending(a => a.CreatedDate))
             {
                 yield return annoucement;
                 await Task.Delay(TimeSpan.FromMilliseconds(2)); //Get things slowly

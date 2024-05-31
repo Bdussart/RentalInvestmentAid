@@ -11,6 +11,7 @@ services:
         
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=${Sa_Password}
@@ -19,10 +20,14 @@ services:
       - 1455:1433
     hostname:
         sql-dev
+    networks:
+      - default
   sqlserver.configurator:
     image: mcr.microsoft.com/mssql/server:2022-latest
     volumes:
       - ./init:/docker-entrypoint-initdb.d
+    networks:
+      - default
     command: >
       bash -c '
         if [ "$Init" = true ]; then
@@ -40,6 +45,13 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - default
   chrome:
     image: selenium/standalone-chrome:latest
     hostname: chrome
@@ -51,6 +63,18 @@ services:
     ports:
       - "5900:5900"
       - "4444:4444"
+    networks:
+      - default
+  fetchAnnoucementWorkerService:
+    image: fetchannoucementworkerservice
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - SQLSERVER_HOST=sqlserver
+    networks:
+      - default
 
 networks:
  default:

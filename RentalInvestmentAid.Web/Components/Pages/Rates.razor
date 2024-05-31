@@ -59,15 +59,22 @@
     [Parameter]
     public List<RentInformation> RentsInformation { get; set; } = new List<RentInformation>();
 
-
-
+    [Parameter]
+    public bool OnlyRentable { get; set; } = false;
 
     public string CheckRentability(LoanInformation loan, List<RentInformation> rents)
     {
-        string result = "table-danger not-rentable";
 
-        if (rents.Where(rent => rent.Rental70Pourcent >= loan.MonthlyCostWithInsurrance).Any())
-            result = "table-success rentable";
+        string displayOnlyRentable = OnlyRentable ? "d-none" : "d-show";
+        string result = $"table-danger not-rentable {displayOnlyRentable}";
+
+
+        if (rents.Where(rent => rent.Rental70Pourcent >= loan.MonthlyCostWithInsurrance).Any()){
+
+            result = $"table-success rentable";
+            if (OnlyRentable)
+                result += " d-show";
+        }
         return result;
     }
 }

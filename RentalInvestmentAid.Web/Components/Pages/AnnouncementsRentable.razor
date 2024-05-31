@@ -23,7 +23,7 @@
     {
         @foreach (AnnouncementInformation result in AnnouncementInformation)
         {
-            <Announcement AnnouncementInformation=result />
+            <Announcement AnnouncementInformation=result OnlyRentable=true/>
         }
     }
 
@@ -52,7 +52,7 @@
             AnnouncementInformation.Add(announcementInformation);
             AnnouncementInformation.OrderBy(ann => ann.CityInformations.CityName);
             await InvokeAsync(StateHasChanged);
-            await Task.Delay(1); // Yield control to update the UI
+            await Task.Delay(1); 
         }
     }
 

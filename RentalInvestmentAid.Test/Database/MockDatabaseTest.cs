@@ -187,7 +187,7 @@ namespace RentalInvestmentAid.Test.Database
             AnnouncementInformation announcementInformation = databaseFactory.GetAnnouncementsInformations()[1];
             Assert.AreEqual(databaseFactory.GetAnnouncementsInformations().First(ann => ann.Id == announcementInformation.Id).RentabilityCalculated, false);
 
-            databaseFactory.UpdateRentabilityInformation(announcementInformation.Id);
+            databaseFactory.UpdateRentabilityInformation(announcementInformation.Id, false);
             Assert.AreEqual(databaseFactory.GetAnnouncementsInformations().First(ann => ann.Id == announcementInformation.Id).RentabilityCalculated, true);
         }
 

@@ -48,11 +48,11 @@
         </div>
         <div class="row rents_and_loan">
             <div class="rents col-sm-4">
-                <Rents RentsInformation="@Rents" />
+                <Rents RentsInformation=@Rents />
             </div>
             <div class="loans  col-sm-8">
                 <div class="rates-informations">
-                    <Rates RentsInformation="@Rents" RateInformation="RateInformation" LoansInformations="@Loans" />
+                    <Rates RentsInformation=@Rents RateInformation=@RateInformation LoansInformations="@Loans" OnlyRentable=@OnlyRentable />
                 </div>
             </div>
         </div>
@@ -65,8 +65,11 @@
 
     private double notaryFee = 0;
     private double realPrice = 0;
+
     [Parameter]
     public AnnouncementInformation AnnouncementInformation { get; set; }
+    [Parameter]
+    public bool OnlyRentable { get; set; } = false;
 
     public List<RentInformation> Rents
     {

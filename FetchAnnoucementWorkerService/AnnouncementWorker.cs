@@ -34,7 +34,8 @@ namespace FetchAnnoucementWorkerService
         public AnnouncementWorker(ILogger<AnnouncementWorker> logger)
         {
             _logger = logger;
-            _announcementRabbitMQBroker = new RabbitMQBroker(SettingsManager.AnnouncementQueueName);
+            string rabbitMqHost = String.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("RABBITMQ_HOST")) ? "localhost" : Environment.GetEnvironmentVariable("RABBITMQ_HOST");
+            _announcementRabbitMQBroker = new RabbitMQBroker(SettingsManager.AnnouncementQueueName, rabbitMqHost);
             _cachingManager = new CachingManager(_databaseFactory);
             _cityTreatment = new CityTreatment(_cachingManager, _databaseFactory);
             _announcementTreatment = new AnnouncementTreatment(_cachingManager, _databaseFactory);
