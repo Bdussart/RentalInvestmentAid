@@ -103,7 +103,7 @@ namespace RentalInvestmentAid.Core.Announcement
             try
             {
                 ChromeOptions options = SeleniumHelper.DefaultChromeOption();
-                using (IWebDriver driver = new RemoteWebDriver(options))
+                using (IWebDriver driver = new RemoteWebDriver(SeleniumHelper.SeleniumUrl, options))
                 {
                     SetSearchInformation(driver, maxPrice, department);
                     //urls.AddRange(FindUrlForEachAnnoncement(driver.PageSource));

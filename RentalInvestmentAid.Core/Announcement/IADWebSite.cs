@@ -66,7 +66,7 @@ namespace RentalInvestmentAid.Core.Announcement
                 bool next = false;
                 ChromeOptions options = SeleniumHelper.DefaultChromeOption();
 
-                using (IWebDriver driver = new RemoteWebDriver(options))
+                using (IWebDriver driver = new RemoteWebDriver(SeleniumHelper.SeleniumUrl,options))
                 {
                     do
                     {
@@ -129,7 +129,7 @@ namespace RentalInvestmentAid.Core.Announcement
                 string html = string.Empty;
                 string type = string.Empty;
                 string announcementIdFromProvider = string.Empty;
-                using (IWebDriver driver = new RemoteWebDriver(options))
+                using (IWebDriver driver = new RemoteWebDriver(SeleniumHelper.SeleniumUrl,options))
                 {
                     SeleniumHelper.GoAndWaitPageIsReady(driver, url);
 

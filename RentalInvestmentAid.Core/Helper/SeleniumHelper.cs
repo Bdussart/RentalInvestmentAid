@@ -12,6 +12,8 @@ namespace RentalInvestmentAid.Core.Helper
 {
     public static class SeleniumHelper
     {
+        private static readonly string _SeleniumDefaultUrl = String.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("SELENIUM_HOST")) ? "127.0.0.1" : Environment.GetEnvironmentVariable("SELENIUM_HOST");
+        public static readonly Uri SeleniumUrl = new Uri($"http://{_SeleniumDefaultUrl}:4444/wd/hub");
         public static void GoAndWaitPageIsReady(IWebDriver driver, string url)
         {
             driver.Navigate().GoToUrl(url);

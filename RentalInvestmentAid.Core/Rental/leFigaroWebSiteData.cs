@@ -206,7 +206,7 @@ namespace RentalInvestmentAid.Core.Rental
             string baseUrl = "https://immobilier.lefigaro.fr/prix-immobilier/auvergne-rhone-alpes/region-84";
 
             ChromeOptions options = SeleniumHelper.DefaultChromeOption();
-            using (IWebDriver driver = new RemoteWebDriver(options))
+            using (IWebDriver driver = new RemoteWebDriver(SeleniumHelper.SeleniumUrl,options))
             {
                 SeleniumHelper.GoAndWaitPageIsReady(driver, baseUrl);
                 Actions actions = new Actions(driver);
