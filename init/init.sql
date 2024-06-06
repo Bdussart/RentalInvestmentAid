@@ -770,7 +770,17 @@ END
 GO
 
 
- 
+CREATE TABLE [dbo].miscellaneous(
+	id int IDENTITY(1,1) NOT NULL,
+	[key] varchar(MAX) NOT NULL,
+	[text] varchar(MAX) NOT NULL)
+GO
+
+INSERT INTO [dbo].miscellaneous ([key], [text]) VALUES('ANNOUNCMENT_PROMPT_CONTEXT', 'Je vais te donner des informations concernant une annonce immobilière,je vais te donner la ville, le code postal, le prix, le nombre de mètres carrés, le type à savoir si une maison appartement ou terrain et la description de l''annonce.Je veux que tu me donnes comme information : - Si la ville possède des transports en commun.- le nombre d''habitants dans la ville.- est-ce qu''il y a des commerces dans la ville ( Boulangerie,boucher, Poste, Supermarché). Si non,donne moi la ville la plus proche avec ces commerces.- si il y a une école primaire sinon la ville la plus proche avec l''école primaire et le temps pour y aller en te basant sur la ville donné.- si il y a un collège sinon la ville la plus proche avec un collège et le temps pour y aller en te basant sur la ville donné.- si il y a un lycée sinon la ville la plus proche avec un lycée et le temps pour y aller en te basant sur la ville donné.- si la ville possède une gare Si non, la ville la plus proche avec une gare et le temps pour y aller en te basant sur la ville donné.
+- Les points fort de l''annonce
+- Les points faibles de l''annonce
+- Les points fort de la ville
+- Les points faible de la ville')
  
 EXEC sp_configure 'CONTAINED DATABASE AUTHENTICATION', 1
 GO
