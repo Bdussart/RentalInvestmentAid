@@ -772,7 +772,7 @@ GO
 
 CREATE TABLE [dbo].miscellaneous(
 	id int IDENTITY(1,1) NOT NULL,
-	[key] varchar(MAX) NOT NULL,
+	[key] varchar(50) NOT NULL,
 	[text] varchar(MAX) NOT NULL)
 GO
 
@@ -781,6 +781,23 @@ INSERT INTO [dbo].miscellaneous ([key], [text]) VALUES('ANNOUNCMENT_PROMPT_CONTE
 - Les points faibles de l''annonce
 - Les points fort de la ville
 - Les points faible de la ville')
+go
+
+CREATE PROCEDURE [dbo].[uspGetMiscellaneous]
+(
+				@key		varchar(50)
+)
+AS
+BEGIN
+SELECT  [id]
+	  ,[key]
+	  ,[text]
+  FROM [RentalInvestmentAid].[dbo].miscellaneous
+  where [key] = @key
+
+
+END
+GO
  
 EXEC sp_configure 'CONTAINED DATABASE AUTHENTICATION', 1
 GO

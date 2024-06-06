@@ -34,7 +34,10 @@ namespace RentalInvestmentAid.Caching
         {
             _memoryCache.Set(key, data, TimeSpan.FromDays(1));
         }
-
+        private void SetCache(string key, object data)
+        {
+            _memoryCache.Set(key, data, TimeSpan.FromDays(1));
+        }
         private List<object> GetFromCache(string key, Func<List<object>> func)
         {
             List<object> list = new List<object>();
@@ -49,6 +52,23 @@ namespace RentalInvestmentAid.Caching
                 _cacheSettedInformation.Add(key, DateTime.Now.Add(_durationCache));
             }
             return list;
+        }
+
+        private object GetFromCache(string key, Func<object> func)
+        {
+            object obj= new object();
+            DateTime dt = DateTime.Now;
+            if (!_memoryCache.TryGetValue(key, out obj) || (_cacheSettedInformation.ContainsKey(key) && _cacheSettedInformation[key] < DateTime.Now))
+            {
+                if (_cacheSettedInformation.TryGetValue(key, out dt))
+                {
+                    _cacheSettedInformation.Remove(key);
+                }
+                obj = func();
+                SetCache(key, func());
+                _cacheSettedInformation.Add(key, DateTime.Now.Add(_durationCache));
+            }
+            return obj;
         }
 
 
@@ -144,7 +164,6 @@ namespace RentalInvestmentAid.Caching
 
         #endregion
 
-
         #region Rent
         public List<RentInformation> GetRents()
         {
@@ -161,6 +180,16 @@ namespace RentalInvestmentAid.Caching
         {
             SetCache(SettingsManager.RentCacheKey, _databaseFactory.GetRentsInformations().Cast<Object>().ToList());
         }
+
+        #endregion
+
+        #region Misc
+        public String GetMiscPrompt()
+        {
+            return GetFromCache(SettingsManager.MiscAnnouncementPromptCacheKey,
+                    () => _databaseFactory.GetMiscPerKey(SettingsManager.AnnouncementPromptKey)).ToString();
+        }
+
 
         #endregion
     }

@@ -38,5 +38,6 @@ namespace RentalInvestmentAid.Database
         public void UpdateRentabilityInformation(int announcementId, bool isRentable);
 
         public Task DeleteAnnouncementInformation(int announcementId);
+        public String GetMiscPerKey(string key);
     }
 }

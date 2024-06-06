@@ -68,6 +68,16 @@ namespace RentalInvestmentAid.Settings
                 return configuration.GetSection("Cache").GetSection("RentCacheKey").Value.ToString();
             }
         }
+
+
+        public static String MiscAnnouncementPromptCacheKey
+        {
+            get
+            {
+                IConfiguration configuration = builder.Build();
+                return configuration.GetSection("Cache").GetSection("MiscAnnouncementPromptCacheKey").Value.ToString();
+            }
+        }
         public static String RentalQueueName
         {
             get
@@ -82,6 +92,23 @@ namespace RentalInvestmentAid.Settings
             {
                 IConfiguration configuration = builder.Build();
                 return configuration.GetSection("Queue").GetSection("AnnouncementQueueName").Value.ToString();
+            }
+        }
+        public static String AnnouncementPromptKey
+        {
+            get
+            {
+                IConfiguration configuration = builder.Build();
+                return configuration.GetSection("MiscKey").GetSection("AnnouncementPromptKey").Value.ToString();
+            }
+        }
+
+        public static String GeminiAPIUrl
+        {
+            get
+            {
+                IConfiguration configuration = builder.Build();
+                return configuration.GetSection("API").GetSection("GeminiAPIUrl").Value.ToString();
             }
         }
     }

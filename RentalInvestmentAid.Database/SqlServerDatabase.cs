@@ -558,5 +558,28 @@ namespace RentalInvestmentAid.Database
                 }
             }
         }
+
+        public string GetMiscPerKey(string key)
+        {
+            string result = string.Empty;
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspGetMiscellaneous", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.AddWithValue("@key", key);
+                    connection.Open();
+
+                    using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            result = reader.GetString(0);
+                        }
+                    }
+                }
+            }
+            return result;
+        }
     }
 }
