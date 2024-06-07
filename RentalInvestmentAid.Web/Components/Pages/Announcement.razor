@@ -62,8 +62,6 @@
 </div>
 
 @code {
-    private CachingManager _cachingManager = null;
-    private IDatabaseFactory _databaseFactory = new SqlServerDatabase();
 
     private double notaryFee = 0;
     private double realPrice = 0;
@@ -71,6 +69,7 @@
     [Parameter]
     public AnnouncementInformation AnnouncementInformation { get; set; }
     [Parameter]
+
     public bool OnlyRentable { get; set; } = false;
 
     public List<RentInformation> Rents
@@ -116,16 +115,22 @@
     private BankTreatment _bankTreament = null;
     private IBroker _announcementBroker = null;
 
-    private AnnouncementTreatment _announcementTreatment = null;
+    [CascadingParameter]
+    public AnnouncementTreatment AnnouncementTreatment { get; set; }
+
+    [CascadingParameter(Name ="CachingManager")]
+    public CachingManager _cachingManager  { get; set; }
+
+    [CascadingParameter(Name = "DatabaseFactory")]
+    public IDatabaseFactory _databaseFactory { get; set; }
+
     private GeminiTreatment _geminiTreatment = null;
 
     protected override Task OnInitializedAsync()
     {
         _announcementBroker = new RabbitMQBroker(Settings.SettingsManager.AnnouncementQueueName);
-        _cachingManager = new CachingManager(_databaseFactory);
         _rentalTreament = new RentalTreament(_cachingManager, _databaseFactory, new LeFigaroWebSiteData(_cachingManager, _announcementBroker));
         _bankTreament = new BankTreatment(_cachingManager, _databaseFactory);
-        _announcementTreatment = new AnnouncementTreatment(_cachingManager, _databaseFactory);
         _geminiTreatment = new GeminiTreatment(_cachingManager, _databaseFactory);
 
         double price = float.Parse(AnnouncementInformation.Price);
@@ -159,6 +164,6 @@
     {
         Console.WriteLine($"DeleteAnnouncement {announcementid}");
         await JS.InvokeVoidAsync("removeElementById", $"container_annoucment_{announcementid}");
-        await  _announcementTreatment.DeleteAnnoucementInformation(announcementid);
+        await AnnouncementTreatment.DeleteAnnoucementInformation(announcementid);
     }
 }

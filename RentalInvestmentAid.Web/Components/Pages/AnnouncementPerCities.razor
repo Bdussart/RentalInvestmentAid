@@ -37,8 +37,11 @@ else
 
 
 @code {
-    private IDatabaseFactory _databaseFactory = new SqlServerDatabase();
-    private CachingManager _cachingManager = null;
+    [CascadingParameter(Name = "CachingManager")]
+    public CachingManager _cachingManager { get; set; }
+
+    [CascadingParameter(Name = "DatabaseFactory")]
+    public IDatabaseFactory _databaseFactory { get; set; }
     private CityTreatment _cityTreatment = null;
 
      AnnouncementTreatment _announcementTreatment = null;

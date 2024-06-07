@@ -30,19 +30,18 @@
 </div>
 
 @code {
+    [CascadingParameter(Name = "CachingManager")]
+    public CachingManager _cachingManager { get; set; }
 
-    private IDatabaseFactory _databaseFactory = new SqlServerDatabase();
+    [CascadingParameter(Name = "DatabaseFactory")]
+    public IDatabaseFactory _databaseFactory { get; set; }
 
-    public List<AnnouncementInformation> AnnouncementInformation = null;
-    private CachingManager _cachingManager = null;
+    public List<AnnouncementInformation> AnnouncementInformation = new List<AnnouncementInformation>();
     private AnnouncementTreatment _announcementTreatment = null;
     private CancellationTokenSource _cancellationTokenSource;
 
     public AnnouncementsWithNoData()
     {
-        AnnouncementInformation = new List<AnnouncementInformation>();
-        _cachingManager = new CachingManager(_databaseFactory);
-        _announcementTreatment = new AnnouncementTreatment(_cachingManager, _databaseFactory);
     }
 
     private async Task GetAnnouncementAsync(CancellationToken cancellationToken)
@@ -60,6 +59,7 @@
     {
         if (firstRender)
         {
+            _announcementTreatment = new AnnouncementTreatment(_cachingManager, _databaseFactory);
             _cancellationTokenSource = new CancellationTokenSource();
            await  GetAnnouncementAsync(_cancellationTokenSource.Token);
         }
