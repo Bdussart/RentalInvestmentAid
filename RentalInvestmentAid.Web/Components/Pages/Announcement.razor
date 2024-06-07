@@ -21,7 +21,7 @@
 
 @rendermode InteractiveServer
 
-<div class="container" id="container_annoucment_@AnnouncementInformation.Id">
+<div class="container-fluid" id="container_annoucment_@AnnouncementInformation.Id">
 
     <div id="annoucment_@AnnouncementInformation.Id" class="announcement">
         <div class="row text-center">
@@ -45,6 +45,14 @@
             </div>
             <div class="announcement_read col-sm-1 ">
                 <input type="checkbox" checked="@AnnouncementInformation.Readed" @oninput="args => CheckboxChanged(AnnouncementInformation.Id, args)">
+                <div>
+                    <button type="button" class="btn btn-primary" @onclick="args => GetGeminiData(AnnouncementInformation.Id, args)">GEMINI</button>
+                    @if(_geminiLoading){
+                        <div class="spinner-border m-5 text-info" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    }
+                </div>
                 <button type="button" class="btn btn-danger" @onclick="args => DeleteAnnouncement(AnnouncementInformation.Id, args)">Supprimer l'annonce</button>
             </div>
         </div>
@@ -58,6 +66,9 @@
                 </div>
             </div>
         </div>
+        <div class="alert alert-dark" role="alert">
+            @((MarkupString)@AnnouncementInformation.InformationProvidedByGemini)
+        </div>
     </div>
 </div>
 
@@ -65,6 +76,8 @@
 
     private double notaryFee = 0;
     private double realPrice = 0;
+
+    private bool _geminiLoading = false;
 
     [Parameter]
     public AnnouncementInformation AnnouncementInformation { get; set; }
@@ -156,8 +169,23 @@
         var value = e.Value;
         Console.WriteLine($"Checkbox changed");
 
-       string result =  await _geminiTreatment.GetPromptInformation(AnnouncementInformation);        
 
+    }
+    private async void GetGeminiData(int announcementid, MouseEventArgs e)
+    {
+        _geminiLoading = true;
+        await InvokeAsync(StateHasChanged);
+
+        string result = await _geminiTreatment.GetPromptInformation(AnnouncementInformation);
+
+        if (!String.IsNullOrWhiteSpace(result))
+        {
+            AnnouncementInformation.InformationProvidedByGemini = result;
+            await InvokeAsync(StateHasChanged);
+        }
+
+        _geminiLoading = false;
+        await InvokeAsync(StateHasChanged);
     }
 
     private async void DeleteAnnouncement(int announcementid, MouseEventArgs e)

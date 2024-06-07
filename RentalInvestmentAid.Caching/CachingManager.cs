@@ -48,7 +48,7 @@ namespace RentalInvestmentAid.Caching
                     _cacheSettedInformation.Remove(key);
                 }
                 list = func();
-                SetCache(key, func());
+                SetCache(key, list);
                 _cacheSettedInformation.Add(key, DateTime.Now.Add(_durationCache));
             }
             return list;
@@ -65,7 +65,7 @@ namespace RentalInvestmentAid.Caching
                     _cacheSettedInformation.Remove(key);
                 }
                 obj = func();
-                SetCache(key, func());
+                SetCache(key, obj);
                 _cacheSettedInformation.Add(key, DateTime.Now.Add(_durationCache));
             }
             return obj;

@@ -291,6 +291,7 @@ CREATE TABLE [dbo].[annoncementInformation](
 	[idPropertyType] [int] NOT NULL,
 	[rentabilityCalculated] [bit] NOT NULL,
 	[isRentable] [bit] NULL,
+	[informationProvidedByGemini] [varchar](max) NULL,
 	[readed] [bit] NOT NULL,
 	[createdDate] [datetime] NOT NULL,
 	[updatedDate] [datetime] NOT NULL
@@ -400,10 +401,25 @@ SELECT  [id]
 	  ,[rentabilityCalculated]
 	  ,[isRentable]
 	  ,[readed]
+	  ,informationProvidedByGemini
       ,[createdDate]
       ,[updatedDate]
   FROM [RentalInvestmentAid].[dbo].[annoncementInformation]
 
+
+END
+GO
+
+CREATE PROCEDURE [dbo].[uspSetInformationProvidedByGeminiInAnnouncement]
+(
+				@announcementId int,
+				@informationProvidedByGemini [varchar](max)
+)
+AS
+BEGIN
+UPDATE [RentalInvestmentAid].[dbo].[annoncementInformation]
+SET informationProvidedByGemini = @informationProvidedByGemini
+  where [id] = @announcementId
 
 END
 GO
@@ -789,12 +805,10 @@ CREATE PROCEDURE [dbo].[uspGetMiscellaneous]
 )
 AS
 BEGIN
-SELECT  [id]
-	  ,[key]
-	  ,[text]
+SELECT  TOP 1
+	  [text]
   FROM [RentalInvestmentAid].[dbo].miscellaneous
   where [key] = @key
-
 
 END
 GO

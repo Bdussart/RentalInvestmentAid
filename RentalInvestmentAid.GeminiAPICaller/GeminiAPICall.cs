@@ -28,7 +28,7 @@ namespace RentalInvestmentAid.GeminiAPICaller
                 string content = JsonConvert.SerializeObject(data);
 
                 HttpResponseMessage response = await client.PostAsync($"{_completeUrl}", new StringContent(content, Encoding.UTF8, "application/json"));
-                result = await HandleResponse<string>(response);
+                result = await HandleResponseWhithoutDeserialization<string>(response);
             }
             catch (Exception ex)
             {
@@ -45,6 +45,14 @@ namespace RentalInvestmentAid.GeminiAPICaller
             if (!response.IsSuccessStatusCode)
                 throw new HttpRequestException(result);
             return JsonConvert.DeserializeObject<T>(result) ?? throw new Exception("Cannot deserialize");
+        }
+        async private Task<String> HandleResponseWhithoutDeserialization<T>(HttpResponseMessage response)
+        {
+            string result = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(result);
+            return result;
         }
     }
 }

@@ -21,6 +21,7 @@ namespace RentalInvestmentAid.Models.Announcement
         public string Description { get; set; } = String.Empty;
         public string UrlWebSite { get; set; } = String.Empty;
         public bool RentabilityCalculated { get; set; }
+        public string InformationProvidedByGemini { get; set; } = String.Empty;
         public bool Readed { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }

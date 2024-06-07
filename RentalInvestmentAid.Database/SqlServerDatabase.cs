@@ -80,8 +80,9 @@ namespace RentalInvestmentAid.Database
                                 RentabilityCalculated = reader.GetBoolean(9),
                                 IsRentable = reader.IsDBNull(10) ? null : reader.GetBoolean(10),
                                 Readed = reader.GetBoolean(11),
-                                CreatedDate = reader.GetDateTime(12),
-                                UpdatedDate = reader.GetDateTime(13)
+                                InformationProvidedByGemini = reader.IsDBNull(12) ? string.Empty : reader.GetString(12),
+                                CreatedDate = reader.GetDateTime(13),
+                                UpdatedDate = reader.GetDateTime(14)
                             });
                         }
                     }
@@ -580,6 +581,21 @@ namespace RentalInvestmentAid.Database
                 }
             }
             return result;
+        }
+
+        public void InsertInformationProvidedByGeminiForAnAnnouncement(int announcementId, string geminiInformation)
+        {
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspSetInformationProvidedByGeminiInAnnouncement", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.AddWithValue("@announcementId", announcementId);
+                    sqlCommand.Parameters.AddWithValue("@informationProvidedByGemini", geminiInformation);
+                    connection.Open();
+                    sqlCommand.ExecuteNonQuery();
+                }
+            }
         }
     }
 }

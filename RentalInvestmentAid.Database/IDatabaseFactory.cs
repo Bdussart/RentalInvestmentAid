@@ -36,6 +36,7 @@ namespace RentalInvestmentAid.Database
         public DepartmentToSearchData InsertDepartment(DepartmentToSearchData departmentToSearchData);
 
         public void UpdateRentabilityInformation(int announcementId, bool isRentable);
+        public void InsertInformationProvidedByGeminiForAnAnnouncement(int announcementId, string geminiInformation);
 
         public Task DeleteAnnouncementInformation(int announcementId);
         public String GetMiscPerKey(string key);
