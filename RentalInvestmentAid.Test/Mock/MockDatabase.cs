@@ -53,6 +53,11 @@ namespace RentalInvestmentAid.Test.Mock
             return _loanstInformation.OrderBy(x => x.Id).ToList();
         }
 
+        public string GetMiscPerKey(string key)
+        {
+            throw new NotImplementedException();
+        }
+
         public List<RateInformation> GetRatesInformations()
         {
             return _rateInformation.OrderBy(x => x.Id).ToList();
@@ -91,6 +96,11 @@ namespace RentalInvestmentAid.Test.Mock
         }
 
         public DepartmentToSearchData InsertDepartment(DepartmentToSearchData departmentToSearchData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void InsertInformationProvidedByGeminiForAnAnnouncement(int announcementId, string geminiInformation)
         {
             throw new NotImplementedException();
         }
