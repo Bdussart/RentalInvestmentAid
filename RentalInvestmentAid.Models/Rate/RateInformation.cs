@@ -13,5 +13,10 @@ namespace RentalInvestmentAid.Models.Bank
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
 
+        public override string ToString()
+        {
+            return $"DurationInYear : {DurationInYear} Rate : {Rate} Title : {Title} ";
+        }
+
     }
 }

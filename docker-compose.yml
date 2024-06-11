@@ -1,14 +1,14 @@
 version: '3.8'
 
 volumes:
+  services_logs:
+  
   sqlserver_data:
   
 
 
     
 services:
-
-        
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: sqlserver
@@ -82,6 +82,8 @@ services:
       - SELENIUM_HOST=chrome
     networks:
       - default
+    volumes:
+      - 'C:\\Logs\\Rental\\Fetch:/app/logs'
   treatAnnoucementWorkerService:
     image: treatannouncementworkerservice
     depends_on:
@@ -95,6 +97,20 @@ services:
       - SELENIUM_HOST=chrome
     networks:
       - default
+    volumes:
+      - 'C:\\Logs\Rental\\Treat:/app/logs'
+  bankWorkerService:
+    image: bankworkerservice
+    depends_on:
+      sqlserver.configurator: 
+        condition: service_completed_successfully  
+    environment:
+      - SQLSERVER_HOST=sqlserver
+      - SELENIUM_HOST=chrome
+    networks:
+      - default
+    volumes:
+      - 'C:\\Logs\Rental\\Bank:/app/logs'
 
 networks:
  default:

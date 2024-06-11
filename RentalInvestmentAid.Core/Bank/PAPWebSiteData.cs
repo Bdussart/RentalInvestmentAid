@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using Microsoft.IdentityModel.Logging;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Remote;
@@ -45,10 +46,12 @@ namespace RentalInvestmentAid.Core.Bank
                 foreach (HtmlNode node in nodes)
                 {
                     List<HtmlNode> childs = node.ChildNodes.Where(child => child.Name.Equals("td", StringComparison.InvariantCultureIgnoreCase)).ToList();
+
+                    LogHelper.LogInformation($" Year : {int.Parse(childs[0].InnerText)} Rate : {childs[4].InnerText.Replace("%", "").Trim()}, {childs[3].InnerText.Replace("%", "").Trim()} {childs[2].InnerText.Replace("%", "").Trim()}");
                     bankInformation.Add(new RateInformation
                     {
                         DurationInYear = int.Parse(childs[0].InnerText),
-                        Rate = childs[4].InnerText.Replace("%", "").Trim(),
+                        Rate = childs[4].InnerText.Replace("%", "").Replace(",", ".").Trim(),
                         RateType = RateType.LowRate,
                         Title = title
                     });
@@ -56,7 +59,7 @@ namespace RentalInvestmentAid.Core.Bank
                     bankInformation.Add(new RateInformation
                     {
                         DurationInYear = int.Parse(childs[0].InnerText),
-                        Rate = childs[3].InnerText.Replace("%", "").Trim(),
+                        Rate = childs[3].InnerText.Replace("%", "").Replace(",", ".").Trim(),
                         RateType = RateType.MediumRate,
                         Title = title
                     });
@@ -64,7 +67,7 @@ namespace RentalInvestmentAid.Core.Bank
                     bankInformation.Add(new RateInformation
                     {
                         DurationInYear = int.Parse(childs[0].InnerText),
-                        Rate = childs[2].InnerText.Replace("%", "").Trim(),
+                        Rate = childs[2].InnerText.Replace("%", "").Replace(",", ".").Trim(),
                         RateType = RateType.HighRate,
                         Title = title
                     });

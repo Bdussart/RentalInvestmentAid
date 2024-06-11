@@ -39,6 +39,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentalInvestmentAid.GeminiA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreatAnnouncementWorkerService", "TreatAnnouncementWorkerService\TreatAnnouncementWorkerService.csproj", "{0285819F-1C57-4533-9C00-F86CD1546857}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankWorkerService", "BankWorkerService\BankWorkerService.csproj", "{0CFFA007-EFC3-4E2A-B4E6-1E43F4EE9306}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,6 +99,10 @@ Global
 		{0285819F-1C57-4533-9C00-F86CD1546857}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0285819F-1C57-4533-9C00-F86CD1546857}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0285819F-1C57-4533-9C00-F86CD1546857}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CFFA007-EFC3-4E2A-B4E6-1E43F4EE9306}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CFFA007-EFC3-4E2A-B4E6-1E43F4EE9306}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CFFA007-EFC3-4E2A-B4E6-1E43F4EE9306}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CFFA007-EFC3-4E2A-B4E6-1E43F4EE9306}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

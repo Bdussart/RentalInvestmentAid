@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-BankWorkerService-f4dddff3-5e9e-411e-9315-12ca619d69e4</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RentalInvestmentAid.Caching\RentalInvestmentAid.Caching.csproj" />
+    <ProjectReference Include="..\RentalInvestmentAid.Core\RentalInvestmentAid.Core.csproj" />
+    <ProjectReference Include="..\RentalInvestmentAid.Database\RentalInvestmentAid.Database.csproj" />
+    <ProjectReference Include="..\RentalInvestmentAid.Logger\RentalInvestmentAid.Logger.csproj" />
+    <ProjectReference Include="..\RentalInvestmentAid.Models\RentalInvestmentAid.Models.csproj" />
+    <ProjectReference Include="..\RentalInvestmentAid.Settings\RentalInvestmentAid.Settings.csproj" />
+  </ItemGroup>
+
+</Project>
