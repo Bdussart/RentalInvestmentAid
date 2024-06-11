@@ -82,6 +82,19 @@ services:
       - SELENIUM_HOST=chrome
     networks:
       - default
+  treatAnnoucementWorkerService:
+    image: treatannouncementworkerservice
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      sqlserver.configurator: 
+        condition: service_completed_successfully  
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - SQLSERVER_HOST=sqlserver
+      - SELENIUM_HOST=chrome
+    networks:
+      - default
 
 networks:
  default:

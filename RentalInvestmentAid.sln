@@ -35,7 +35,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Queries", "Queries", "{95A1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FetchAnnoucementWorkerService", "FetchAnnoucementWorkerService\FetchAnnoucementWorkerService.csproj", "{68C9BF09-0F07-4042-A974-C74EEA51A36D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RentalInvestmentAid.GeminiAPICaller", "RentalInvestmentAid.GeminiAPICaller\RentalInvestmentAid.GeminiAPICaller.csproj", "{547F5470-D0C3-44D4-89B4-B9235B1103E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentalInvestmentAid.GeminiAPICaller", "RentalInvestmentAid.GeminiAPICaller\RentalInvestmentAid.GeminiAPICaller.csproj", "{547F5470-D0C3-44D4-89B4-B9235B1103E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreatAnnouncementWorkerService", "TreatAnnouncementWorkerService\TreatAnnouncementWorkerService.csproj", "{0285819F-1C57-4533-9C00-F86CD1546857}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -91,6 +93,10 @@ Global
 		{547F5470-D0C3-44D4-89B4-B9235B1103E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{547F5470-D0C3-44D4-89B4-B9235B1103E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{547F5470-D0C3-44D4-89B4-B9235B1103E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0285819F-1C57-4533-9C00-F86CD1546857}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0285819F-1C57-4533-9C00-F86CD1546857}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0285819F-1C57-4533-9C00-F86CD1546857}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0285819F-1C57-4533-9C00-F86CD1546857}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

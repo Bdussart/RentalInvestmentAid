@@ -32,6 +32,11 @@ namespace RentalInvestmentAid.Core
             _databaseFactory = databaseFactory;
             _rentalWebSiteData = rentalWebSiteData;
         }
+        public RentalTreament(CachingManager cachingManager, IDatabaseFactory databaseFactory) : base(cachingManager)
+        {
+            base._cachingManager = cachingManager;
+            _databaseFactory = databaseFactory;
+        }
         private List<RentalInformations> FindRentalInformationForAnAnnoucement(AnnouncementInformation announcementInformation)
         {
             return _cachingManager.GetRentalInformations().Where(rent => rent.CityInfo.Id == announcementInformation.CityInformations.Id
@@ -69,11 +74,16 @@ namespace RentalInvestmentAid.Core
 
         public void UpdateCitiesRentInformations()
         {
-            foreach (CityInformations city in _databaseFactory.GetCitiesWithNoRent())
+            if (_rentalWebSiteData != null)
             {
-                LogHelper.LogInfo($"****** Search City {city.CityName} rental information *****");
-                _rentalWebSiteData.SearchByCityNameAndDepartementAndEnqueueUrl(city.CityName, int.Parse(city.Departement));
+                foreach (CityInformations city in _databaseFactory.GetCitiesWithNoRent())
+                {
+                    LogHelper.LogInfo($"****** Search City {city.CityName} rental information *****");
+                    _rentalWebSiteData.SearchByCityNameAndDepartementAndEnqueueUrl(city.CityName, int.Parse(city.Departement));
+                }
             }
+            else
+                throw new NullReferenceException("IRentalWebSiteData _rentalWebSiteData must be initialised in the constructor");
         }
 
         public bool CheckDataRentabilityForAnnouncement(AnnouncementInformation announcement)

@@ -63,6 +63,7 @@ namespace RentalInvestmentAid
 
         public static void Main(string[] args)
         {
+        {
             _announcementRabbitMQBroker = new RabbitMQBroker(SettingsManager.AnnouncementQueueName);
             _rentalRabbitMQBroker = new RabbitMQBroker(SettingsManager.RentalQueueName);
             _cachingManager = new CachingManager(_databaseFactory);

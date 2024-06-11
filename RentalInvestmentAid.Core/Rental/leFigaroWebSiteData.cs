@@ -210,14 +210,6 @@ namespace RentalInvestmentAid.Core.Rental
             {
                 SeleniumHelper.GoAndWaitPageIsReady(driver, baseUrl);
                 Actions actions = new Actions(driver);
-                //if (driver.FindElement(By.ClassName("gJERWf")).Displayed)
-                //{
-                //    IWebElement element = driver.FindElement(By.ClassName("button__acceptAll"));
-                //    actions.ScrollToElement(element);
-                //    actions.Perform();
-                //    actions.Click(element);
-                //    actions.Perform();
-                //}
 
                 InteratiorHelper.ImitateHumanTyping(textToWrite, driver.FindElement(By.Name("q")));
                 actions.SendKeys(Keys.Enter);
