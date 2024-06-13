@@ -111,6 +111,32 @@ services:
       - default
     volumes:
       - 'C:\\Logs\Rental\\Bank:/app/logs'
+  fetchCityWorkerService:
+    image: fetchcityworkerservice
+    depends_on:
+      sqlserver.configurator: 
+        condition: service_completed_successfully  
+    environment:
+      - SQLSERVER_HOST=sqlserver
+      - SELENIUM_HOST=chrome
+      - RABBITMQ_HOST=rabbitmq
+    networks:
+      - default
+    volumes:
+      - 'C:\\Logs\Rental\\City\Fetcher:/app/logs'
+  treatCityWorkerService:
+    image: treatcityworkerservice
+    depends_on:
+      sqlserver.configurator: 
+        condition: service_completed_successfully  
+    environment:
+      - SQLSERVER_HOST=sqlserver
+      - SELENIUM_HOST=chrome
+      - RABBITMQ_HOST=rabbitmq
+    networks:
+      - default
+    volumes:
+      - 'C:\\Logs\Rental\\City\Treater:/app/logs'
 
 networks:
  default:

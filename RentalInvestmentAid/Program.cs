@@ -173,20 +173,6 @@ namespace RentalInvestmentAid
                 _bankTreatment.InsertRate(rate);
             }
 
-            //foreach (IAnnouncementWebSiteData announcementWebSite in _announcementWebSites)
-            //{
-            //    try
-            //    {
-            //        LogHelper.LogInfo($"******{Task.CurrentId} Start work for worker {announcementWebSite.GetKeyword()}* ****");
-            //        announcementWebSite.EnQueueAnnoucementUrl(_dicoDepartements.Values.ToList(), _maxPrice);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        LogHelper.LogInfo($"{Task.CurrentId}Damn an Exception ! {ex}");
-            //    }
-            //}
-
-
             Console.ReadKey();
             _loop = false;
         }

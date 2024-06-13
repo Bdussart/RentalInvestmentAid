@@ -37,9 +37,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FetchAnnoucementWorkerServi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentalInvestmentAid.GeminiAPICaller", "RentalInvestmentAid.GeminiAPICaller\RentalInvestmentAid.GeminiAPICaller.csproj", "{547F5470-D0C3-44D4-89B4-B9235B1103E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreatAnnouncementWorkerService", "TreatAnnouncementWorkerService\TreatAnnouncementWorkerService.csproj", "{0285819F-1C57-4533-9C00-F86CD1546857}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TreatAnnouncementWorkerService", "TreatAnnouncementWorkerService\TreatAnnouncementWorkerService.csproj", "{0285819F-1C57-4533-9C00-F86CD1546857}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankWorkerService", "BankWorkerService\BankWorkerService.csproj", "{0CFFA007-EFC3-4E2A-B4E6-1E43F4EE9306}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankWorkerService", "BankWorkerService\BankWorkerService.csproj", "{0CFFA007-EFC3-4E2A-B4E6-1E43F4EE9306}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FetchCityWorkerService", "FetchCityWorkerService\FetchCityWorkerService.csproj", "{B9102137-2F4D-45B8-92DA-0594528521D1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TreatCityWorkerService", "TreatCityWorkerService\TreatCityWorkerService.csproj", "{3BE7B702-0C51-426F-A408-F15779A29D80}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -103,6 +107,14 @@ Global
 		{0CFFA007-EFC3-4E2A-B4E6-1E43F4EE9306}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CFFA007-EFC3-4E2A-B4E6-1E43F4EE9306}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CFFA007-EFC3-4E2A-B4E6-1E43F4EE9306}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9102137-2F4D-45B8-92DA-0594528521D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9102137-2F4D-45B8-92DA-0594528521D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9102137-2F4D-45B8-92DA-0594528521D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9102137-2F4D-45B8-92DA-0594528521D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BE7B702-0C51-426F-A408-F15779A29D80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BE7B702-0C51-426F-A408-F15779A29D80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BE7B702-0C51-426F-A408-F15779A29D80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BE7B702-0C51-426F-A408-F15779A29D80}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
