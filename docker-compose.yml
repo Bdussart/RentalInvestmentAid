@@ -148,6 +148,20 @@ services:
       - default
     volumes:
       - 'C:\\Logs\Rental\\Rent:/app/logs'
+  rentalWebSite:
+    image: rentalinvestmentaidweb
+    depends_on:
+      sqlserver.configurator: 
+        condition: service_completed_successfully  
+    environment:
+      - SQLSERVER_HOST=sqlserver
+      - RABBITMQ_HOST=rabbitmq
+    networks:
+      - default
+    volumes:
+      - 'C:\\Logs\Rental\\Rent:/app/logs'
+    ports:
+      - "8080:80"
 
 networks:
  default:
