@@ -53,3 +53,10 @@ for /f "tokens=*" %%i in ('docker ps -aq --filter "name=rentworkerservice"') do 
 
 docker build -f RentWorkerService/Dockerfile -t rentworkerservice .
 
+for /f "tokens=*" %%i in ('docker ps -q --filter "name=rentalinvestmentaidweb"') do docker stop %%i
+
+REM Remove containers
+for /f "tokens=*" %%i in ('docker ps -aq --filter "name=rentalinvestmentaidweb"') do docker rm %%i
+
+docker build -f RentalInvestmentAid.Web/Dockerfile -t rentalinvestmentaidweb .
+

@@ -15,7 +15,7 @@ namespace RentalInvestmentAid.Models.Bank
 
         public override string ToString()
         {
-            return $"DurationInYear : {DurationInYear} Rate : {Rate} Title : {Title} ";
+            return $"-RateInformation- Id {Id} DurationInYear : {DurationInYear} Rate : {Rate} Title : {Title} ";
         }
 
     }

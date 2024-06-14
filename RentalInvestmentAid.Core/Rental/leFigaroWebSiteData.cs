@@ -112,7 +112,7 @@ namespace RentalInvestmentAid.Core.Rental
             }
             catch (Exception ex)
             {
-                Logger.LogHelper.LogException(ex);
+                Logger.LogHelper.LogException(ex, objectInfo: $"url : {url}");
             }
             return rentalInformations;
         }
@@ -188,18 +188,19 @@ namespace RentalInvestmentAid.Core.Rental
                         IdFromProvider = idFromProvider
                     });
                 }
-
-
             }
             catch (Exception ex)
             {
-                Logger.LogHelper.LogException(ex);
+                Logger.LogHelper.LogException(ex, objectInfo: $"url : {url}");
             }
             return rentalInformations;
         }
 
         public void SearchByCityNameAndDepartementAndEnqueueUrl(string cityName, int departement)
         {
+            try
+            {
+
             LogHelper.LogInfo($" cityName : {cityName}, departement : {departement}");
 
             string textToWrite = $"{cityName} {departement.ToString("00")}";
@@ -215,8 +216,14 @@ namespace RentalInvestmentAid.Core.Rental
                 actions.SendKeys(Keys.Enter);
                 actions.Perform();
 
-                if (!driver.Url.Contains("recherche=q?", StringComparison.CurrentCultureIgnoreCase) && !base._cachingManager.GetRentalInformations().Any(rental => rental.Url.Equals(driver.Url, StringComparison.InvariantCultureIgnoreCase)))
+                if (!driver.Url.Contains("recherche?q=", StringComparison.CurrentCultureIgnoreCase) && !base._cachingManager.GetRentalInformations().Any(rental => rental.Url.Equals(driver.Url, StringComparison.InvariantCultureIgnoreCase)))
                     _rentalRabbitMQBroker.SendMessage<string>(driver.Url);
+            }
+
+            }
+            catch (Exception ex)
+            {
+                Logger.LogHelper.LogException(ex, objectInfo: $"cityName : {cityName}, departement : {departement}");
             }
         }
     }

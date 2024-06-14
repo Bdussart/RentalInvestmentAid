@@ -13,5 +13,11 @@ namespace RentalInvestmentAid.Models.Rental
         public RentalTypeOfTheRent RentalTypeOfTheRent { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
+
+        public override string ToString()
+        {
+            string cityId = CityInfo != null ? CityInfo.Id.ToString() : String.Empty;
+            return $"-RentalInformations- Id {Id} CityID {cityId} Price {Price} Url {Url} IdFromProdivder : {IdFromProvider}";
+        }
     }
 }

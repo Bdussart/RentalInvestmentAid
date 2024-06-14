@@ -37,7 +37,7 @@ namespace RentalInvestmentAid.Models.Announcement
 
         public override string ToString()
         {
-            return $"[{Id} - {IdFromProvider}] {CityInformations?.CityName} - {CityInformations?.ZipCode} - {Price} - {Metrage} : {UrlWebSite}";
+            return $"-AnnouncementInformation-[{Id} - {IdFromProvider}] {CityInformations?.CityName} - {CityInformations?.ZipCode} - {Price} - {Metrage} : {UrlWebSite}";
         }
     }
 }

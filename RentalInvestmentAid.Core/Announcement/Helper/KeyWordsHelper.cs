@@ -11,19 +11,19 @@ namespace RentalInvestmentAid.Core.Announcement.Helper
     {
         private static List<string> HouseKeyWord = new List<string>
         {
-            "Maison", "Villa", "proprieté"
+            "maison", "villa", "proprieté", "local"
         };
         private static List<string> ApartementKeyWord = new List<string>
         {
-            "appartement", "duplex", "triplex"
+            "appartement", "duplex", "triplex", "studio", "studette"
         };
         private static List<string> LandKeyWord = new List<string>
         {
-            "Terrain"
+            "terrain"
         };
         private static List<string> ParkingKeyWord = new List<string>
         {
-            "Parking"
+            "parking"
         };
         public static RentalTypeOfTheRent GetRentalType(string keyWord)
         {

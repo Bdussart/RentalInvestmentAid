@@ -26,6 +26,7 @@ namespace RentWorkerService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            await Task.Delay(TimeSpan.FromMinutes(2), stoppingToken);
             while (!stoppingToken.IsCancellationRequested)
             {
                 CheckAllDataRentability();

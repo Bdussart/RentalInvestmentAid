@@ -11,6 +11,7 @@ using RentalInvestmentAid.Models.Rate;
 using RentalInvestmentAid.Models.Loan;
 using RentalInvestmentAid.Models;
 using RentalInvestmentAid.Models.City;
+using System.Globalization;
 
 namespace RentalInvestmentAid.Database
 {
@@ -277,8 +278,8 @@ namespace RentalInvestmentAid.Database
                         sqlCommand.Parameters.AddWithValue("@idAnnouncementProvider", announcementInformation.AnnouncementProvider);
                         sqlCommand.Parameters.AddWithValue("@idCity", announcementInformation.CityInformations.Id);
                         sqlCommand.Parameters.AddWithValue("@idFromProvider", announcementInformation.IdFromProvider);
-                        sqlCommand.Parameters.AddWithValue("@price", announcementInformation.Price);
-                        sqlCommand.Parameters.AddWithValue("@metrage", announcementInformation.Metrage);
+                        sqlCommand.Parameters.AddWithValue("@price", Convert.ToDouble(announcementInformation.Price, CultureInfo.InvariantCulture));
+                        sqlCommand.Parameters.AddWithValue("@metrage", Convert.ToDouble(announcementInformation.Metrage, CultureInfo.InvariantCulture));
                         sqlCommand.Parameters.AddWithValue("@description", announcementInformation.Description);
                         sqlCommand.Parameters.AddWithValue("@idProptertyType", announcementInformation.RentalType);
                         sqlCommand.Parameters.AddWithValue("@url", announcementInformation.UrlWebSite);
@@ -309,8 +310,8 @@ namespace RentalInvestmentAid.Database
                     {
                         sqlCommand.CommandType = CommandType.StoredProcedure;
                         sqlCommand.Parameters.AddWithValue("@durationInYear", rateInformation.DurationInYear);
-                        sqlCommand.Parameters.AddWithValue("@rate", Convert.ToDecimal(rateInformation.Rate));
-                        sqlCommand.Parameters.AddWithValue("@rateType", Convert.ToDecimal(rateInformation.RateType));
+                        sqlCommand.Parameters.AddWithValue("@rate", Convert.ToDouble(rateInformation.Rate));
+                        sqlCommand.Parameters.AddWithValue("@rateType", Convert.ToDouble(rateInformation.RateType));
                         sqlCommand.Parameters.AddWithValue("@title", rateInformation.Title);
 
                         SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
@@ -373,8 +374,8 @@ namespace RentalInvestmentAid.Database
                         sqlCommand.CommandType = CommandType.StoredProcedure;
                         sqlCommand.Parameters.AddWithValue("@idAnnoncementInformation", rentInformation.AnnouncementInformation.Id);
                         sqlCommand.Parameters.AddWithValue("@idRentalInformation", rentInformation.RentalInformations.Id);
-                        sqlCommand.Parameters.AddWithValue("@rentPrice", rentInformation.RentPrice);
-                        sqlCommand.Parameters.AddWithValue("@rent70Price", rentInformation.Rental70Pourcent);
+                        sqlCommand.Parameters.AddWithValue("@rentPrice", Convert.ToDouble(Math.Round(rentInformation.RentPrice).ToString(), CultureInfo.InvariantCulture));
+                        sqlCommand.Parameters.AddWithValue("@rent70Price", Convert.ToDouble(Math.Round(rentInformation.Rental70Pourcent).ToString(), CultureInfo.InvariantCulture));
 
                         SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
                         retval.Direction = ParameterDirection.ReturnValue;

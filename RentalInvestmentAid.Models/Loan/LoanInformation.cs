@@ -21,5 +21,12 @@ namespace RentalInvestmentAid.Models.Loan
         public double InsurranceRate { get;set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
+
+        public override string ToString()
+        {
+            string announcmentInfo = AnnouncementInformation != null ? AnnouncementInformation.Id.ToString() : String.Empty;
+            string rateInfoInfo = RateInformation != null ? RateInformation.Id.ToString() : String.Empty;
+            return $"-LoanInformation- Id : {Id} announcmentId : {announcmentInfo} rateId : {rateInfoInfo}";
+        }
     }
 }
