@@ -43,7 +43,7 @@ namespace RentalInvestmentAid.Core
                 && announcementInformation.RentalType == rent.RentalTypeOfTheRent).ToList();
         }
 
-        private List<LoanInformation> CalculAllLoan(string amount, string insurranceRate = "0,30")
+        private List<LoanInformation> CalculAllLoan(string amount, string insurranceRate = "0.30")
         {
             List<LoanInformation> loanInformation = new List<LoanInformation>();
             _cachingManager.GetRatesInformation().ForEach(rateInformation =>
