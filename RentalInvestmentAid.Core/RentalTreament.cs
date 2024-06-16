@@ -64,8 +64,8 @@ namespace RentalInvestmentAid.Core
                 {
                     AnnouncementInformation = announcementInformation,
                     RentalInformations = rentalInformation,
-                    RentPrice = price,
-                    Rental70Pourcent = price * 0.70
+                    RentPrice = Math.Round(price),
+                    Rental70Pourcent = Math.Round(price * 0.70)
                 });
             });
 

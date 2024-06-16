@@ -673,8 +673,8 @@ CREATE TABLE [dbo].[rentInformation](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[idAnnoncementInformation] [int] NOT NULL,
 	[idRentalInformation] [int] NOT NULL,
-	[rentPrice] [decimal](12, 3) NOT NULL,
-	[rent70Price] [decimal](12, 3) NOT NULL,
+	[rentPrice] [decimal](10, 0) NOT NULL,
+	[rent70Price] [decimal](10, 0) NOT NULL,
 	[createdDate] [datetime] NOT NULL,
 	[updatedDate] [datetime] NOT NULL,
  CONSTRAINT [PK_rentabilityInformation] PRIMARY KEY CLUSTERED 
@@ -720,8 +720,8 @@ CREATE PROCEDURE [dbo].[uspInsertRentInformation]
 (
 				@idAnnoncementInformation	int,
 				@idRentalInformation		int,
-				@rentPrice					decimal(6,2),
-				@rent70Price				decimal(6,2)
+				@rentPrice					decimal(10,0),
+				@rent70Price				decimal(10,0)
 )
 AS
 BEGIN

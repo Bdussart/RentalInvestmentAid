@@ -141,7 +141,9 @@
 
     protected override Task OnInitializedAsync()
     {
-        _announcementBroker = new RabbitMQBroker(Settings.SettingsManager.AnnouncementQueueName);
+        string rabbitMqHost = String.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("RABBITMQ_HOST")) ? "localhost" : Environment.GetEnvironmentVariable("RABBITMQ_HOST");
+
+        _announcementBroker = new RabbitMQBroker(Settings.SettingsManager.AnnouncementQueueName, rabbitMqHost);
         _rentalTreament = new RentalTreament(_cachingManager, _databaseFactory, new LeFigaroWebSiteData(_cachingManager, _announcementBroker));
         _bankTreament = new BankTreatment(_cachingManager, _databaseFactory);
         _geminiTreatment = new GeminiTreatment(_cachingManager, _databaseFactory);

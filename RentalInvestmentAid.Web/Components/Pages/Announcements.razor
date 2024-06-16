@@ -63,7 +63,7 @@
         {
             _announcementTreatment = new AnnouncementTreatment(_cachingManager, _databaseFactory);
             _cancellationTokenSource = new CancellationTokenSource();
-            await Task.Delay(2000); // 2-second delay before starting the stream
+            await Task.Delay(2000); 
            await  GetAnnouncementAsync(_cancellationTokenSource.Token);
         }
     }

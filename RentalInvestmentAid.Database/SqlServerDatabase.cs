@@ -374,8 +374,8 @@ namespace RentalInvestmentAid.Database
                         sqlCommand.CommandType = CommandType.StoredProcedure;
                         sqlCommand.Parameters.AddWithValue("@idAnnoncementInformation", rentInformation.AnnouncementInformation.Id);
                         sqlCommand.Parameters.AddWithValue("@idRentalInformation", rentInformation.RentalInformations.Id);
-                        sqlCommand.Parameters.AddWithValue("@rentPrice", Convert.ToDouble(Math.Round(rentInformation.RentPrice).ToString(), CultureInfo.InvariantCulture));
-                        sqlCommand.Parameters.AddWithValue("@rent70Price", Convert.ToDouble(Math.Round(rentInformation.Rental70Pourcent).ToString(), CultureInfo.InvariantCulture));
+                        sqlCommand.Parameters.AddWithValue("@rentPrice", rentInformation.RentPrice);
+                        sqlCommand.Parameters.AddWithValue("@rent70Price", rentInformation.Rental70Pourcent);
 
                         SqlParameter retval = sqlCommand.Parameters.Add("@RETURN_VALUE", SqlDbType.Int);
                         retval.Direction = ParameterDirection.ReturnValue;
