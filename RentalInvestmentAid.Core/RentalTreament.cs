@@ -59,7 +59,7 @@ namespace RentalInvestmentAid.Core
             List<RentInformation> realCost = new List<RentInformation>();
             rentalInformation.ForEach(rentalInformation =>
             {
-                double price = Convert.ToDouble(rentalInformation.Price) * Convert.ToDouble(metrage.Replace(".", ","));
+                double price = Convert.ToDouble(rentalInformation.Price) * Convert.ToDouble(metrage.Replace(",", "."));
                 realCost.Add(new RentInformation()
                 {
                     AnnouncementInformation = announcementInformation,
