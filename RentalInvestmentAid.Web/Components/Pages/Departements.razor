@@ -1,0 +1,100 @@
+﻿@page "/departements"
+
+@using RentalInvestmentAid.Caching
+@using RentalInvestmentAid.Database
+@using RentalInvestmentAid.Models;
+@using RentalInvestmentAid.Web.Model
+@using RentalInvestmentAid.Web.Services
+
+@rendermode InteractiveServer
+
+
+@if (_isLoading)
+{
+    <div class="spinner-border text-dark" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+}
+else
+{
+    <div class="container-fluid">
+        <h3>Nouveau Departement</h3>
+
+        <form>
+            <div class="form-group">
+                <label for="departement-name">Nom du departement</label>
+                <input type="text" class="form-control" id="departement-name" placeholder="Nom du departement" @bind="DepartmentName" @oninput="OnInput" aria-describedby="departement-name" autocomplete="off">
+                <ul class="list-group position-absolute" style="z-index: 1000;">
+                    @if (suggestions != null && suggestions.Any())
+                    {
+                        @foreach (var suggestion in suggestions)
+                        {
+                            <li class="list-group-item list-group-item-action" @onclick="() => SelectSuggestion(suggestion)">@suggestion.Name</li>
+                        }
+                    }
+                </ul>
+            </div>
+            <div class="form-group">
+                <label for="departement-number">Departement</label>
+                <input id="departement-number" type="text" class="form-control" placeholder="departement" @bind="DepartmentNumber" aria-describedby="departement-number" readonly>
+            </div>
+        </form>
+        <div class="hr"></div>
+        <h3>Departements</h3>
+            <div class="departements-informations row">
+                @foreach (DepartmentToSearchData departement in _departements)
+                {
+                    <div class="card" style="width: 18rem;">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">@departement.DepartmentName</li>
+                            <li class="list-group-item">@departement.DepartmentNumber</li>
+                            <li class="list-group-item"><button type="submit" class="btn btn-danger">Delete</button></li>                        
+                        </ul>
+                    </div>
+                }
+           </div>        
+    </div>
+}
+
+@code {
+    private bool _isLoading = true;
+    private List<DepartmentToSearchData> _departements = new List<DepartmentToSearchData>();
+
+    public DepartmentService DepartmentService = new DepartmentService();
+    [CascadingParameter(Name = "CachingManager")]
+    public CachingManager _cachingManager { get; set; }
+
+    [CascadingParameter(Name = "DatabaseFactory")]
+    public IDatabaseFactory _databaseFactory { get; set; }
+
+    async protected override Task OnInitializedAsync()
+    {
+        _departements = _databaseFactory.GetDepartmentToSearchDatas();
+        _isLoading = false;
+    }
+
+
+    private string DepartmentName { get; set; }
+    private string DepartmentNumber { get; set; }
+    private List<Department> suggestions = new List<Department>();
+
+    private void OnInput(ChangeEventArgs e)
+    {
+        var input = e.Value?.ToString();
+        if (!string.IsNullOrEmpty(input))
+        {
+            suggestions = DepartmentService.GetDepartments(input);
+        }
+        else
+        {
+            suggestions.Clear();
+        }
+    }
+
+    private void SelectSuggestion(Department department)
+    {
+        DepartmentName = department.Name;
+        DepartmentNumber = department.Number;
+        suggestions.Clear();
+    }
+}

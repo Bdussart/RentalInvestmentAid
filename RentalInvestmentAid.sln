@@ -45,7 +45,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FetchCityWorkerService", "F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TreatCityWorkerService", "TreatCityWorkerService\TreatCityWorkerService.csproj", "{3BE7B702-0C51-426F-A408-F15779A29D80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RentWorkerService", "RentWorkerService\RentWorkerService.csproj", "{E3EA38D7-4DE1-4105-B641-27D6473FF686}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentWorkerService", "RentWorkerService\RentWorkerService.csproj", "{E3EA38D7-4DE1-4105-B641-27D6473FF686}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
