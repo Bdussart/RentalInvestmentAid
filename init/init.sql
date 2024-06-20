@@ -127,6 +127,19 @@ INSERT INTO [dbo].[departmentToSearchData]
 END
 GO
 
+CREATE PROCEDURE uspDeleteDepartmentToSearchData
+(
+				@departmentId			int
+)
+AS
+BEGIN
+
+DELETE FROM [dbo].[departmentToSearchData]
+WHERE [id] = @departmentId
+
+END
+GO
+
 CREATE PROCEDURE uspGetDepartmentToSearchData
 AS
 BEGIN
@@ -405,6 +418,38 @@ SELECT  [id]
       ,[createdDate]
       ,[updatedDate]
   FROM [RentalInvestmentAid].[dbo].[annoncementInformation]
+
+
+END
+GO
+
+
+
+
+ALTER PROCEDURE [dbo].[uspGetAnnoncementInformationsByProvider](
+				@providerId int,
+				@idAnnouncementProvider varchar(50)
+)
+AS
+BEGIN
+SELECT  [id]
+	  ,[idAnnouncementProvider]
+	  ,[idFromProvider] 
+	  ,[idCity]
+      ,[price]
+      ,[metrage]
+      ,[description]
+	  ,idPropertyType
+      ,[url]
+	  ,[rentabilityCalculated]
+	  ,[isRentable]
+	  ,[readed]
+	  ,informationProvidedByGemini
+      ,[createdDate]
+      ,[updatedDate]
+  FROM [RentalInvestmentAid].[dbo].[annoncementInformation]
+  WHERE [idFromProvider] = @idAnnouncementProvider AND
+		[idAnnouncementProvider] = @providerId 
 
 
 END

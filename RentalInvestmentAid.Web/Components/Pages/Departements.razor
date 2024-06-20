@@ -38,6 +38,7 @@ else
                 <label for="departement-number">Departement</label>
                 <input id="departement-number" type="text" class="form-control" placeholder="departement" @bind="DepartmentNumber" aria-describedby="departement-number" readonly>
             </div>
+            <li class="list-group-item"><button type="submit" class="btn btn-danger" @onclick=InsertDepartement >Ajouter</button></li>
         </form>
         <div class="hr"></div>
         <h3>Departements</h3>
@@ -48,14 +49,14 @@ else
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">@departement.DepartmentName</li>
                             <li class="list-group-item">@departement.DepartmentNumber</li>
-                            <li class="list-group-item"><button type="submit" class="btn btn-danger">Delete</button></li>                        
-                        </ul>
+                        <li class="list-group-item"><button type="submit" class="btn btn-danger" @onclick="args => DeleteDepartement(departement.Id, args)">Delete</button></li>
+                    </ul>
                     </div>
                 }
            </div>        
     </div>
 }
-
+ @* @onclick="args => DeleteAnnouncement(AnnouncementInformation.Id, args) *@
 @code {
     private bool _isLoading = true;
     private List<DepartmentToSearchData> _departements = new List<DepartmentToSearchData>();
@@ -96,5 +97,15 @@ else
         DepartmentName = department.Name;
         DepartmentNumber = department.Number;
         suggestions.Clear();
+    }
+
+    private void DeleteDepartement(int departementId, MouseEventArgs e)
+    {
+
+    }
+
+    private void InsertDepartement()
+    {
+        
     }
 }

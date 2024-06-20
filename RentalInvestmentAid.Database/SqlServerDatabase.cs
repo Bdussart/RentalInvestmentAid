@@ -12,6 +12,7 @@ using RentalInvestmentAid.Models.Loan;
 using RentalInvestmentAid.Models;
 using RentalInvestmentAid.Models.City;
 using System.Globalization;
+using RentalInvestmentAid.Database.Extension;
 
 namespace RentalInvestmentAid.Database
 {
@@ -64,27 +65,7 @@ namespace RentalInvestmentAid.Database
                     {
                         while (reader.Read())
                         {
-                            announcementInformations.Add(new AnnouncementInformation
-                            {
-                                Id = reader.GetInt32(0),
-                                AnnouncementProvider = (AnnouncementProvider)reader.GetInt32(1),
-                                IdFromProvider = reader.GetString(2),
-                                CityInformations = new CityInformations
-                                {
-                                    Id = reader.GetInt32(3),
-                                },
-                                Price = reader.GetDecimal(4).ToString(),
-                                Metrage = reader.GetDecimal(5).ToString(),
-                                Description = reader.GetString(6).ToString(),
-                                RentalType = (RentalTypeOfTheRent)reader.GetInt32(7),
-                                UrlWebSite = reader.GetString(8).ToString(),
-                                RentabilityCalculated = reader.GetBoolean(9),
-                                IsRentable = reader.IsDBNull(10) ? null : reader.GetBoolean(10),
-                                Readed = reader.GetBoolean(11),
-                                InformationProvidedByGemini = reader.IsDBNull(12) ? string.Empty : reader.GetString(12),
-                                CreatedDate = reader.GetDateTime(13),
-                                UpdatedDate = reader.GetDateTime(14)
-                            });
+                            announcementInformations.Add(new AnnouncementInformation().AnnouncementInformationFromSqlDataReader(reader));
                         }
                     }
                 }
@@ -597,6 +578,45 @@ namespace RentalInvestmentAid.Database
                     sqlCommand.ExecuteNonQuery();
                 }
             }
+        }
+
+        public void DeleteDepartment(int departmentId)
+        {
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspDeleteDepartmentToSearchData", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.AddWithValue("@departmentId", departmentId);
+                    connection.Open();
+                    sqlCommand.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public AnnouncementInformation? GetAnnouncementsInformationsByProviderId(int providerId, string announcmentProviderId)
+        {
+            AnnouncementInformation? announcementInformation = null;
+            using (SqlConnection connection = new SqlConnection(SettingsManager.ConnectionString))
+            {
+                using (SqlCommand sqlCommand = new SqlCommand("uspGetAnnoncementInformationsByProvider", connection))
+                {
+                    sqlCommand.CommandType = CommandType.StoredProcedure;
+                    sqlCommand.Parameters.AddWithValue("@providerId", providerId);
+                    sqlCommand.Parameters.AddWithValue("@idAnnouncementProvider", announcmentProviderId);
+                    connection.Open();
+
+                    using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            announcementInformation = new AnnouncementInformation().AnnouncementInformationFromSqlDataReader(reader);
+                        }
+                    }
+                }
+            }
+
+            return announcementInformation;
         }
     }
 }

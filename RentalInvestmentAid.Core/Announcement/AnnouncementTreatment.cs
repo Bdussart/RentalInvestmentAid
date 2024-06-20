@@ -88,14 +88,11 @@ namespace RentalInvestmentAid.Core.Announcement
             return announcementInformation;
         }
 
-        public bool ExistAnnouncementByProviderAndProviderId(string providerId, AnnouncementProvider announcementProvider)
+        public bool ExistAnnouncementByProviderAndProviderId(string providerAnnouncmentId, AnnouncementProvider announcementProvider)
         {
-            bool result = false;
+            AnnouncementInformation? val = _databaseFactory.GetAnnouncementsInformationsByProviderId((int)announcementProvider, providerAnnouncmentId);
 
-            if (_cachingManager.GetAnnouncementInformation().Any(ann => ann.IdFromProvider.Equals(providerId) && ann.AnnouncementProvider.Equals(announcementProvider)))
-                result = true;
-
-            return result;
+            return val != null;
         }
 
         public void UpdateRentabilityInformation(int announcementId, bool isRentable)
