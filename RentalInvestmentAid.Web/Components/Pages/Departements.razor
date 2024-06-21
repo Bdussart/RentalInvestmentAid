@@ -1,10 +1,12 @@
 ﻿@page "/departements"
 
 @using RentalInvestmentAid.Caching
+@using RentalInvestmentAid.Core.Department
 @using RentalInvestmentAid.Database
 @using RentalInvestmentAid.Models;
 @using RentalInvestmentAid.Web.Model
 @using RentalInvestmentAid.Web.Services
+@inject IJSRuntime JS
 
 @rendermode InteractiveServer
 
@@ -45,12 +47,14 @@ else
             <div class="departements-informations row">
                 @foreach (DepartmentToSearchData departement in _departements)
                 {
-                    <div class="card" style="width: 18rem;">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">@departement.DepartmentName</li>
-                            <li class="list-group-item">@departement.DepartmentNumber</li>
-                        <li class="list-group-item"><button type="submit" class="btn btn-danger" @onclick="args => DeleteDepartement(departement.Id, args)">Delete</button></li>
-                    </ul>
+                    <div id="department-@departement.Id">
+                        <div class="card" style="width: 18rem;">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">@departement.DepartmentName</li>
+                                <li class="list-group-item">@departement.DepartmentNumber</li>
+                            <li class="list-group-item"><button type="submit" class="btn btn-danger" @onclick="args => DeleteDepartement(departement.Id, args)">Delete</button></li>
+                        </ul>
+                        </div>
                     </div>
                 }
            </div>        
@@ -60,6 +64,7 @@ else
 @code {
     private bool _isLoading = true;
     private List<DepartmentToSearchData> _departements = new List<DepartmentToSearchData>();
+    private DepartmentTreatment departmentTreatment = null;
 
     public DepartmentService DepartmentService = new DepartmentService();
     [CascadingParameter(Name = "CachingManager")]
@@ -71,6 +76,7 @@ else
     async protected override Task OnInitializedAsync()
     {
         _departements = _databaseFactory.GetDepartmentToSearchDatas();
+        departmentTreatment = new DepartmentTreatment(_cachingManager, _databaseFactory);
         _isLoading = false;
     }
 
@@ -99,13 +105,18 @@ else
         suggestions.Clear();
     }
 
-    private void DeleteDepartement(int departementId, MouseEventArgs e)
+    private async void DeleteDepartement(int departementId, MouseEventArgs e)
     {
+        departmentTreatment.DeleteDepartment(departementId);
+        await JS.InvokeVoidAsync("removeElementById", $"department-{departementId}");
 
+        await InvokeAsync(StateHasChanged);
     }
 
-    private void InsertDepartement()
+    private async void InsertDepartement()
     {
-        
+        departmentTreatment.InsertDepartment(DepartmentName, DepartmentNumber);
+
+        await InvokeAsync(StateHasChanged);
     }
 }

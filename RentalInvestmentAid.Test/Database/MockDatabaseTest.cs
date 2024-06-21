@@ -212,6 +212,29 @@ namespace RentalInvestmentAid.Test.Database
 
         }
 
+        [TestMethod]
+        public void update_rentability_information()
+        {
+            IDatabaseFactory databaseFactory = new MockDatabase();
+            CityInformations cityInformations = CreateCity();
+            AnnouncementInformation announcementRentable = CreateAnnouncement(cityInformations);
+            AnnouncementInformation announcementNotRentable = CreateAnnouncement(cityInformations);
+            AnnouncementInformation announcementNotCalculated = CreateAnnouncement(cityInformations);
+            databaseFactory.InsertAnnouncementInformation(CreateAnnouncement(cityInformations));
+            databaseFactory.InsertAnnouncementInformation(announcementRentable);
+            databaseFactory.InsertAnnouncementInformation(announcementNotCalculated);
+            databaseFactory.InsertAnnouncementInformation(announcementNotRentable);
+            databaseFactory.UpdateRentabilityInformation(announcementRentable.Id, true);
+            databaseFactory.UpdateRentabilityInformation(announcementNotRentable.Id, false);
+
+            AnnouncementInformation announcementInDB = databaseFactory.GetAnnouncementsInformations().Find(ann => announcementRentable.Id == ann.Id);
+            AnnouncementInformation announcementInDBNotRentable = databaseFactory.GetAnnouncementsInformations().Find(ann => announcementNotRentable.Id == ann.Id);
+            AnnouncementInformation announcementInDBNotCalculated = databaseFactory.GetAnnouncementsInformations().Find(ann => announcementNotCalculated.Id == ann.Id);
+
+            Assert.IsTrue(announcementInDB.IsRentable);
+            Assert.IsFalse(announcementInDBNotRentable.IsRentable);
+            Assert.IsNull(announcementInDBNotCalculated.IsRentable);
+        }
 
         //[TestMethod]
         //public void insert_2_loans_and_check_id()
@@ -220,7 +243,7 @@ namespace RentalInvestmentAid.Test.Database
 
         //    CityInformations city = CreateCity();
         //    RateInformation rateInformation = CreateRate();
-            
+
 
         //    databaseFactory.InsertLoanInformation(CreateLoan()
         //}

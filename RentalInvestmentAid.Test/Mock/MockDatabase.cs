@@ -28,9 +28,19 @@ namespace RentalInvestmentAid.Test.Mock
             throw new NotImplementedException();
         }
 
+        public void DeleteDepartment(int departmentId)
+        {
+            throw new NotImplementedException();
+        }
+
         public List<AnnouncementInformation> GetAnnouncementsInformations()
         {
             return _announcementInformation.OrderBy(x=> x.Id).ToList();
+        }
+
+        public AnnouncementInformation? GetAnnouncementsInformationsByProviderId(int providerId, string announcmentProviderId)
+        {
+            return _announcementInformation.Find(ann => ann.AnnouncementProvider.Equals(providerId) && ann.IdFromProvider.Equals(announcmentProviderId, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public List<CityInformations> GetCities()
@@ -148,7 +158,7 @@ namespace RentalInvestmentAid.Test.Mock
 
         public void UpdateRentabilityInformation(int announcementId, bool isRentable)
         {
-            throw new NotImplementedException();
+            _announcementInformation.Find(ann => ann.Id == announcementId).IsRentable = isRentable;
         }
     }
 }

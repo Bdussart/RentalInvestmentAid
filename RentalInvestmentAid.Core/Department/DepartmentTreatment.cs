@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace RentalInvestmentAid.Core.Department
 {
-    internal class DepartmentTreatment : MustInitializeCache
+    public class DepartmentTreatment : MustInitializeCache
     {
         private IDatabaseFactory _databaseFactory;
         public DepartmentTreatment(CachingManager cachingManager, IDatabaseFactory databaseFactory) : base(cachingManager)

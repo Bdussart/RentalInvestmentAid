@@ -426,7 +426,7 @@ GO
 
 
 
-ALTER PROCEDURE [dbo].[uspGetAnnoncementInformationsByProvider](
+CREATE PROCEDURE [dbo].[uspGetAnnoncementInformationsByProvider](
 				@providerId int,
 				@idAnnouncementProvider varchar(50)
 )

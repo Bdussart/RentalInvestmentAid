@@ -47,10 +47,13 @@ namespace RentalInvestmentAid.Core.Announcement
             {
                 foreach (HtmlNode node in allAnnoncementInThePage)
                 {
-                    string announceUid = $"r{node.Attributes["data-gtm"].Value.Split("_")[2]}";
+                    if (node.Attributes["data-gtm"] != null)
+                    {
+                        string announceUid = $"r{node.Attributes["data-gtm"].Value.Split("_")[2]}";
 
-                    if (!_announcementTreatment.ExistAnnouncementByProviderAndProviderId(announceUid, _announcementProvider))
-                        urls.Add($"https://www.iadfrance.fr/annonce/{announceUid}");
+                        if (!_announcementTreatment.ExistAnnouncementByProviderAndProviderId(announceUid, _announcementProvider))
+                            urls.Add($"https://www.iadfrance.fr/annonce/{announceUid}");
+                    }
                 }
             }
 
@@ -66,7 +69,7 @@ namespace RentalInvestmentAid.Core.Announcement
                 bool next = false;
                 ChromeOptions options = SeleniumHelper.DefaultChromeOption();
 
-                using (IWebDriver driver = new RemoteWebDriver(SeleniumHelper.SeleniumUrl,options))
+                using (IWebDriver driver = new RemoteWebDriver(SeleniumHelper.SeleniumUrl, options))
                 {
                     do
                     {
