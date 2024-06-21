@@ -1,12 +1,14 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
+# Use the .NET 8.0 runtime as a base image
 FROM mcr.microsoft.com/dotnet/runtime:8.0 AS base
-USER app
 WORKDIR /app
+USER app
 
+# Use the .NET 8.0 SDK for building the application
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Debug
 WORKDIR /src
+
+# Copy and restore dependencies
 COPY ["TreatAnnouncementWorkerService/TreatAnnouncementWorkerService.csproj", "TreatAnnouncementWorkerService/"]
 COPY ["RentalInvestmentAid.Caching/RentalInvestmentAid.Caching.csproj", "RentalInvestmentAid.Caching/"]
 COPY ["RentalInvestmentAid.Database/RentalInvestmentAid.Database.csproj", "RentalInvestmentAid.Database/"]
@@ -17,14 +19,18 @@ COPY ["RentalInvestmentAid.Core/RentalInvestmentAid.Core.csproj", "RentalInvestm
 COPY ["RentalInvestmentAid.GeminiAPICaller/RentalInvestmentAid.GeminiAPICaller.csproj", "RentalInvestmentAid.GeminiAPICaller/"]
 COPY ["RentalInvestmentAid.Queue/RentalInvestmentAid.Queue.csproj", "RentalInvestmentAid.Queue/"]
 RUN dotnet restore "./TreatAnnouncementWorkerService/./TreatAnnouncementWorkerService.csproj"
+
+# Copy the rest of the source code and build the application
 COPY . .
 WORKDIR "/src/TreatAnnouncementWorkerService"
-RUN dotnet build "./TreatAnnouncementWorkerService.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "TreatAnnouncementWorkerService.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
+# Publish the application
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Debug
-RUN dotnet publish "./TreatAnnouncementWorkerService.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "TreatAnnouncementWorkerService.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
+# Create the final image
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .

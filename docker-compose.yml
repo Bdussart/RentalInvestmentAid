@@ -83,7 +83,7 @@ services:
     networks:
       - default
     volumes:
-      - 'C:\\Logs\\Rental\\Fetch:/app/logs'
+      - 'C:\\Logs\\Rental\\Annoucement\\Fetch:/app/logs'
   treatAnnoucementWorkerService:
     image: treatannouncementworkerservice
     depends_on:
@@ -98,7 +98,7 @@ services:
     networks:
       - default
     volumes:
-      - 'C:\\Logs\Rental\\Treat:/app/logs'
+      - 'C:\\Logs\Rental\\Annoucement\\Treat:/app/logs'
   bankWorkerService:
     image: bankworkerservice
     depends_on:
@@ -159,7 +159,7 @@ services:
     networks:
       - default
     volumes:
-      - 'C:\\Logs\Rental\\Rent:/app/logs'
+      - 'C:\\Logs\RentalWebSite\\Rent:/app/logs'
     ports:
       - "8080:8080"
 
