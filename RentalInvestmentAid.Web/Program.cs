@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using RentalInvestmentAid.Caching;
 using RentalInvestmentAid.Database;
 using RentalInvestmentAid.Web.Components;
+using RentalInvestmentAid.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,9 @@ builder.Services.AddCascadingValue(sp =>
     var source = new CascadingValueSource<IDatabaseFactory>("DatabaseFactory", databaseFactory, false);
     return source;
 });
+
+builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<DockerService>();
 
 var app = builder.Build();
 

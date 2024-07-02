@@ -1,0 +1,59 @@
+﻿@page "/dockermanager"
+@using Docker.DotNet.Models
+@using RentalInvestmentAid.Web.Services
+
+
+@rendermode InteractiveServer
+@inject DockerService DockerService
+
+<h3>Docker Manager</h3>
+
+<label for="network">Network:</label>
+<input type="text" id="network" @bind="_networkName" placeholder="Enter network name" />
+<button @onclick="LoadContainers">Load Containers</button>
+
+<div class="row">
+    @if (_containers != null)
+    {
+        @foreach (var container in _containers)
+        {
+            <div class="card col-3">
+                <div class="card-header">
+                        @container.Image
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"> @container.ID</li>
+                        <li class="list-group-item"> @container.State</li>
+                        <li class="list-group-item"> @container.Status</li>
+                        <li class="list-group-item"> <button @onclick="() => StartContainer(container.ID)">Start</button></li>
+                        <li class="list-group-item"> <button @onclick="() => StopContainer(container.ID)">Stop</button></li>
+                    </ul>
+                </div>  
+        }
+    }
+</div>
+
+@code {
+    private string _networkName;
+    private IList<ContainerListResponse> _containers;
+
+    private async Task LoadContainers()
+    {
+        if(!String.IsNullOrEmpty(_networkName))
+            _containers = await DockerService.ListContainersByNetworkAsync(_networkName);
+    }
+
+    private async Task StartContainer(string id)
+    {
+        await DockerService.StartContainerAsync(id);
+        await LoadContainers();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task StopContainer(string id)
+    {
+        await DockerService.StopContainerAsync(id);
+        await LoadContainers();
+        await InvokeAsync(StateHasChanged);
+    }
+}
